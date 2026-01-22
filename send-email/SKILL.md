@@ -1,6 +1,6 @@
 ---
 name: send-email
-description: "Send emails using the Resend API - single or batch. Use when: (1) sending transactional emails, (2) sending notifications, (3) sending multiple emails in bulk (up to 100 per batch), (4) batch email sending, (5) any email sending task. Auto-detects project language."
+description: "Use when sending transactional emails, welcome messages, order confirmations, password resets, notifications, or bulk emails (up to 100 per batch) via Resend API."
 ---
 
 # Send Email with Resend
@@ -27,8 +27,8 @@ Resend provides two endpoints for sending emails:
 
 ## Quick Start
 
-1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.).
-2. **Install SDK if possible (prefer SDK over cURL)** - See [references/installation.md](references/installation.md)
+1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.)
+2. **Install SDK** (preferred) or use cURL - See [references/installation.md](references/installation.md)
 3. **Choose single or batch** based on the decision matrix above
 4. **Implement best practices** - Idempotency keys, error handling, retries
 
@@ -85,13 +85,13 @@ Prevent duplicate emails when retrying failed requests.
 |-----------|------|-------------|
 | `cc` | string[] | CC recipients |
 | `bcc` | string[] | BCC recipients |
-| `reply_to` (naming varies by SDK) | string[] | Reply-to addresses |
-| `scheduled_at` (naming varies by SDK) | string | Schedule send time (ISO 8601) |
+| `reply_to`* | string[] | Reply-to addresses |
+| `scheduled_at`* | string | Schedule send time (ISO 8601) |
 | `attachments` | array | File attachments (max 40MB total) |
 | `tags` | array | Key/value pairs for tracking |
 | `headers` | object | Custom headers |
 
-If the user does not have Inbound set up, ask the user for the email address to use for the `reply_to` parameter. This ensures recipients can reply to the email.
+*Parameter naming varies by SDK (e.g., `replyTo` in Node.js, `reply_to` in Python).
 
 ### Minimal Example (Node.js)
 
@@ -182,6 +182,59 @@ For sends larger than 100 emails, chunk into multiple batch requests:
 4. **Track results** per chunk to handle partial failures
 
 See [references/batch-email-examples.md](references/batch-email-examples.md) for complete chunking implementations.
+
+## Deliverability
+
+Follow these practices to maximize inbox placement.
+
+### Required
+
+| Practice | Why |
+|----------|-----|
+| **Valid DMARC record** | Gmail and Yahoo require DMARC since 2024 |
+| **Links match sending domain** | If sending from `@acme.com`, link to `https://acme.com` - mismatched domains trigger spam filters |
+| **Include plain text version** | Use both `html` and `text` parameters for accessibility and deliverability |
+| **Avoid "no-reply" addresses** | Use real addresses (e.g., `support@`) - improves trust signals |
+| **Keep body under 102KB** | Gmail clips larger messages |
+
+### Recommended
+
+| Practice | Why |
+|----------|-----|
+| **Use subdomains** | Send transactional from `notifications.acme.com`, marketing from `mail.acme.com` - protects reputation |
+| **Disable tracking for transactional** | Open/click tracking can trigger spam filters for password resets, receipts, etc. |
+
+## Tracking (Opens & Clicks)
+
+Tracking is configured at the **domain level** in the Resend dashboard, not per-email.
+
+| Setting | How it works | Recommendation |
+|---------|--------------|----------------|
+| **Open tracking** | Inserts 1x1 transparent pixel | Disable for transactional emails - can hurt deliverability |
+| **Click tracking** | Rewrites links through redirect | Disable for sensitive emails (password resets, security alerts) |
+
+**When to enable tracking:**
+- Marketing emails where engagement metrics matter
+- Newsletters and announcements
+
+**When to disable tracking:**
+- Transactional emails (receipts, confirmations, password resets)
+- Security-sensitive emails
+- When maximizing deliverability is priority
+
+Configure via dashboard: Domain → Configuration → Click/Open Tracking
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Retrying without idempotency key | Always include idempotency key - prevents duplicate sends on retry |
+| Using batch for emails with attachments | Batch doesn't support attachments - use single sends instead |
+| Not validating batch before send | Validate all emails first - one invalid email fails the entire batch |
+| Retrying 400/422 errors | These are validation errors - fix the request, don't retry |
+| Same idempotency key, different payload | Returns 409 error - use unique key per unique email content |
+| Tracking enabled for transactional emails | Disable open/click tracking for password resets, receipts - hurts deliverability |
+| Using "no-reply" sender address | Use real address like `support@` - improves trust signals with email providers |
 
 ## Notes
 
