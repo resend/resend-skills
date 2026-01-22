@@ -16,7 +16,7 @@ Resend provides two endpoints for sending emails:
 
 **Choose batch when:**
 - Sending 2+ distinct emails at once
-- Reducing API calls is important
+- Reducing API calls is important (by default, rate limit is 2 requests per second)
 - No attachments or scheduling needed
 
 **Choose single when:**
@@ -27,8 +27,8 @@ Resend provides two endpoints for sending emails:
 
 ## Quick Start
 
-1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.)
-2. **Install SDK if needed** - See [references/installation.md](references/installation.md)
+1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.).
+2. **Install SDK if possible (prefer SDK over cURL)** - See [references/installation.md](references/installation.md)
 3. **Choose single or batch** based on the decision matrix above
 4. **Implement best practices** - Idempotency keys, error handling, retries
 
@@ -56,7 +56,7 @@ Prevent duplicate emails when retrying failed requests.
 | 400, 422 | Fix request parameters, don't retry |
 | 401, 403 | Check API key / verify domain, don't retry |
 | 409 | Idempotency conflict - use new key or fix payload |
-| 429 | Rate limited - retry with exponential backoff |
+| 429 | Rate limited - retry with exponential backoff (by default, rate limit is 2 requests per second) |
 | 500 | Server error - retry with exponential backoff |
 
 ### Retry Strategy
@@ -85,11 +85,13 @@ Prevent duplicate emails when retrying failed requests.
 |-----------|------|-------------|
 | `cc` | string[] | CC recipients |
 | `bcc` | string[] | BCC recipients |
-| `reply_to` | string[] | Reply-to addresses |
-| `scheduled_at` | string | Schedule send time (ISO 8601) |
+| `reply_to` (naming varies by SDK) | string[] | Reply-to addresses |
+| `scheduled_at` (naming varies by SDK) | string | Schedule send time (ISO 8601) |
 | `attachments` | array | File attachments (max 40MB total) |
 | `tags` | array | Key/value pairs for tracking |
 | `headers` | object | Custom headers |
+
+If the user does not have Inbound set up, ask the user for the email address to use for the `reply_to` parameter. This ensures recipients can reply to the email.
 
 ### Minimal Example (Node.js)
 

@@ -8,7 +8,7 @@
 
 # Resend Skills
 
-A collection of skills for AI coding agents following the [Agent Skills](https://github.com/anthropics/agent-skills) format. These skills enable AI agents to send emails using the [Resend](https://resend.com) API.
+A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to send emails using the [Resend](https://resend.com) API.
 
 ## Available Skills
 
