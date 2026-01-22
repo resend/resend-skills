@@ -56,7 +56,7 @@ Prevent duplicate emails when retrying failed requests.
 | 400, 422 | Fix request parameters, don't retry |
 | 401, 403 | Check API key / verify domain, don't retry |
 | 409 | Idempotency conflict - use new key or fix payload |
-| 429 | Rate limited - retry with exponential backoff (by default, rate limit is 2 requests per second) |
+| 429 | Rate limited - retry with exponential backoff (by default, rate limit is 2 requests/second) |
 | 500 | Server error - retry with exponential backoff |
 
 ### Retry Strategy
@@ -68,7 +68,7 @@ Prevent duplicate emails when retrying failed requests.
 
 ## Single Email
 
-**Endpoint:** `POST /emails`
+**Endpoint:** `POST /emails` (prefer SDK over cURL)
 
 ### Required Parameters
 
@@ -121,7 +121,7 @@ See [references/single-email-examples.md](references/single-email-examples.md) f
 
 ## Batch Email
 
-**Endpoint:** `POST /emails/batch`
+**Endpoint:** `POST /emails/batch` (but prefer SDK over cURL)
 
 ### Limitations
 
@@ -191,9 +191,9 @@ Follow these practices to maximize inbox placement.
 
 | Practice | Why |
 |----------|-----|
-| **Valid DMARC record** | Gmail and Yahoo require DMARC since 2024 |
+| **Valid SPF, DKIM, DMARC record** | authenticate the email and prevent spoofing |
 | **Links match sending domain** | If sending from `@acme.com`, link to `https://acme.com` - mismatched domains trigger spam filters |
-| **Include plain text version** | Use both `html` and `text` parameters for accessibility and deliverability |
+| **Include plain text version** | Use both `html` and `text` parameters for accessibility and deliverability (Resend generates a plain text version if not provided) |
 | **Avoid "no-reply" addresses** | Use real addresses (e.g., `support@`) - improves trust signals |
 | **Keep body under 102KB** | Gmail clips larger messages |
 
@@ -239,7 +239,9 @@ Configure via dashboard: Domain → Configuration → Click/Open Tracking
 ## Notes
 
 - The `from` address must use a verified domain
+- If the sending address cannot receive replies, set the `reply_to` parameter to a valid address.
 - Store API key in `RESEND_API_KEY` environment variable
 - Node.js SDK supports `react` parameter for React Email components
-- Response returns `{ id: "email-id" }` on success (single) or array of IDs (batch)
+- Resend returns `error`, `data`, `headers` in the response.
+- Data returns `{ id: "email-id" }` on success (single) or array of IDs (batch)
 - For marketing campaigns to large lists, use Resend Broadcasts instead
