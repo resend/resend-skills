@@ -103,7 +103,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const { data, error } = await resend.emails.send(
   {
     from: 'Acme <onboarding@resend.dev>',
-    to: ['user@example.com'],
+    to: ['delivered@resend.dev'],
     subject: 'Hello World',
     html: '<p>Email body here</p>',
   },
@@ -149,13 +149,13 @@ const { data, error } = await resend.batch.send(
   [
     {
       from: 'Acme <notifications@acme.com>',
-      to: ['user1@example.com'],
+      to: ['delivered@resend.dev'],
       subject: 'Order Shipped',
       html: '<p>Your order has shipped!</p>',
     },
     {
       from: 'Acme <notifications@acme.com>',
-      to: ['user2@example.com'],
+      to: ['delivered@resend.dev'],
       subject: 'Order Confirmed',
       html: '<p>Your order is confirmed!</p>',
     },
@@ -268,7 +268,7 @@ Use pre-built templates instead of sending HTML with each request.
 ```typescript
 const { data, error } = await resend.emails.send({
   from: 'Acme <hello@acme.com>',
-  to: ['user@example.com'],
+  to: ['delivered@resend.dev'],
   subject: 'Welcome!',
   template: {
     id: 'tmpl_abc123',

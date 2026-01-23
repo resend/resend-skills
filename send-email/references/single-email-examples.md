@@ -27,7 +27,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const { data, error } = await resend.emails.send(
   {
     from: 'Acme <onboarding@resend.dev>',
-    to: ['user@example.com'],
+    to: ['delivered@resend.dev'],
     subject: 'Order Confirmation',
     html: '<p>Your order has been confirmed.</p>',
   },
@@ -47,7 +47,7 @@ resend.api_key = os.environ["RESEND_API_KEY"]
 
 email = resend.Emails.send({
     "from": "Acme <onboarding@resend.dev>",
-    "to": ["user@example.com"],
+    "to": ["delivered@resend.dev"],
     "subject": "Order Confirmation",
     "html": "<p>Your order has been confirmed.</p>",
 }, idempotency_key=f"order-confirmation/{order_id}")
@@ -64,7 +64,7 @@ client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 params := &resend.SendEmailRequest{
     From:    "Acme <onboarding@resend.dev>",
-    To:      []string{"user@example.com"},
+    To:      []string{"delivered@resend.dev"},
     Subject: "Order Confirmation",
     Html:    "<p>Your order has been confirmed.</p>",
     Headers: map[string]string{
@@ -84,7 +84,7 @@ curl -X POST 'https://api.resend.com/emails' \
   -H 'Idempotency-Key: order-confirmation/12345' \
   -d '{
     "from": "Acme <onboarding@resend.dev>",
-    "to": ["user@example.com"],
+    "to": ["delivered@resend.dev"],
     "subject": "Order Confirmation",
     "html": "<p>Your order has been confirmed.</p>"
   }'
@@ -115,7 +115,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const { data, error } = await resend.emails.send({
   from: 'Acme <onboarding@resend.dev>',
-  to: ['user@example.com'],
+  to: ['delivered@resend.dev'],
   subject: 'Hello',
   html: '<p>Hello world</p>',
 });
@@ -151,7 +151,7 @@ resend.api_key = os.environ["RESEND_API_KEY"]
 try:
     email = resend.Emails.send({
         "from": "Acme <onboarding@resend.dev>",
-        "to": ["user@example.com"],
+        "to": ["delivered@resend.dev"],
         "subject": "Hello",
         "html": "<p>Hello world</p>",
     })
@@ -179,7 +179,7 @@ client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 params := &resend.SendEmailRequest{
     From:    "Acme <onboarding@resend.dev>",
-    To:      []string{"user@example.com"},
+    To:      []string{"delivered@resend.dev"},
     Subject: "Hello",
     Html:    "<p>Hello world</p>",
 }
@@ -242,7 +242,7 @@ async function sendEmailWithRetry(
 const result = await sendEmailWithRetry(
   {
     from: 'Acme <onboarding@resend.dev>',
-    to: ['user@example.com'],
+    to: ['delivered@resend.dev'],
     subject: 'Order Confirmation',
     html: '<p>Your order is confirmed.</p>',
   },
@@ -279,7 +279,7 @@ def send_email_with_retry(params, max_retries=3, idempotency_key=None):
 result = send_email_with_retry(
     {
         "from": "Acme <onboarding@resend.dev>",
-        "to": ["user@example.com"],
+        "to": ["delivered@resend.dev"],
         "subject": "Order Confirmation",
         "html": "<p>Your order is confirmed.</p>",
     },
@@ -325,7 +325,7 @@ client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 params := &resend.SendEmailRequest{
     From:    "Acme <onboarding@resend.dev>",
-    To:      []string{"user@example.com"},
+    To:      []string{"delivered@resend.dev"},
     Subject: "Order Confirmation",
     Html:    "<p>Your order is confirmed.</p>",
     Headers: map[string]string{
@@ -399,7 +399,7 @@ async function sendEmail(options: SendEmailOptions) {
 
 // Usage
 const result = await sendEmail({
-  to: 'user@example.com',
+  to: 'delivered@resend.dev',
   subject: 'Welcome!',
   html: '<h1>Welcome to Acme</h1>',
   idempotencyKey: `welcome-email/${userId}`,
@@ -462,7 +462,7 @@ def send_email(
 
 # Usage
 result = send_email(
-    to="user@example.com",
+    to="delivered@resend.dev",
     subject="Welcome!",
     html="<h1>Welcome to Acme</h1>",
     idempotency_key=f"welcome-email/{user_id}",
