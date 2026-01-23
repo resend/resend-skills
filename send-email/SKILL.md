@@ -1,6 +1,6 @@
 ---
 name: send-email
-description: "Use when sending transactional emails, welcome messages, order confirmations, password resets, notifications, or bulk emails (up to 100 per batch) via Resend API."
+description: Use when sending transactional emails (welcome messages, order confirmations, password resets, receipts), notifications, or bulk emails via Resend API.
 ---
 
 # Send Email with Resend
@@ -321,20 +321,29 @@ New domains must gradually increase sending volume to establish reputation.
 
 ### Recommended Schedule
 
-**New domains:**
+**Existing domain**
 
-| Day | Daily Max | Hourly Max |
-|-----|-----------|------------|
-| 1 | 150 | — |
-| 7 | 2,000 | 150 |
-| 14+ | Gradually increase | Monitor metrics |
+| Day | Messages per day    | Messages per hour   |
+|-----|---------------------|---------------------|
+| 1   | Up to 1,000 emails  | 100 Maximum         |
+| 2   | Up to 2,500 emails  | 300 Maximum         |
+| 3   | Up to 5,000 emails  | 600 Maximum         |
+| 4   | Up to 5,000 emails  | 800 Maximum         |
+| 5   | Up to 7,500 emails  | 1,000 Maximum       |
+| 6   | Up to 7,500 emails  | 1,500 Maximum       |
+| 7   | Up to 10,000 emails | 2,000 Maximum       |
 
-**Established domains (moving to Resend):**
+**New domain**
 
-| Day | Daily Max | Hourly Max |
-|-----|-----------|------------|
-| 1 | 1,000 | 100 |
-| 7 | 10,000 | 2,000 |
+| Day | Messages per day    | Messages per hour   |
+|-----|---------------------|---------------------|
+| 1   | Up to 150 emails    |                    |
+| 2   | Up to 250 emails    |                    |
+| 3   | Up to 400 emails    |                    |
+| 4   | Up to 700 emails    | 50 Maximum         |
+| 5   | Up to 1,000 emails  | 75 Maximum         |
+| 6   | Up to 1,500 emails  | 100 Maximum        |
+| 7   | Up to 2,000 emails  | 150 Maximum        |
 
 ### Monitor These Metrics
 
