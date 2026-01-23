@@ -187,6 +187,8 @@ See [references/batch-email-examples.md](references/batch-email-examples.md) for
 
 Follow these practices to maximize inbox placement.
 
+For more help with deliverability, install the email-best-practices skill with `npx skills add resend/email-best-practices`.
+
 ### Required
 
 | Practice | Why |
