@@ -76,7 +76,7 @@ function validateBatch(emails: BatchEmail[]): ValidationResult {
 
 // Usage
 const emails = [
-  { from: 'Acme <noreply@acme.com>', to: ['user@example.com'], subject: 'Hello', html: '<p>Hi</p>' },
+  { from: 'Acme <noreply@acme.com>', to: ['delivered@resend.dev'], subject: 'Hello', html: '<p>Hi</p>' },
 ];
 
 const validation = validateBatch(emails);
@@ -139,7 +139,7 @@ def validate_batch(emails: List[dict]) -> tuple[bool, List[ValidationError]]:
 
 # Usage
 emails = [
-    {"from": "Acme <noreply@acme.com>", "to": ["user@example.com"], "subject": "Hello", "html": "<p>Hi</p>"},
+    {"from": "Acme <noreply@acme.com>", "to": ["delivered@resend.dev"], "subject": "Hello", "html": "<p>Hi</p>"},
 ]
 
 valid, errors = validate_batch(emails)
@@ -279,8 +279,8 @@ async function sendBatchWithRetry(
 // Usage
 const result = await sendBatchWithRetry(
   [
-    { from: 'Acme <noreply@acme.com>', to: ['user1@example.com'], subject: 'Hello', html: '<p>Hi</p>' },
-    { from: 'Acme <noreply@acme.com>', to: ['user2@example.com'], subject: 'Hello', html: '<p>Hi</p>' },
+    { from: 'Acme <noreply@acme.com>', to: ['delivered@resend.dev'], subject: 'Hello', html: '<p>Hi</p>' },
+    { from: 'Acme <noreply@acme.com>', to: ['delivered@resend.dev'], subject: 'Hello', html: '<p>Hi</p>' },
   ],
   { idempotencyKey: `batch-welcome/${batchId}` }
 );
@@ -336,8 +336,8 @@ def send_batch_with_retry(
 # Usage
 result = send_batch_with_retry(
     emails=[
-        {"from": "Acme <noreply@acme.com>", "to": ["user1@example.com"], "subject": "Hello", "html": "<p>Hi</p>"},
-        {"from": "Acme <noreply@acme.com>", "to": ["user2@example.com"], "subject": "Hello", "html": "<p>Hi</p>"},
+        {"from": "Acme <noreply@acme.com>", "to": ["delivered@resend.dev"], "subject": "Hello", "html": "<p>Hi</p>"},
+        {"from": "Acme <noreply@acme.com>", "to": ["delivered@resend.dev"], "subject": "Hello", "html": "<p>Hi</p>"},
     ],
     idempotency_key=f"batch-welcome/{batch_id}"
 )
@@ -634,8 +634,8 @@ const batchService = new BatchEmailService();
 
 // Simple batch
 const result = await batchService.send([
-  { from: 'Acme <noreply@acme.com>', to: ['user1@example.com'], subject: 'Hello', html: '<p>Hi</p>' },
-  { from: 'Acme <noreply@acme.com>', to: ['user2@example.com'], subject: 'Hello', html: '<p>Hi</p>' },
+  { from: 'Acme <noreply@acme.com>', to: ['delivered@resend.dev'], subject: 'Hello', html: '<p>Hi</p>' },
+  { from: 'Acme <noreply@acme.com>', to: ['delivered@resend.dev'], subject: 'Hello', html: '<p>Hi</p>' },
 ], { idempotencyKey: `welcome-batch/${batchId}` });
 
 // Large batch (auto-chunked)
@@ -798,8 +798,8 @@ service = BatchEmailService()
 
 # Simple batch
 result = service.send([
-    {"from": "Acme <noreply@acme.com>", "to": ["user1@example.com"], "subject": "Hello", "html": "<p>Hi</p>"},
-    {"from": "Acme <noreply@acme.com>", "to": ["user2@example.com"], "subject": "Hello", "html": "<p>Hi</p>"},
+    {"from": "Acme <noreply@acme.com>", "to": ["delivered@resend.dev"], "subject": "Hello", "html": "<p>Hi</p>"},
+    {"from": "Acme <noreply@acme.com>", "to": ["delivered@resend.dev"], "subject": "Hello", "html": "<p>Hi</p>"},
 ], idempotency_key=f"welcome-batch/{batch_id}")
 
 # Large batch (auto-chunked)

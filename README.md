@@ -18,7 +18,7 @@ Send emails using the Resend API - single or batch. Supports transactional email
 ## Installation
 
 ```bash
-npx add-skill https://github.com/resend/resend-skills/tree/main/send-email
+npx skills add resend/resend-skills
 ```
 
 ## Usage
@@ -40,6 +40,7 @@ Skills are automatically activated when relevant tasks are detected. Example pro
 - Java
 - .NET
 - cURL
+- SMTP
 
 ## Prerequisites
 

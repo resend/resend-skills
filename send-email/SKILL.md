@@ -1,6 +1,6 @@
 ---
 name: send-email
-description: "Send emails using the Resend API - single or batch. Use when: (1) sending transactional emails, (2) sending notifications, (3) sending multiple emails in bulk (up to 100 per batch), (4) batch email sending, (5) any email sending task. Auto-detects project language."
+description: Use when sending transactional emails (welcome messages, order confirmations, password resets, receipts), notifications, or bulk emails via Resend API.
 ---
 
 # Send Email with Resend
@@ -27,8 +27,8 @@ Resend provides two endpoints for sending emails:
 
 ## Quick Start
 
-1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.).
-2. **Install SDK if possible (prefer SDK over cURL)** - See [references/installation.md](references/installation.md)
+1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.)
+2. **Install SDK** (preferred) or use cURL - See [references/installation.md](references/installation.md)
 3. **Choose single or batch** based on the decision matrix above
 4. **Implement best practices** - Idempotency keys, error handling, retries
 
@@ -56,7 +56,7 @@ Prevent duplicate emails when retrying failed requests.
 | 400, 422 | Fix request parameters, don't retry |
 | 401, 403 | Check API key / verify domain, don't retry |
 | 409 | Idempotency conflict - use new key or fix payload |
-| 429 | Rate limited - retry with exponential backoff (by default, rate limit is 2 requests per second) |
+| 429 | Rate limited - retry with exponential backoff (by default, rate limit is 2 requests/second) |
 | 500 | Server error - retry with exponential backoff |
 
 ### Retry Strategy
@@ -68,7 +68,7 @@ Prevent duplicate emails when retrying failed requests.
 
 ## Single Email
 
-**Endpoint:** `POST /emails`
+**Endpoint:** `POST /emails` (prefer SDK over cURL)
 
 ### Required Parameters
 
@@ -85,13 +85,13 @@ Prevent duplicate emails when retrying failed requests.
 |-----------|------|-------------|
 | `cc` | string[] | CC recipients |
 | `bcc` | string[] | BCC recipients |
-| `reply_to` (naming varies by SDK) | string[] | Reply-to addresses |
-| `scheduled_at` (naming varies by SDK) | string | Schedule send time (ISO 8601) |
+| `reply_to`* | string[] | Reply-to addresses |
+| `scheduled_at`* | string | Schedule send time (ISO 8601) |
 | `attachments` | array | File attachments (max 40MB total) |
-| `tags` | array | Key/value pairs for tracking |
+| `tags` | array | Key/value pairs for tracking (see [Tags](#tags)) |
 | `headers` | object | Custom headers |
 
-If the user does not have Inbound set up, ask the user for the email address to use for the `reply_to` parameter. This ensures recipients can reply to the email.
+*Parameter naming varies by SDK (e.g., `replyTo` in Node.js, `reply_to` in Python).
 
 ### Minimal Example (Node.js)
 
@@ -103,7 +103,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const { data, error } = await resend.emails.send(
   {
     from: 'Acme <onboarding@resend.dev>',
-    to: ['user@example.com'],
+    to: ['delivered@resend.dev'],
     subject: 'Hello World',
     html: '<p>Email body here</p>',
   },
@@ -121,7 +121,7 @@ See [references/single-email-examples.md](references/single-email-examples.md) f
 
 ## Batch Email
 
-**Endpoint:** `POST /emails/batch`
+**Endpoint:** `POST /emails/batch` (but prefer SDK over cURL)
 
 ### Limitations
 
@@ -149,13 +149,13 @@ const { data, error } = await resend.batch.send(
   [
     {
       from: 'Acme <notifications@acme.com>',
-      to: ['user1@example.com'],
+      to: ['delivered@resend.dev'],
       subject: 'Order Shipped',
       html: '<p>Your order has shipped!</p>',
     },
     {
       from: 'Acme <notifications@acme.com>',
-      to: ['user2@example.com'],
+      to: ['delivered@resend.dev'],
       subject: 'Order Confirmed',
       html: '<p>Your order is confirmed!</p>',
     },
@@ -183,10 +183,214 @@ For sends larger than 100 emails, chunk into multiple batch requests:
 
 See [references/batch-email-examples.md](references/batch-email-examples.md) for complete chunking implementations.
 
+## Deliverability
+
+Follow these practices to maximize inbox placement.
+
+For more help with deliverability, install the email-best-practices skill with `npx skills add resend/email-best-practices`.
+
+### Required
+
+| Practice | Why |
+|----------|-----|
+| **Valid SPF, DKIM, DMARC record** | authenticate the email and prevent spoofing |
+| **Links match sending domain** | If sending from `@acme.com`, link to `https://acme.com` - mismatched domains trigger spam filters |
+| **Include plain text version** | Use both `html` and `text` parameters for accessibility and deliverability (Resend generates a plain text version if not provided) |
+| **Avoid "no-reply" addresses** | Use real addresses (e.g., `support@`) - improves trust signals |
+| **Keep body under 102KB** | Gmail clips larger messages |
+
+### Recommended
+
+| Practice | Why |
+|----------|-----|
+| **Use subdomains** | Send transactional from `notifications.acme.com`, marketing from `mail.acme.com` - protects reputation |
+| **Disable tracking for transactional** | Open/click tracking can trigger spam filters for password resets, receipts, etc. |
+
+## Tracking (Opens & Clicks)
+
+Tracking is configured at the **domain level** in the Resend dashboard, not per-email.
+
+| Setting | How it works | Recommendation |
+|---------|--------------|----------------|
+| **Open tracking** | Inserts 1x1 transparent pixel | Disable for transactional emails - can hurt deliverability |
+| **Click tracking** | Rewrites links through redirect | Disable for sensitive emails (password resets, security alerts) |
+
+**When to enable tracking:**
+- Marketing emails where engagement metrics matter
+- Newsletters and announcements
+
+**When to disable tracking:**
+- Transactional emails (receipts, confirmations, password resets)
+- Security-sensitive emails
+- When maximizing deliverability is priority
+
+Configure via dashboard: Domain → Configuration → Click/Open Tracking
+
+## Webhooks (Event Notifications)
+
+Track email delivery status in real-time using webhooks. Resend sends HTTP POST requests to your endpoint when events occur.
+
+| Event | When to use |
+|-------|-------------|
+| `email.delivered` | Confirm successful delivery |
+| `email.bounced` | Remove from mailing list, alert user |
+| `email.complained` | Unsubscribe user (spam complaint) |
+| `email.opened` / `email.clicked` | Track engagement (marketing only) |
+
+**CRITICAL: Always verify webhook signatures.** Without verification, attackers can send fake events to your endpoint.
+
+See [references/webhooks.md](references/webhooks.md) for setup, signature verification code, and all event types.
+
+## Tags
+
+Tags are key/value pairs that help you track and filter emails.
+
+```typescript
+tags: [
+  { name: 'user_id', value: 'usr_123' },
+  { name: 'email_type', value: 'welcome' },
+  { name: 'plan', value: 'enterprise' }
+]
+```
+
+**Use cases:**
+- Associate emails with customers in your system
+- Categorize by email type (welcome, receipt, password-reset)
+- Filter emails in the Resend dashboard
+- Correlate webhook events back to your application
+
+**Constraints:** Tag names and values can only contain ASCII letters, numbers, underscores, or dashes. Max 256 characters each.
+
+## Templates
+
+Use pre-built templates instead of sending HTML with each request.
+
+```typescript
+const { data, error } = await resend.emails.send({
+  from: 'Acme <hello@acme.com>',
+  to: ['delivered@resend.dev'],
+  subject: 'Welcome!',
+  template: {
+    id: 'tmpl_abc123',
+    variables: {
+      USER_NAME: 'John',      // Case-sensitive!
+      ORDER_TOTAL: '$99.00'
+    }
+  }
+});
+```
+
+**IMPORTANT:** Variable names are **case-sensitive** and must match exactly as defined in the template editor. `USER_NAME` ≠ `user_name`.
+
+| Fact | Detail |
+|------|--------|
+| **Max variables** | 20 per template |
+| **Reserved names** | `FIRST_NAME`, `LAST_NAME`, `EMAIL`, `RESEND_UNSUBSCRIBE_URL`, `contact`, `this` |
+| **Fallback values** | Optional - if not set and variable missing, send fails |
+| **Can't combine with** | `html`, `text`, or `react` parameters |
+
+Templates must be **published** in the dashboard before use. Draft templates won't work.
+
+## Testing
+
+**WARNING: Never test with fake addresses at real email providers.**
+
+Using addresses like `test@gmail.com`, `example@outlook.com`, or `fake@yahoo.com` will:
+- **Bounce** - These addresses don't exist
+- **Destroy your sender reputation** - High bounce rates trigger spam filters
+- **Get your domain blocklisted** - Providers flag domains with high bounce rates
+
+### Safe Testing Options
+
+| Method | Address | Result |
+|--------|---------|--------|
+| **Delivered** | `delivered@resend.dev` | Simulates successful delivery |
+| **Bounced** | `bounced@resend.dev` | Simulates hard bounce |
+| **Complained** | `complained@resend.dev` | Simulates spam complaint |
+| **Your own email** | Your actual address | Real delivery test |
+
+**For development:** Use the `resend.dev` test addresses to simulate different scenarios without affecting your reputation.
+
+**For staging:** Send to real addresses you control (team members, test accounts you own).
+
+## Domain Warm-up
+
+New domains must gradually increase sending volume to establish reputation.
+
+**Why it matters:** Sudden high volume from a new domain triggers spam filters. ISPs expect gradual growth.
+
+### Recommended Schedule
+
+**Existing domain**
+
+| Day | Messages per day    | Messages per hour   |
+|-----|---------------------|---------------------|
+| 1   | Up to 1,000 emails  | 100 Maximum         |
+| 2   | Up to 2,500 emails  | 300 Maximum         |
+| 3   | Up to 5,000 emails  | 600 Maximum         |
+| 4   | Up to 5,000 emails  | 800 Maximum         |
+| 5   | Up to 7,500 emails  | 1,000 Maximum       |
+| 6   | Up to 7,500 emails  | 1,500 Maximum       |
+| 7   | Up to 10,000 emails | 2,000 Maximum       |
+
+**New domain**
+
+| Day | Messages per day    | Messages per hour   |
+|-----|---------------------|---------------------|
+| 1   | Up to 150 emails    |                    |
+| 2   | Up to 250 emails    |                    |
+| 3   | Up to 400 emails    |                    |
+| 4   | Up to 700 emails    | 50 Maximum         |
+| 5   | Up to 1,000 emails  | 75 Maximum         |
+| 6   | Up to 1,500 emails  | 100 Maximum        |
+| 7   | Up to 2,000 emails  | 150 Maximum        |
+
+### Monitor These Metrics
+
+| Metric | Target | Action if exceeded |
+|--------|--------|-------------------|
+| **Bounce rate** | < 4% | Slow down, clean list |
+| **Spam complaint rate** | < 0.08% | Slow down, review content |
+
+**Don't use third-party warm-up services.** Focus on sending relevant content to real, engaged recipients.
+
+## Suppression List
+
+Resend automatically manages a suppression list of addresses that should not receive emails.
+
+**Addresses are added when:**
+- Email hard bounces (address doesn't exist)
+- Recipient marks email as spam
+- You manually add them via dashboard
+
+**What happens:** Resend won't attempt delivery to suppressed addresses. The `email.suppressed` webhook event fires instead.
+
+**Why this matters:** Continuing to send to bounced/complained addresses destroys your reputation. The suppression list protects you automatically.
+
+**Management:** View and manage suppressed addresses in the Resend dashboard under Suppressions.
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Retrying without idempotency key | Always include idempotency key - prevents duplicate sends on retry |
+| Using batch for emails with attachments | Batch doesn't support attachments - use single sends instead |
+| Not validating batch before send | Validate all emails first - one invalid email fails the entire batch |
+| Retrying 400/422 errors | These are validation errors - fix the request, don't retry |
+| Same idempotency key, different payload | Returns 409 error - use unique key per unique email content |
+| Tracking enabled for transactional emails | Disable open/click tracking for password resets, receipts - hurts deliverability |
+| Using "no-reply" sender address | Use real address like `support@` - improves trust signals with email providers |
+| Not verifying webhook signatures | Always verify - attackers can send fake events to your endpoint |
+| Testing with fake emails (test@gmail.com) | Use `delivered@resend.dev` - fake addresses bounce and hurt reputation |
+| Template variable name mismatch | Variable names are case-sensitive - `USER_NAME` ≠ `user_name` |
+| Sending high volume from new domain | Warm up gradually - sudden spikes trigger spam filters |
+
 ## Notes
 
 - The `from` address must use a verified domain
+- If the sending address cannot receive replies, set the `reply_to` parameter to a valid address.
 - Store API key in `RESEND_API_KEY` environment variable
 - Node.js SDK supports `react` parameter for React Email components
-- Response returns `{ id: "email-id" }` on success (single) or array of IDs (batch)
+- Resend returns `error`, `data`, `headers` in the response.
+- Data returns `{ id: "email-id" }` on success (single) or array of IDs (batch)
 - For marketing campaigns to large lists, use Resend Broadcasts instead
