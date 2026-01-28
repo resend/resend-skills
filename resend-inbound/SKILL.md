@@ -32,7 +32,7 @@ Add MX record to receive at `<anything>@yourdomain.com`.
 | **Type** | MX |
 | **Host** | Your domain or subdomain |
 | **Value** | Provided in Resend dashboard |
-| **Priority** | Must be **lowest number** (highest priority) |
+| **Priority** | 10 (**lowest number** wins a conflict, but typically only multiples of 10 are used) |
 
 **Critical:** Your MX record must have the lowest priority value, or emails won't route to Resend.
 
