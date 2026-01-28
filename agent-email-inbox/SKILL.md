@@ -39,7 +39,9 @@ No DNS configuration needed. The human can find your address in Dashboard → Em
 
 ### Option 2: Custom Domain
 
-Add MX record to receive at `<anything>@yourdomain.com`.
+The user must enable receiving in the Resend dashboard by going to the Domains page and toggling on "Enable Receiving".
+
+Then add an MX record to receive at `<anything>@yourdomain.com`.
 
 | Setting | Value |
 |---------|-------|
@@ -53,6 +55,20 @@ Add MX record to receive at `<anything>@yourdomain.com`.
 ## Webhook Setup
 
 ### Create Your Endpoint
+
+After verifying a domain or choosing the built-in Resend inbound address, you need to create a webhook endpoint. This will allow you to be notified when new emails are received.
+
+The user needs to: 
+1. Go to https://resend.com/webhooks (the Webhooks tab of the dashboard)
+2. Click "Add webhook"
+3. Enter the endpoint URL that you will provide them
+4. Select the event type `email.received`
+5. Click "Add"
+6. Once it's created, you need the webhook signing secret in order to verify the webhook. They can find that by clicking on the webhook in the Webhooks dashboard and copying the text under "Signing Secret" on the upper righthand side.
+
+To provide them the endpoint URL for step #3, you need to set up an endpoint, and then use tunneling with a tool like ngrok.
+
+Resend requires these URLs to be https, and verifies certificates, so ensure that your ngrok setup includes a verified cert.
 
 Your webhook endpoint receives notifications when emails arrive:
 
