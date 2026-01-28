@@ -48,7 +48,7 @@ If you already have MX records (e.g., Google Workspace, Microsoft 365):
 ```
 # Example: receive at support.acme.com without affecting acme.com
 support.acme.com.  MX  10  <resend-mx-value>
-```
+If you set up Resend to receive email on a root domain, *all* traffic will be routed to Resend, not to any other mailbox. It's crucial, then, to use a subdomain with inbound emails.
 
 ## Webhook Setup
 
