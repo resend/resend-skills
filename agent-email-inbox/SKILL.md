@@ -39,7 +39,9 @@ No DNS configuration needed. The human can find your address in Dashboard → Em
 
 ### Option 2: Custom Domain
 
-Add MX record to receive at `<anything>@yourdomain.com`.
+The user must enable receiving in the Resend dashboard by going to the Domains page and toggling on "Enable Receiving".
+
+Then add an MX record to receive at `<anything>@yourdomain.com`.
 
 | Setting | Value |
 |---------|-------|
