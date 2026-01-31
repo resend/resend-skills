@@ -29,6 +29,50 @@ Sender → Email → Resend (MX) → Webhook → Your Server → AI Agent
 4. **Implement security layer** - Choose and configure your security level
 5. **Connect to agent** - Pass validated emails to your AI agent for processing
 
+## Before You Start: Account & API Key Setup
+
+### First Question: New or Existing Resend Account?
+
+Ask your human:
+- **New account just for the agent?** → Simpler setup, full account access is fine
+- **Existing account with other projects?** → Use domain-scoped API keys for sandboxing
+
+This matters for security. If the Resend account has other domains, production apps, or billing, you want to limit what the agent's API key can access.
+
+### Creating API Keys Securely
+
+> ⚠️ **Don't paste API keys in chat!** They'll be in conversation history forever.
+
+**Safer options:**
+
+1. **Environment file method:**
+   - Human creates `.env` file directly: `echo "RESEND_API_KEY=re_xxx" >> .env`
+   - Agent never sees the key in chat history
+
+2. **Password manager / secrets manager:**
+   - Human stores key in 1Password, Vault, etc.
+   - Agent reads from environment at runtime
+
+3. **If key must be shared in chat:**
+   - Human should rotate the key immediately after setup
+   - Or create a temporary key, then replace with permanent one
+
+### Domain-Scoped API Keys (Recommended for Existing Accounts)
+
+If your human has an existing Resend account with other projects, create a **domain-scoped API key** that can only send from the agent's domain:
+
+1. **Verify the agent's domain first** (Dashboard → Domains → Add Domain)
+2. **Create a scoped API key:**
+   - Dashboard → API Keys → Create API Key
+   - Under "Permission", select "Sending access"
+   - Under "Domain", select only the agent's domain
+3. **Result:** Even if the key leaks, it can only send from one domain — not your production domains
+
+**When to skip this:**
+- Account is new and only for the agent
+- Agent needs access to multiple domains
+- You're just testing with `.resend.app` address
+
 ## Domain Setup
 
 ### Option 1: Resend-Managed Domain (Recommended for Getting Started)
