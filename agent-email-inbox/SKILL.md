@@ -107,6 +107,8 @@ Then add an MX record to receive at `<anything>@yourdomain.com`.
 
 **Use a subdomain** (e.g., `agent.yourdomain.com`) to avoid disrupting existing email services on your root domain.
 
+**Tip:** To verify your DNS records have propagated correctly, visit [dns.email](https://dns.email) and input your domain. This tool checks MX, SPF, DKIM, and DMARC records all in one place.
+
 > ⚠️ **DNS Propagation:** MX record changes can take up to 48 hours to propagate globally, though often complete within a few hours. Test by sending to your new address and checking the Resend dashboard's Receiving tab.
 
 ## Webhook Setup
