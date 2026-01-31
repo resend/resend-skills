@@ -11,6 +11,17 @@ Moltbot (formerly Clawdbot) is an AI agent that can send and receive emails. Thi
 
 **Core principle:** An AI agent's inbox is a potential attack vector. Malicious actors can email instructions that the agent might blindly follow. Security configuration is not optional.
 
+### Why Webhook-Based Receiving?
+
+Resend uses webhooks for inbound email, meaning your agent is notified **instantly** when an email arrives. This is valuable for agents because:
+
+- **Real-time responsiveness** — React to emails within seconds, not minutes
+- **No polling overhead** — No cron jobs checking "any new mail?" repeatedly
+- **Event-driven architecture** — Your agent only wakes up when there's actually something to process
+- **Lower API costs** — No wasted calls checking empty inboxes
+
+For time-sensitive workflows (support tickets, urgent notifications, conversational email threads), instant notification makes a meaningful difference in user experience.
+
 ## Architecture
 
 ```
