@@ -52,6 +52,8 @@ Then add an MX record to receive at `<anything>@yourdomain.com`.
 
 **Use a subdomain** (e.g., `agent.yourdomain.com`) to avoid disrupting existing email services on your root domain.
 
+> ⚠️ **DNS Propagation:** MX record changes can take up to 48 hours to propagate globally, though often complete within a few hours. Test by sending to your new address and checking the Resend dashboard's Receiving tab.
+
 ## Webhook Setup
 
 ### Create Your Endpoint
@@ -119,11 +121,39 @@ export async function POST(req: NextRequest) {
 3. Select `email.received` event
 4. Copy the signing secret to `RESEND_WEBHOOK_SECRET`
 
+### Webhook Retry Behavior
+
+Resend automatically retries failed webhook deliveries with exponential backoff:
+- Retries occur over approximately 6 hours
+- Your endpoint must return 2xx status to acknowledge receipt
+- Failed deliveries are visible in the Webhooks dashboard
+- Emails are stored even if webhooks fail — you won't lose messages
+
 ## Local Development with Tunneling
 
-Your local server isn't likely to be accessible from the internet. Use tunneling to expose it temporarily.
+Your local server isn't accessible from the internet. Use tunneling to expose it for webhook delivery.
 
-### Option 1: ngrok (Most Popular)
+> 🚨 **Critical: Persistent URLs Required**
+>
+> Webhook URLs are registered in Resend's dashboard. If your tunnel URL changes (e.g., ngrok restart), you must update the webhook configuration manually. For development, this is manageable. For anything persistent, you need either:
+> - A **paid tunnel service** with static URLs (ngrok paid, Cloudflare named tunnels)
+> - **Production deployment** to a real server (see Production Deployment section)
+>
+> Don't use ephemeral tunnel URLs for anything you expect to keep running.
+
+### Option 1: ngrok
+
+The most popular tunneling solution.
+
+**Free tier limitations:**
+- URLs are random and change on every restart (e.g., `https://a1b2c3d4.ngrok-free.app`)
+- Must update webhook URL in Resend dashboard after each restart
+- Fine for initial testing, painful for ongoing development
+
+**Paid tier ($8/mo Personal plan):**
+- Static subdomain that persists across restarts (e.g., `https://myagent.ngrok.io`)
+- Set once in Resend, never update again
+- Recommended if using ngrok long-term
 
 ```bash
 # Install
@@ -133,23 +163,59 @@ brew install ngrok  # macOS
 # Authenticate (free account required)
 ngrok config add-authtoken <your-token>
 
-# Start tunnel
+# Start tunnel (free - random URL)
 ngrok http 3000
+
+# Start tunnel (paid - static subdomain)
+ngrok http --domain=myagent.ngrok.io 3000
 ```
 
-You'll get a URL like `https://abc123.ngrok-free.app` - use this in Resend webhooks.
+### Option 2: Cloudflare Tunnel (Recommended for Free Persistent URLs)
 
-### Option 2: Cloudflare Tunnel (Free, No Account for Quick Tunnels)
+Cloudflare Tunnels can be either quick (ephemeral) or named (persistent). For webhooks, use **named tunnels**.
 
+**Quick tunnel (ephemeral - NOT recommended for webhooks):**
+```bash
+cloudflared tunnel --url http://localhost:3000
+# URL changes every time - same problem as free ngrok
+```
+
+**Named tunnel (persistent - recommended):**
 ```bash
 # Install
 brew install cloudflared  # macOS
 
-# Quick tunnel (no account needed)
-cloudflared tunnel --url http://localhost:3000
+# One-time setup: authenticate with Cloudflare
+cloudflared tunnel login
+
+# Create a named tunnel (one-time)
+cloudflared tunnel create my-agent-webhook
+# Note the tunnel ID output
+
+# Create config file ~/.cloudflared/config.yml
+tunnel: <tunnel-id>
+credentials-file: /path/to/.cloudflared/<tunnel-id>.json
+
+ingress:
+  - hostname: webhook.yourdomain.com
+    service: http://localhost:3000
+  - service: http_status:404
+
+# Add DNS record (one-time)
+cloudflared tunnel route dns my-agent-webhook webhook.yourdomain.com
+
+# Run tunnel (use this command each time)
+cloudflared tunnel run my-agent-webhook
 ```
 
+Now `https://webhook.yourdomain.com` always points to your local machine, even across restarts.
+
+**Pros:** Free, persistent URLs, uses your own domain
+**Cons:** Requires owning a domain on Cloudflare, more setup than ngrok
+
 ### Option 3: VS Code Port Forwarding
+
+Good for quick testing during development sessions.
 
 1. Open Ports panel (View → Ports)
 2. Click "Forward a Port"
@@ -157,17 +223,143 @@ cloudflared tunnel --url http://localhost:3000
 4. Set visibility to "Public"
 5. Use the forwarded URL
 
+**Note:** URL changes each VS Code session. Not suitable for persistent webhooks.
+
 ### Option 4: localtunnel
+
+Simple but ephemeral.
 
 ```bash
 npx localtunnel --port 3000
 ```
+
+**Note:** URLs change on restart. Same limitations as free ngrok.
 
 ### Webhook URL Configuration
 
 After starting your tunnel, update Resend:
 - Development: `https://<tunnel-url>/api/webhooks/email`
 - Production: `https://yourdomain.com/api/webhooks/email`
+
+## Production Deployment
+
+For a reliable agent inbox, deploy your webhook endpoint to production infrastructure instead of relying on tunnels.
+
+### Recommended Approaches
+
+**Option A: Deploy webhook handler to serverless**
+- Vercel, Netlify, or Cloudflare Workers
+- Zero server management, automatic HTTPS
+- Free tiers available for low volume
+
+**Option B: Deploy to a VPS/cloud instance**
+- Your webhook handler runs alongside your agent
+- Use nginx/caddy for HTTPS termination
+- More control, predictable costs
+
+**Option C: Use your agent's existing infrastructure**
+- If your agent already runs on a server with a public IP
+- Add webhook route to existing web server
+
+### Example: Deploying to Vercel
+
+```bash
+# In your Next.js project with the webhook handler
+vercel deploy --prod
+
+# Your webhook URL becomes:
+# https://your-project.vercel.app/api/webhooks/email
+```
+
+### Example: Simple Express Server on VPS
+
+```typescript
+// server.ts
+import express from 'express';
+import { Resend } from 'resend';
+
+const app = express();
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+app.post('/api/webhooks/email', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const event = resend.webhooks.verify({
+      payload: req.body.toString(),
+      headers: {
+        'svix-id': req.headers['svix-id'] as string,
+        'svix-timestamp': req.headers['svix-timestamp'] as string,
+        'svix-signature': req.headers['svix-signature'] as string,
+      },
+      secret: process.env.RESEND_WEBHOOK_SECRET!,
+    });
+
+    if (event.type === 'email.received') {
+      await handleIncomingEmail(event);
+    }
+
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.status(400).send('Error');
+  }
+});
+
+app.listen(3000, () => console.log('Webhook server running on :3000'));
+```
+
+Use a reverse proxy (nginx, caddy) for HTTPS, or deploy behind a load balancer that terminates SSL.
+
+## Clawdbot Integration
+
+To connect your webhook endpoint to Clawdbot, send received emails to Clawdbot's message API or directly to a session.
+
+### Option A: Webhook Triggers Clawdbot Session Message
+
+```typescript
+async function processWithAgent(email: ProcessedEmail) {
+  // Format email for Clawdbot
+  const message = `
+📧 **New Email**
+From: ${email.from}
+Subject: ${email.subject}
+
+${email.body}
+  `.trim();
+
+  // Send to Clawdbot via your preferred method:
+  // - HTTP API to Clawdbot gateway
+  // - Direct session message
+  // - Telegram/Signal/etc. channel that Clawdbot monitors
+  
+  await sendToClawdbot(message);
+}
+```
+
+### Option B: Clawdbot Polls for New Emails
+
+Instead of push-based webhooks, Clawdbot can poll the Resend API for new emails during heartbeats. Less immediate but simpler architecture.
+
+```typescript
+// In your agent's heartbeat check
+async function checkForNewEmails() {
+  // List recent received emails
+  const { data: emails } = await resend.emails.list({
+    // Filter for received emails in last hour
+  });
+  
+  // Process any unhandled emails
+  for (const email of emails) {
+    if (!alreadyProcessed(email.id)) {
+      await processEmail(email);
+      markAsProcessed(email.id);
+    }
+  }
+}
+```
+
+### Option C: External Channel Plugin
+
+For deep integration, implement Clawdbot's external channel plugin interface to treat email as a first-class channel alongside Telegram, Signal, etc.
 
 ## Security Levels
 
@@ -623,6 +815,7 @@ OWNER_EMAIL=you@email.com               # For security notifications
 | No rate limiting | Implement per-sender rate limits |
 | Processing HTML directly | Strip HTML or use text-only to reduce attack surface |
 | No logging of rejections | Log all security events for audit |
+| Using ephemeral tunnel URLs | Use persistent URLs (paid ngrok, Cloudflare named tunnels) or deploy to production |
 
 ## Testing
 
