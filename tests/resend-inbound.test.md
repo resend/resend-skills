@@ -2,7 +2,7 @@
 
 **Skill under test:** `resend-inbound`
 **Skill type:** Reference/Technique
-**Test approach:** Application scenarios - can the agent correctly set up inbound email, handle webhooks, retrieve content, and avoid common mistakes?
+**Test approach:** Application scenarios - can the agent correctly set up inbound email, handle webhooks, retrieve content, and avoid common mistakes? Emphasis on Resend-specific behavior that differs from other email webhook services.
 
 ## Setup
 
@@ -90,6 +90,7 @@ Keep it minimal but production-ready.
 ```
 
 **Expected:**
+- Reads body as raw text (`req.text()`), NOT parsed JSON
 - Verifies webhook signature using `resend.webhooks.verify()`
 - Extracts svix-id, svix-timestamp, svix-signature headers
 - Uses `RESEND_WEBHOOK_SECRET` for verification
@@ -98,13 +99,40 @@ Keep it minimal but production-ready.
 
 **Failure indicators:**
 - Parses JSON directly without signature verification
+- Uses `req.json()` before verification (needs raw text)
 - Skips verification "for simplicity"
 - Doesn't use the svix headers
 - Doesn't return appropriate status codes
 
 ---
 
-## Scenario 4: Email Forwarding with Attachments
+## Scenario 4: Attachment Expiration Edge Case
+
+**Tests:** Understanding download URL expiration behavior
+
+```
+Your webhook handler receives an email with 3 large attachments. To avoid
+blocking the webhook response, you store the email_id and attachment
+download_urls in a job queue. A background worker picks up the job
+90 minutes later and tries to download the attachments. All downloads fail.
+
+What went wrong? How do you fix your architecture?
+```
+
+**Expected:**
+- `download_url` expires after **1 hour** -- 90 minutes later, all URLs are invalid
+- Fix: Store only the `email_id` in the queue, NOT the download URLs
+- The background worker should call `resend.emails.receiving.attachments.list()` at processing time to get fresh URLs
+- Alternative: download attachments immediately in the webhook handler and store the content
+
+**Failure indicators:**
+- Doesn't know about the 1-hour expiration
+- Suggests caching URLs is fine
+- Doesn't provide a fix for the architecture
+
+---
+
+## Scenario 5: Email Forwarding with Attachments
 
 **Tests:** Complete forwarding flow including attachment re-encoding
 
@@ -119,7 +147,7 @@ support@acme.com, forward it to team@acme.com with all attachments intact.
 3. List attachments via `resend.emails.receiving.attachments.list()`
 4. Download each attachment via `fetch(download_url)`
 5. Convert to base64 for re-sending
-6. Forward via `resend.emails.send()` with attachments array
+6. Forward via `resend.emails.send()` with attachments array (NOT batch -- batch doesn't support attachments)
 
 **Failure indicators:**
 - Skips webhook verification
@@ -130,55 +158,90 @@ support@acme.com, forward it to team@acme.com with all attachments intact.
 
 ---
 
-## Scenario 5: Routing by Recipient
+## Scenario 6: MX Priority Conflict
 
-**Tests:** Handling multiple addresses on the same domain
-
-```
-Your domain receives emails at:
-- support@inbound.acme.com → create support ticket
-- billing@inbound.acme.com → forward to accounting team
-- feedback@inbound.acme.com → store in database
-
-All arrive at the same webhook endpoint. Write the routing logic.
-```
-
-**Expected:**
-- Routes based on `event.data.to[0]` field
-- Checks for each address prefix (support@, billing@, feedback@)
-- Handles unknown recipients (catch-all)
-- All arrive at the same webhook because that's how Resend works
-
-**Failure indicators:**
-- Tries to set up separate webhook endpoints per address
-- Doesn't handle unknown/unmatched recipients
-- Hardcodes full email addresses instead of pattern matching
-
----
-
-## Scenario 6: Return 200 OK
-
-**Tests:** Understanding webhook retry behavior
+**Tests:** Understanding MX priority when multiple records exist
 
 ```
-Your webhook handler throws an unhandled error while processing an email.
-What happens? How should you handle this?
+Your domain has these MX records:
+
+acme.com  MX  10  aspmx.l.google.com
+acme.com  MX  20  inbound.resend.com
+
+You added Resend's MX record but emails aren't arriving at Resend.
+They all go to Google Workspace. What's wrong? How do you fix it?
 ```
 
 **Expected:**
-- Resend retries on non-200 responses (exponential backoff over ~6 hours)
-- Handler MUST return 200 OK to acknowledge receipt
-- Should catch errors and still return 200 (or at least handle gracefully)
-- Notes that emails are stored even if webhooks fail (no data loss)
+- The lowest priority NUMBER wins (10 < 20), so Google's MX takes all traffic
+- Resend's MX needs to have the lowest number to take precedence
+- But: changing the root domain MX will break Google Workspace for employees
+- The real fix: use a **subdomain** for Resend inbound, not the root domain
+- Example: `support.acme.com MX 10 inbound.resend.com`
 
 **Failure indicators:**
-- Doesn't know about retry behavior
-- Doesn't mention the importance of returning 200
-- Doesn't know emails are stored regardless of webhook status
+- Suggests changing Resend's priority to 5 on root domain (breaks Google)
+- Doesn't understand lowest number = highest priority
+- Doesn't recommend a subdomain as the solution
 
 ---
 
-## Scenario 7: Quick Start Domain Choice
+## Scenario 7: Routing by Recipient - Edge Cases
+
+**Tests:** Handling multiple recipients and CC edge cases
+
+```
+Your domain receives emails at support@, billing@, and feedback@ addresses.
+All arrive at the same webhook. Consider these cases:
+
+Case A: Email sent TO support@inbound.acme.com -- straightforward
+Case B: Email sent TO billing@inbound.acme.com AND CC'd to support@inbound.acme.com
+Case C: Email sent TO unknown-address@inbound.acme.com
+
+Write the routing logic handling all cases.
+```
+
+**Expected:**
+- Routes based on `event.data.to` array (may have multiple entries)
+- Case B: both `to` and `cc` addresses are your domain -- decide which takes priority or handle both
+- Case C: must have a catch-all for unknown recipients
+- All arrive at same webhook (Resend doesn't support per-address routing)
+
+**Failure indicators:**
+- Only checks `to[0]` and ignores CC
+- Doesn't handle multiple recipients in `to`
+- No catch-all for unknown addresses
+- Tries to set up separate webhooks per address
+
+---
+
+## Scenario 8: Webhook Idempotency
+
+**Tests:** Handling duplicate webhook deliveries
+
+```
+Your webhook handler successfully processes an email, creates a support
+ticket, and returns 200. But due to a network timeout, Resend doesn't
+receive the 200 response and retries delivery. Your handler processes
+the same email again, creating a duplicate support ticket.
+
+How do you prevent this?
+```
+
+**Expected:**
+- Use `event.data.email_id` as an idempotency check
+- Before processing, check if you've already handled this email_id (in database, cache, or similar)
+- Store processed email_ids and skip duplicates
+- This is a standard webhook idempotency pattern
+
+**Failure indicators:**
+- Doesn't recognize the duplicate delivery problem
+- Suggests only returning 200 faster (doesn't prevent all cases)
+- No mention of tracking processed email_ids
+
+---
+
+## Scenario 9: Quick Start Domain Choice
 
 **Tests:** Recommending the right domain option for the situation
 
@@ -207,10 +270,12 @@ What's the fastest path?
 |----------|---------------|
 | 1 - Webhook Payload | Knows body isn't in webhook, calls separate API |
 | 2 - Domain Setup | Recommends subdomain, explains root domain risk |
-| 3 - Signature Verification | Includes full svix verification, correct headers |
-| 4 - Forwarding | Complete flow: verify -> get content -> download attachments -> base64 -> send |
-| 5 - Routing | Routes by to field, handles unknown recipients |
-| 6 - Return 200 | Understands retry behavior, returns 200, knows emails are stored |
-| 7 - Quick Start | Recommends .resend.app domain for fastest path |
+| 3 - Signature Verification | Raw text body, full svix verification, correct status codes |
+| 4 - Attachment Expiration | Knows 1-hour limit, fixes architecture to fetch fresh URLs |
+| 5 - Forwarding | Complete flow: verify -> get -> download -> base64 -> single send |
+| 6 - MX Priority | Understands priority numbers, recommends subdomain |
+| 7 - Routing Edge Cases | Handles CC, multiple to, unknown recipients |
+| 8 - Webhook Idempotency | Uses email_id for dedup, tracks processed emails |
+| 9 - Quick Start | Recommends .resend.app domain for fastest path |
 
-**Pass threshold:** 6/7 scenarios correct
+**Pass threshold:** 7/9 scenarios correct

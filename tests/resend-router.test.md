@@ -33,66 +33,54 @@ Which sub-skill(s) do you need? What's the correct order of setup?
 
 ---
 
-## Scenario 2: AI Agent vs Plain Inbound
+## Scenario 2: Automation That Sounds Like AI
 
-**Tests:** Distinguishing `resend-inbound` from `agent-email-inbox`
+**Tests:** Distinguishing `resend-inbound` from `agent-email-inbox` when the request describes automation without saying "AI"
 
 ```
-A user says: "I want my app to receive emails at billing@myapp.com
-and store them in a database."
+A user says: "I want to build a system that receives customer emails,
+automatically extracts invoice numbers from the body, looks up the order
+in our database, and updates the status. It should also auto-reply with
+the current order status."
 
 Which sub-skill do you route to?
 ```
 
-**Expected:** Routes to `resend-inbound`. This is plain email receiving, not an AI agent inbox.
+**Expected:** This is ambiguous. The system "understands" email content and "takes actions" -- but it could be rule-based parsing (regex for invoice numbers) or AI-driven. Agent should either:
+- Ask whether this is rule-based or AI-driven processing
+- Route to `agent-email-inbox` if they assume AI (because of "automatically extracts" / "understands"), mentioning security
+- Route to `resend-inbound` if they assume simple parsing, but flag that if AI is involved, security measures are needed
 
 **Failure indicators:**
-- Routes to `agent-email-inbox` / `moltbot`
-- Suggests security levels or prompt injection protection (not relevant here)
+- Routes confidently to one skill without acknowledging the ambiguity
+- Routes to `resend-inbound` with no mention of security implications if AI is involved
+- Routes to `agent-email-inbox` for what might be simple regex parsing
 
 ---
 
-## Scenario 3: AI Agent Inbox
+## Scenario 3: Domain Setup Ambiguity
 
-**Tests:** Correct identification of AI agent use case
+**Tests:** Routing when "domain" could mean sending domain or receiving domain
 
 ```
-A user says: "I'm building an AI assistant that processes customer emails,
-understands their intent, and takes actions like creating tickets or
-updating orders."
+A user says: "I need to configure my domain for Resend."
 
-Which sub-skill do you route to?
+How do you handle this?
 ```
 
-**Expected:** Routes to `agent-email-inbox` / `moltbot`. AI processing emails = agent inbox with security considerations.
+**Expected:** Agent should clarify because "configure domain" means different things:
+- Sending domain: DNS records (SPF, DKIM, DMARC) for email authentication → `send-email` skill
+- Receiving domain: MX records for inbound email → `resend-inbound` skill
+- Both: common for apps that send and receive
 
 **Failure indicators:**
-- Routes to `resend-inbound` only (misses security implications)
-- Doesn't mention security concerns for AI processing
+- Assumes sending or receiving without asking
+- Routes to a single sub-skill without clarifying
+- Doesn't know that domain setup differs between sending and receiving
 
 ---
 
-## Scenario 4: Bulk Notifications
-
-**Tests:** Routing for batch sending scenarios
-
-```
-A user says: "I need to send order confirmation emails to 500 customers
-who placed orders today."
-
-Which sub-skill and approach do you recommend?
-```
-
-**Expected:** Routes to `send-email`. Should mention batch endpoint with chunking (500 > 100 limit), idempotency keys per chunk.
-
-**Failure indicators:**
-- Suggests single sends in a loop without mentioning batch
-- Doesn't mention the 100-per-batch limit requiring chunking
-- Doesn't mention idempotency keys
-
----
-
-## Scenario 5: Webhook Setup Confusion
+## Scenario 4: Webhook Setup Confusion
 
 **Tests:** Routing when user mentions webhooks (both sending and receiving use them)
 
@@ -113,9 +101,76 @@ How do you clarify what they need?
 
 ---
 
-## Scenario 6: "Just Send an Email"
+## Scenario 5: Forwarding Trap
 
-**Tests:** Simple routing for the most common case
+**Tests:** Recognizing that "forwarding" requires both receiving and sending
+
+```
+A user says: "When someone emails helpdesk@myapp.com, I want to forward
+it to our team Slack channel and also forward it as an email to
+manager@company.com with any attachments."
+
+Which sub-skill(s) do you need?
+```
+
+**Expected:** Both `resend-inbound` (to receive the email) and `send-email` (to forward as email with attachments). The Slack part is outside Resend scope. Key detail: forwarding with attachments requires single sends (batch doesn't support attachments).
+
+**Failure indicators:**
+- Only routes to `send-email` (misses that you need to receive first)
+- Only routes to `resend-inbound` (misses that email forwarding uses the send API)
+- Doesn't note that attachments require single sends
+
+---
+
+## Scenario 6: Security Without AI Keywords
+
+**Tests:** Recognizing security risk when "AI" is never mentioned but the system processes untrusted input and takes actions
+
+```
+A user says: "Customers will email returns@shop.com and my system will
+automatically process refunds based on what they write. If they include
+an order number and say they want a refund, it initiates the refund in
+our payment system."
+
+Which sub-skill do you route to?
+```
+
+**Expected:** This should route to `agent-email-inbox` (or at minimum flag security concerns) because:
+- Untrusted external senders are triggering financial actions (refunds)
+- The system interprets freeform email content to make decisions
+- Without security, anyone could email "refund order #X" and trigger unauthorized refunds
+- This is an attack vector whether or not AI is involved
+
+**Failure indicators:**
+- Routes to `resend-inbound` without mentioning security risks
+- Treats this as simple email receiving + database lookup
+- Doesn't flag that untrusted input triggering financial actions needs security
+
+---
+
+## Scenario 7: Broadcast / Audience Red Herring
+
+**Tests:** Handling a request the router doesn't clearly cover
+
+```
+A user says: "I want to send a monthly newsletter to my 10,000 subscribers
+with unsubscribe links and engagement tracking."
+
+Which sub-skill do you route to?
+```
+
+**Expected:** The router skill mentions "audiences, or broadcasts" in its description but has no sub-skill listed for this use case. Agent should note that this is a marketing/broadcast use case, not covered by the current sub-skills (which focus on transactional sending and receiving). May mention Resend Broadcasts as the appropriate feature.
+
+**Failure indicators:**
+- Routes to `send-email` without caveats (send-email is for transactional, not marketing)
+- Suggests batch sending 10,000 emails (wrong approach for newsletters)
+- Doesn't mention that marketing emails have different requirements (unsubscribe, engagement tracking)
+
+---
+
+## Scenario 8: "Just Send an Email"
+
+**Tests:** Simple routing baseline (control scenario)
 
 ```
 A user says: "I need to send a welcome email when a user signs up."
@@ -135,10 +190,12 @@ A user says: "I need to send a welcome email when a user signs up."
 | Scenario | Pass Criteria |
 |----------|---------------|
 | 1 - Ambiguous | Routes to BOTH correct sub-skills in correct order |
-| 2 - Plain inbound | Routes to `resend-inbound`, not agent inbox |
-| 3 - AI agent | Routes to `agent-email-inbox`, mentions security |
-| 4 - Bulk | Routes to `send-email`, mentions batch + chunking + idempotency |
-| 5 - Webhooks | Clarifies use case before routing |
-| 6 - Simple send | Routes to `send-email` directly |
+| 2 - Automation vs AI | Acknowledges ambiguity, asks or flags security if AI-driven |
+| 3 - Domain Setup | Clarifies sending vs receiving domain before routing |
+| 4 - Webhooks | Clarifies use case before routing |
+| 5 - Forwarding | Routes to BOTH skills, notes attachment constraint |
+| 6 - Security no AI | Flags security risk for untrusted input triggering actions |
+| 7 - Broadcast | Notes this isn't covered by transactional sub-skills |
+| 8 - Simple send | Routes to `send-email` directly |
 
-**Pass threshold:** 5/6 correct routing decisions
+**Pass threshold:** 6/8 correct routing decisions
