@@ -1,6 +1,13 @@
 ---
 name: send-email
 description: Use when sending transactional emails (welcome messages, order confirmations, password resets, receipts), notifications, or bulk emails via Resend API.
+inputs:
+    - name: RESEND_API_KEY
+      description: Resend API key for sending emails. Get yours at https://resend.com/api-keys
+      required: true
+    - name: RESEND_WEBHOOK_SECRET
+      description: Webhook signing secret for verifying delivery event payloads (bounced, delivered, opened). Found in the Resend dashboard under Webhooks.
+      required: false
 ---
 
 # Send Email with Resend

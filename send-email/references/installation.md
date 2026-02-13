@@ -1,5 +1,24 @@
 # Resend SDK Installation Guide
 
+Always install the latest SDK version to ensure you have support for all features including webhook verification (`webhooks.verify()`) and email receiving (`emails.receiving.get()`). Older versions may not include these methods.
+
+## Minimum SDK Versions
+
+These are the minimum versions required for full functionality (sending, receiving, and webhook verification). Always prefer the latest version when possible.
+
+| Language | Package | Min Version | Install |
+|----------|---------|-------------|---------|
+| Node.js | `resend` | >= 6.9.2 | `npm install resend` |
+| Python | `resend` | >= 2.21.0 | `pip install resend` |
+| Go | `resend-go/v3` | >= 3.1.0 | `go get github.com/resend/resend-go/v3` |
+| Ruby | `resend` | >= 1.0.0 | `gem install resend` |
+| PHP | `resend/resend-php` | >= 1.1.0 | `composer require resend/resend-php` |
+| Rust | `resend-rs` | >= 0.20.0 | `cargo add resend-rs` |
+| Java | `resend-java` | >= 4.11.0 | See [Maven/Gradle](#java) below |
+| .NET | `Resend` | >= 0.2.1 | `dotnet add package Resend` |
+
+> **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()` or `emails.receiving.get()`, which are required for inbound email and webhook security.
+
 ## Detecting Project Language
 
 Check for these files to determine the project's language/framework:
@@ -71,7 +90,7 @@ cargo add tokio -F macros,rt-multi-thread
 
 Gradle:
 ```gradle
-implementation 'com.resend:resend-java:+'
+implementation 'com.resend:resend-java:4.11.0'
 ```
 
 Maven:
@@ -79,7 +98,7 @@ Maven:
 <dependency>
   <groupId>com.resend</groupId>
   <artifactId>resend-java</artifactId>
-  <version>LATEST</version>
+  <version>4.11.0</version>
 </dependency>
 ```
 

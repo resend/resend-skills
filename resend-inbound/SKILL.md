@@ -1,6 +1,13 @@
 ---
 name: resend-inbound
 description: Use when receiving emails with Resend - setting up inbound domains, processing email.received webhooks, retrieving email content/attachments, or forwarding received emails.
+inputs:
+    - name: RESEND_API_KEY
+      description: Resend API key for retrieving email content and attachments. Get yours at https://resend.com/api-keys
+      required: true
+    - name: RESEND_WEBHOOK_SECRET
+      description: Webhook signing secret for verifying inbound email event payloads. Found in the Resend dashboard under Webhooks.
+      required: true
 ---
 
 # Receive Emails with Resend
@@ -8,6 +15,23 @@ description: Use when receiving emails with Resend - setting up inbound domains,
 ## Overview
 
 Resend processes incoming emails for your domain and sends webhook events to your endpoint. **Webhooks contain metadata only** - you must call separate APIs to retrieve email body and attachments.
+
+## SDK Version Requirements
+
+This skill requires Resend SDK features for webhook verification (`webhooks.verify()`) and email receiving (`emails.receiving.get()`). Always install the latest SDK version. If the project already has a Resend SDK installed, check the version and upgrade if needed.
+
+| Language | Package | Min Version |
+|----------|---------|-------------|
+| Node.js | `resend` | >= 6.9.2 |
+| Python | `resend` | >= 2.21.0 |
+| Go | `resend-go/v3` | >= 3.1.0 |
+| Ruby | `resend` | >= 1.0.0 |
+| PHP | `resend/resend-php` | >= 1.1.0 |
+| Rust | `resend-rs` | >= 0.20.0 |
+| Java | `resend-java` | >= 4.11.0 |
+| .NET | `Resend` | >= 0.2.1 |
+
+See `send-email` skill's [installation guide](../send-email/references/installation.md) for full installation commands.
 
 ## Quick Start
 

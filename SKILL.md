@@ -4,7 +4,16 @@ description: Use when working with Resend email platform - routes to specific su
 license: MIT
 metadata:
     author: resend
-    version: "2.2.0"
+    version: "2.3.0"
+    homepage: https://resend.com
+    source: https://github.com/resend/resend-skills
+inputs:
+    - name: RESEND_API_KEY
+      description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys
+      required: true
+    - name: RESEND_WEBHOOK_SECRET
+      description: Webhook signing secret for verifying event payloads. Found in the Resend dashboard under Webhooks after creating an endpoint.
+      required: false
 ---
 
 # Resend
