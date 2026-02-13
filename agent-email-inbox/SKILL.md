@@ -468,10 +468,16 @@ To provide them the endpoint URL for step #3, you need to set up an endpoint, an
 
 Resend requires these URLs to be https, and verifies certificates, so ensure that your ngrok setup includes a verified cert.
 
-Your webhook endpoint receives notifications when emails arrive:
+Your webhook endpoint receives notifications when emails arrive.
+
+> **Critical: Use raw body for verification.** Webhook signature verification requires the raw request body. If you parse it as JSON before verifying, the signature check will fail.
+> - **Next.js App Router:** Use `req.text()` (not `req.json()`)
+> - **Express:** Use `express.raw({ type: 'application/json' })` on the webhook route (not `express.json()`)
+
+#### Next.js App Router
 
 ```typescript
-// app/api/webhooks/email/route.ts (Next.js App Router)
+// app/api/webhooks/email/route.ts
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -479,9 +485,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
+    // CRITICAL: Read raw body, not parsed JSON
     const payload = await req.text();
 
-    // Always verify webhook signatures
+    // Verify webhook signature
     const event = resend.webhooks.verify({
       payload,
       headers: {
@@ -493,7 +500,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (event.type === 'email.received') {
-      // Get full email content
+      // Webhook payload only includes metadata, not email body
       const { data: email } = await resend.emails.receiving.get(
         event.data.email_id
       );
@@ -502,12 +509,90 @@ export async function POST(req: NextRequest) {
       await processEmailForAgent(event.data, email);
     }
 
+    // Always return 200 to acknowledge receipt (even for rejected emails)
     return new NextResponse('OK', { status: 200 });
   } catch (error) {
     console.error('Webhook error:', error);
     return new NextResponse('Error', { status: 400 });
   }
 }
+```
+
+#### Express
+
+```javascript
+import express from 'express';
+import { Resend } from 'resend';
+
+const app = express();
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// CRITICAL: Use express.raw, NOT express.json, for the webhook route
+app.post('/webhook/email', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const payload = req.body.toString();
+
+    // Verify webhook signature
+    const event = resend.webhooks.verify({
+      payload,
+      headers: {
+        'svix-id': req.headers['svix-id'],
+        'svix-timestamp': req.headers['svix-timestamp'],
+        'svix-signature': req.headers['svix-signature'],
+      },
+      secret: process.env.RESEND_WEBHOOK_SECRET,
+    });
+
+    if (event.type === 'email.received') {
+      const sender = event.data.from.toLowerCase();
+
+      // Security check (using your chosen level)
+      if (!isAllowedSender(sender)) {
+        console.log(`Rejected email from unauthorized sender: ${sender}`);
+        // Return 200 even for rejected emails to prevent Resend retry storms
+        res.status(200).send('OK');
+        return;
+      }
+
+      // Webhook payload only includes metadata, not email body
+      const { data: email } = await resend.emails.receiving.get(event.data.email_id);
+
+      await processEmailForAgent(event.data, email);
+    }
+
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.status(400).send('Error');
+  }
+});
+
+// Health check endpoint (useful for verifying your server is up)
+app.get('/', (req, res) => {
+  res.send('Agent Email Inbox - Ready');
+});
+
+app.listen(3000, () => console.log('Webhook server running on :3000'));
+```
+
+#### Webhook Verification Fallback (Svix)
+
+If you're using an older Resend SDK that doesn't have `resend.webhooks.verify()`, you can verify signatures directly with the `svix` package:
+
+```bash
+npm install svix
+```
+
+```javascript
+import { Webhook } from 'svix';
+
+// Replace resend.webhooks.verify() with:
+const wh = new Webhook(process.env.RESEND_WEBHOOK_SECRET);
+const event = wh.verify(payload, {
+  'svix-id': req.headers['svix-id'],
+  'svix-timestamp': req.headers['svix-timestamp'],
+  'svix-signature': req.headers['svix-signature'],
+});
 ```
 
 ### Register Webhook in Resend Dashboard
@@ -669,41 +754,7 @@ vercel deploy --prod
 
 ### Example: Simple Express Server on VPS
 
-```typescript
-// server.ts
-import express from 'express';
-import { Resend } from 'resend';
-
-const app = express();
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-app.post('/api/webhooks/email', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    const event = resend.webhooks.verify({
-      payload: req.body.toString(),
-      headers: {
-        'svix-id': req.headers['svix-id'] as string,
-        'svix-timestamp': req.headers['svix-timestamp'] as string,
-        'svix-signature': req.headers['svix-signature'] as string,
-      },
-      secret: process.env.RESEND_WEBHOOK_SECRET!,
-    });
-
-    if (event.type === 'email.received') {
-      await handleIncomingEmail(event);
-    }
-
-    res.status(200).send('OK');
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(400).send('Error');
-  }
-});
-
-app.listen(3000, () => console.log('Webhook server running on :3000'));
-```
-
-Use a reverse proxy (nginx, caddy) for HTTPS, or deploy behind a load balancer that terminates SSL.
+See the Express example in the Webhook Setup section above. Deploy it with a reverse proxy (nginx, caddy) for HTTPS, or behind a load balancer that terminates SSL.
 
 ## Clawdbot Integration
 
@@ -908,6 +959,9 @@ OWNER_EMAIL=you@email.com               # For security notifications
 | Processing HTML directly | Strip HTML or use text-only to reduce attack surface |
 | No logging of rejections | Log all security events for audit |
 | Using ephemeral tunnel URLs | Use persistent URLs (paid ngrok, Cloudflare named tunnels) or deploy to production |
+| Using `express.json()` on webhook route | Use `express.raw({ type: 'application/json' })` — JSON parsing breaks signature verification |
+| Returning non-200 for rejected emails | Always return 200 to acknowledge receipt, even for rejected emails — otherwise Resend retries |
+| Old Resend SDK version | `emails.receiving.get()` and `webhooks.verify()` require recent SDK versions — see SDK Version Requirements |
 
 ## Testing
 
@@ -916,6 +970,63 @@ Use Resend's test addresses for development:
 - `bounced@resend.dev` - Simulates hard bounce
 
 For security testing, send test emails from non-allowlisted addresses to verify rejection works correctly.
+
+**Quick verification checklist:**
+1. Server is running: `curl http://localhost:3000` should return a response
+2. Tunnel is working: `curl https://<your-tunnel-url>` should return the same response
+3. Webhook is active: Check status in Resend dashboard → Webhooks
+4. Send a test email from an allowlisted address and check server logs
+
+## Troubleshooting
+
+### "Cannot read properties of undefined (reading 'verify')"
+
+**Cause:** Resend SDK version too old — `resend.webhooks.verify()` was added in recent versions.
+**Fix:** Update to the latest SDK:
+```bash
+npm install resend@latest
+```
+Or use the Svix fallback (see Webhook Verification Fallback section above).
+
+### "Cannot read properties of undefined (reading 'get')"
+
+**Cause:** Resend SDK version too old — `emails.receiving.get()` requires a recent SDK.
+**Fix:**
+```bash
+npm install resend@latest
+# Verify version:
+npm list resend
+```
+
+### Webhook returns 400 errors
+
+**Possible causes:**
+1. **Wrong signing secret** — Check the Resend dashboard for the correct secret. Click on your webhook and copy "Signing Secret" from the upper right.
+2. **Body parsing issue** — You must use the raw body for verification. Use `express.raw({ type: 'application/json' })` on the webhook route, not `express.json()`.
+3. **SDK version too old** — Update to `resend@latest`.
+
+### ngrok connection refused / tunnel died
+
+**Cause:** Free ngrok tunnels time out and change URLs on restart.
+**Fix:** Restart ngrok, then update the webhook URL in the Resend dashboard.
+**Better:** Use paid ngrok with a static domain, or deploy to production.
+
+### Email received but no webhook fires
+
+1. Check the webhook is "Active" in Resend dashboard → Webhooks
+2. Check the endpoint URL is correct (including the path, e.g., `/webhook/email`)
+3. Check the tunnel is running: `curl https://<your-tunnel-url>`
+4. Check the "Recent Deliveries" section on your webhook for status codes
+
+### Security check rejecting all emails
+
+1. Check the sender address is in your `ALLOWED_SENDERS` list
+2. Check for case mismatch — the comparison should be case-insensitive
+3. Debug by logging: `console.log('Sender:', event.data.from.toLowerCase())`
+
+### Agent doesn't auto-respond to emails
+
+**This is expected behavior.** The webhook delivers a notification to the user, who then instructs the agent how to respond. This is the safest approach — the user reviews each email before the agent acts on it.
 
 ## Related Skills
 
