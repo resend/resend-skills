@@ -58,11 +58,13 @@ See `send-email` skill's [installation guide](../send-email/references/installat
 
 ## Quick Start
 
-1. **Set up receiving domain** - Use Resend's `.resend.app` domain or configure MX records
+1. **Ask the user for their email address** - You need a real email address to send test emails to. **Do NOT guess, assume, or use placeholder addresses like `test@example.com`.** Ask the user: "What email address should I send test emails to?" and wait for their response before proceeding.
 2. **Choose your security level** - Decide how to validate incoming emails *before* any are processed
-3. **Create webhook endpoint** - Handle `email.received` events with security built in from the start
-4. **Set up tunneling** (local dev) - Use ngrok or similar to expose your endpoint
-5. **Connect to agent** - Pass validated emails to your AI agent for processing
+3. **Set up receiving domain** - Configure MX records for the user's custom domain (see Domain Setup section)
+4. **Create webhook endpoint** - Handle `email.received` events with security built in from the start. **The webhook endpoint MUST be a POST route.** Resend sends webhooks as POST requests — GET, PUT, PATCH, and other methods will not work.
+5. **Set up tunneling** (local dev) - Use ngrok or similar to expose your endpoint
+6. **Create webhook via API** - Use the Resend Webhook API to register your endpoint programmatically (see Webhook Setup section)
+7. **Connect to agent** - Pass validated emails to your AI agent for processing
 
 ## Before You Start: Account & API Key Setup
 
@@ -456,17 +458,35 @@ function truncateContent(content: string): string {
 
 After choosing your security level and setting up your domain, create a webhook endpoint. This will allow you to be notified when new emails are received.
 
-The user needs to: 
-1. Go to https://resend.com/webhooks (the Webhooks tab of the dashboard)
-2. Click "Add webhook"
-3. Enter the endpoint URL that you will provide them
-4. Select the event type `email.received`
-5. Click "Add"
-6. Once it's created, you need the webhook signing secret in order to verify the webhook. They can find that by clicking on the webhook in the Webhooks dashboard and copying the text under "Signing Secret" on the upper righthand side.
+> **The webhook endpoint MUST be a POST route.** Resend sends all webhook events as POST requests. GET, PUT, PATCH, and other HTTP methods will not receive webhook events. Make sure your route handler is defined as `POST`.
 
-To provide them the endpoint URL for step #3, you need to set up an endpoint, and then use tunneling with a tool like ngrok.
+#### Step 1: Set up tunneling to get a stable public URL
 
-Resend requires these URLs to be https, and verifies certificates, so ensure that your ngrok setup includes a verified cert.
+You need a public HTTPS URL before writing any code, because the URL determines your route path and will be registered with Resend. Resend requires HTTPS and verifies certificates.
+
+**Recommended: ngrok with a stable domain**
+
+```bash
+# Free tier (URL changes on every restart — update webhook registration each time)
+ngrok http 3000
+
+# Paid tier (stable URL — set once, never changes)
+ngrok http --domain=myagent.ngrok.io 3000
+```
+
+If using the free tier, note the generated URL (e.g., `https://a1b2c3d4.ngrok-free.app`). You'll register this with Resend shortly.
+
+See the **Local Development with Tunneling** section below for alternative options (Cloudflare Tunnel, VS Code, localtunnel).
+
+#### Step 2: Choose your webhook path and NEVER change it
+
+Pick a webhook path now and commit to it. This exact path will be registered with Resend, and if you change it later, webhooks will 404 silently.
+
+> **⚠️ CRITICAL: Do not rename, move, or restructure the webhook route path after it has been registered with Resend.** If you change `/webhook` to `/webhook/email`, or `/api/webhooks` to `/api/webhook`, Resend will keep sending to the old path and every delivery will 404. If you must change the path, you must also update or recreate the webhook registration via the API.
+
+**Recommended path:** `/webhook` (simple, hard to get wrong)
+
+Your full webhook URL will be: `https://<your-tunnel-domain>/webhook`
 
 Your webhook endpoint receives notifications when emails arrive.
 
@@ -477,7 +497,7 @@ Your webhook endpoint receives notifications when emails arrive.
 #### Next.js App Router
 
 ```typescript
-// app/api/webhooks/email/route.ts
+// app/webhook/route.ts
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -528,7 +548,7 @@ const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // CRITICAL: Use express.raw, NOT express.json, for the webhook route
-app.post('/webhook/email', express.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const payload = req.body.toString();
 
@@ -719,8 +739,8 @@ npx localtunnel --port 3000
 ### Webhook URL Configuration
 
 After starting your tunnel, update Resend:
-- Development: `https://<tunnel-url>/api/webhooks/email`
-- Production: `https://yourdomain.com/api/webhooks/email`
+- Development: `https://<tunnel-url>/webhook`
+- Production: `https://yourdomain.com/webhook`
 
 ## Production Deployment
 
@@ -749,7 +769,7 @@ For a reliable agent inbox, deploy your webhook endpoint to production infrastru
 vercel deploy --prod
 
 # Your webhook URL becomes:
-# https://your-project.vercel.app/api/webhooks/email
+# https://your-project.vercel.app/webhook
 ```
 
 ### Example: Simple Express Server on VPS
@@ -1014,7 +1034,7 @@ npm list resend
 ### Email received but no webhook fires
 
 1. Check the webhook is "Active" in Resend dashboard → Webhooks
-2. Check the endpoint URL is correct (including the path, e.g., `/webhook/email`)
+2. Check the endpoint URL is correct (including the path, e.g., `/webhook`)
 3. Check the tunnel is running: `curl https://<your-tunnel-url>`
 4. Check the "Recent Deliveries" section on your webhook for status codes
 
