@@ -6,7 +6,7 @@ inputs:
       description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys
       required: true
     - name: RESEND_WEBHOOK_SECRET
-      description: Webhook signing secret for verifying inbound email event payloads. Found in the Resend dashboard under Webhooks.
+      description: Webhook signing secret for verifying inbound email event payloads. Returned as `signing_secret` in the response when you create a webhook via the API.
       required: true
 ---
 
@@ -615,19 +615,111 @@ const event = wh.verify(payload, {
 });
 ```
 
-### Register Webhook in Resend Dashboard
+### Register Webhook via the API
 
-1. Go to Dashboard → Webhooks → Add Webhook
-2. Enter your endpoint URL
-3. Select `email.received` event
-4. Copy the signing secret to `RESEND_WEBHOOK_SECRET`
+**Do not ask the user to manually create webhooks in the dashboard.** Use the Resend Webhook API to create the webhook programmatically. This is faster, less error-prone, and gives you the signing secret directly in the response — no need for the user to navigate the dashboard and copy secrets into chat.
+
+The API endpoint is `POST https://api.resend.com/webhooks`. You need:
+- `endpoint` (string, required): Your full public webhook URL (e.g., `https://<your-tunnel-domain>/webhook`)
+- `events` (string[], required): Event types to subscribe to. For an agent inbox, use `["email.received"]`
+
+The response includes a `signing_secret` (format: `whsec_xxxxxxxxxx`) — **store this immediately** as `RESEND_WEBHOOK_SECRET`. This is the only time you'll see it in the response.
+
+#### Node.js
+
+```typescript
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const { data, error } = await resend.webhooks.create({
+  endpoint: 'https://<your-tunnel-domain>/webhook',
+  events: ['email.received'],
+});
+
+if (error) {
+  console.error('Failed to create webhook:', error);
+  throw error;
+}
+
+// IMPORTANT: Store the signing secret — you need it to verify incoming webhooks
+// Write it directly to .env, never log it
+// fs.appendFileSync('.env', `\nRESEND_WEBHOOK_SECRET=${data.signing_secret}\n`);
+console.log('Webhook created:', data.id);
+```
+
+#### Python
+
+```python
+import resend
+
+resend.api_key = 're_xxxxxxxxx'
+
+webhook = resend.Webhooks.create(params={
+    "endpoint": "https://<your-tunnel-domain>/webhook",
+    "events": ["email.received"],
+})
+
+# Write the signing secret directly to .env, never log it
+# with open('.env', 'a') as f:
+#     f.write(f"\nRESEND_WEBHOOK_SECRET={webhook['signing_secret']}\n")
+print(f"Webhook created: {webhook['id']}")
+```
+
+#### cURL
+
+```bash
+curl -X POST 'https://api.resend.com/webhooks' \
+  -H 'Authorization: Bearer re_xxxxxxxxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "endpoint": "https://<your-tunnel-domain>/webhook",
+    "events": ["email.received"]
+  }'
+
+# Response:
+# {
+#   "object": "webhook",
+#   "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+#   "signing_secret": "whsec_xxxxxxxxxx"
+# }
+```
+
+#### Other SDKs
+
+The webhook creation API is available in all Resend SDKs: Go, Ruby, PHP, Rust, Java, and .NET. The pattern is the same — pass `endpoint` and `events`, and read `signing_secret` from the response.
+
+### Webhook Signing Secret and Verification
+
+The `signing_secret` returned when you create a webhook is used to verify that incoming webhook requests actually came from Resend. **You must verify every webhook request.** Without verification, anyone who discovers your endpoint URL can send fake events.
+
+Every webhook request from Resend includes three headers:
+
+| Header | Purpose |
+|--------|---------|
+| `svix-id` | Unique message identifier |
+| `svix-timestamp` | Unix timestamp when the webhook was sent |
+| `svix-signature` | Cryptographic signature for verification |
+
+Use `resend.webhooks.verify()` (shown in the endpoint code examples above) to validate these headers against the raw request body. The verification is sensitive to the exact bytes of the body — if your framework parses and re-stringifies the JSON before you verify, the signature check will fail.
 
 ### Webhook Retry Behavior
 
 Resend automatically retries failed webhook deliveries with exponential backoff:
-- Retries occur over approximately 6 hours
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | Immediate |
+| 2 | 5 seconds |
+| 3 | 5 minutes |
+| 4 | 30 minutes |
+| 5 | 2 hours |
+| 6 | 5 hours |
+| 7 | 10 hours |
+
 - Your endpoint must return 2xx status to acknowledge receipt
-- Failed deliveries are visible in the Webhooks dashboard
+- If an endpoint is removed or disabled, retry attempts stop automatically
+- Failed deliveries are visible in the Webhooks dashboard, where you can also manually replay events
 - Emails are stored even if webhooks fail — you won't lose messages
 
 ## Local Development with Tunneling
@@ -636,7 +728,7 @@ Your local server isn't accessible from the internet. Use tunneling to expose it
 
 > 🚨 **Critical: Persistent URLs Required**
 >
-> Webhook URLs are registered in Resend's dashboard. If your tunnel URL changes (e.g., ngrok restart), you must update the webhook configuration manually. For development, this is manageable. For anything persistent, you need either:
+> Webhook URLs are registered with Resend via the API. If your tunnel URL changes (e.g., ngrok restart on the free tier), you must delete and recreate the webhook registration via the API. For development, this is manageable. For anything persistent, you need either:
 > - A **paid tunnel service** with static URLs (ngrok paid, Cloudflare named tunnels)
 > - **Production deployment** to a real server (see Production Deployment section)
 >
@@ -648,7 +740,7 @@ The most popular and simplest tunneling solution. Use ngrok as the default choic
 
 **Free tier limitations:**
 - URLs are random and change on every restart (e.g., `https://a1b2c3d4.ngrok-free.app`)
-- Must update webhook URL in Resend dashboard after each restart
+- Must delete and recreate the webhook via the API after each restart
 - Fine for initial testing, painful for ongoing development
 
 **Paid tier ($8/mo Personal plan):**
@@ -1021,14 +1113,14 @@ npm list resend
 ### Webhook returns 400 errors
 
 **Possible causes:**
-1. **Wrong signing secret** — Check the Resend dashboard for the correct secret. Click on your webhook and copy "Signing Secret" from the upper right.
+1. **Wrong signing secret** — The signing secret is returned when you create the webhook via the API (`data.signing_secret`). If you've lost it, delete and recreate the webhook to get a new one.
 2. **Body parsing issue** — You must use the raw body for verification. Use `express.raw({ type: 'application/json' })` on the webhook route, not `express.json()`.
 3. **SDK version too old** — Update to `resend@latest`.
 
 ### ngrok connection refused / tunnel died
 
 **Cause:** Free ngrok tunnels time out and change URLs on restart.
-**Fix:** Restart ngrok, then update the webhook URL in the Resend dashboard.
+**Fix:** Restart ngrok, then delete and recreate the webhook via the API with the new tunnel URL.
 **Better:** Use paid ngrok with a static domain, or deploy to production.
 
 ### Email received but no webhook fires
