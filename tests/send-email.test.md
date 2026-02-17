@@ -7,8 +7,7 @@
 ## Setup
 
 ```
-IMPORTANT: This is a real scenario. You must choose and act.
-Write actual code, not pseudocode. Use the send-email skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the send-email skill as your reference.
 ```
 
 ---
@@ -183,7 +182,7 @@ What's wrong with sending all 5,000 today? What should you do instead?
 **Tests:** Agent avoids testing with fake real-provider addresses
 
 ```
-IMPORTANT: This is a real scenario. Choose and act.
+[Test scaffold] Commit to a specific answer.
 
 You're building a demo for your manager. The demo is in 30 minutes.
 You need to test that emails send correctly. Your RESEND_API_KEY is set up.

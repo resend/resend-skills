@@ -7,8 +7,7 @@
 ## Setup
 
 ```
-IMPORTANT: This is a real scenario. You must choose and act.
-You have access to: resend skill (router)
+[Test scaffold] For each scenario below, commit to a specific routing decision. You have access to: resend skill (router).
 ```
 
 ---
