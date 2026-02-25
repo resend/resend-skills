@@ -29,8 +29,14 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 | **Sending emails** | `send-email` | Transactional emails, notifications, batch sends |
 | **Receiving emails** | `resend-inbound` | Processing inbound emails, webhooks for received mail, attachments |
 | **AI Agent inbox** | `agent-email-inbox` | Setting up email for AI agents, or any system where untrusted email content triggers actions — includes security measures against prompt injection |
+| **Email templates** | `templates` | Creating, updating, publishing, and managing reusable email templates via API |
 
 ## Quick Routing
+
+**Need to manage templates (create/update/publish/delete)?** Use `templates` skill
+- Full template lifecycle management via API
+- Variable syntax, constraints, reserved names
+- Draft vs published state, version history
 
 **Need to send emails?** Use `send-email` skill
 - Single or batch transactional emails

@@ -278,25 +278,27 @@ const { data, error } = await resend.emails.send({
   to: ['delivered@resend.dev'],
   subject: 'Welcome!',
   template: {
-    id: 'tmpl_abc123',
+    id: 'tmpl_abc123',       // or alias: 'welcome-email'
     variables: {
-      USER_NAME: 'John',      // Case-sensitive!
+      USER_NAME: 'John',     // Case-sensitive! Must match template exactly.
       ORDER_TOTAL: '$99.00'
     }
   }
 });
 ```
 
-**IMPORTANT:** Variable names are **case-sensitive** and must match exactly as defined in the template editor. `USER_NAME` ≠ `user_name`.
+**IMPORTANT:** Variable names are **case-sensitive**. `USER_NAME` ≠ `user_name`.
 
 | Fact | Detail |
 |------|--------|
-| **Max variables** | 20 per template |
-| **Reserved names** | `FIRST_NAME`, `LAST_NAME`, `EMAIL`, `RESEND_UNSUBSCRIBE_URL`, `contact`, `this` |
-| **Fallback values** | Optional - if not set and variable missing, send fails |
+| **Reserved names** | `FIRST_NAME`, `LAST_NAME`, `EMAIL`, `UNSUBSCRIBE_URL`, `contact`, `this` |
+| **Fallback values** | Optional — if not set and variable missing at send time, send fails (422) |
 | **Can't combine with** | `html`, `text`, or `react` parameters |
+| **subject / from** | Template defaults can be overridden per-send |
 
-Templates must be **published** in the dashboard before use. Draft templates won't work.
+Templates must be **published** before use. Draft templates cannot send.
+
+To create, update, publish, or delete templates via API, use the `templates` skill.
 
 ## Testing
 
