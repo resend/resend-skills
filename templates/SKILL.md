@@ -70,6 +70,8 @@ Use **triple mustache** in HTML and subject: `{{{VARIABLE_NAME}}}`
 
 Plain substitution only — no `{{#each}}`, `{{#if}}`, or other Handlebars control flow. Pre-render dynamic lists server-side into a single HTML variable.
 
+Variable key casing is arbitrary (`ORDER_ID`, `orderId`, `order_id` all work) but must be consistent: whatever casing you use in the template definition must match exactly in the send call.
+
 ## Sending with a Template
 
 ```typescript

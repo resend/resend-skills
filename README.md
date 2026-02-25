@@ -10,12 +10,21 @@
 
 # Resend Skills
 
-A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to send emails using the [Resend](https://resend.com) API.
+A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to work with the [Resend](https://resend.com) email platform.
 
 ## Available Skills
 
 ### [`send-email`](./send-email)
-Send emails using the Resend API - single or batch. Supports transactional emails, notifications, and bulk sending (up to 100 emails per batch). Includes best practices for idempotency keys, error handling, and retry logic.
+Send emails using the Resend API — single or batch. Supports transactional emails, notifications, and bulk sending (up to 100 emails per batch). Includes best practices for idempotency keys, error handling, and retry logic.
+
+### [`templates`](./templates)
+Create, update, publish, and delete reusable email templates via the Resend API. Covers template lifecycle (draft → publish → send), variable syntax (`{{{VAR}}}`), variable constraints, reserved names, and cursor-based pagination for listing templates.
+
+### [`resend-inbound`](./resend-inbound)
+Receive emails with Resend. Covers MX record setup, processing `email.received` webhooks, retrieving attachments, and forwarding received emails.
+
+### [`agent-email-inbox`](./agent-email-inbox)
+Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, and prompt injection protection.
 
 ## Installation
 
@@ -29,6 +38,8 @@ Skills are automatically activated when relevant tasks are detected. Example pro
 
 - "Send a welcome email to new users"
 - "Send batch notifications to all order customers"
+- "Create a reusable order confirmation template with variables"
+- "Set up an inbound email handler for support@myapp.com"
 - "Schedule a newsletter for tomorrow at 9am"
 
 ## Supported SDKs

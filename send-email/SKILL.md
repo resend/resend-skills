@@ -287,7 +287,7 @@ const { data, error } = await resend.emails.send({
 });
 ```
 
-**IMPORTANT:** Variable names are **case-sensitive**. `USER_NAME` ≠ `user_name`.
+**IMPORTANT:** Variable names are **case-sensitive** and must match the template definition exactly. Any casing is valid — `USER_NAME`, `userName`, or `user_name` — as long as the send call uses the same casing as defined in the template.
 
 | Fact | Detail |
 |------|--------|
@@ -391,7 +391,7 @@ Resend automatically manages a suppression list of addresses that should not rec
 | Using "no-reply" sender address | Use real address like `support@` - improves trust signals with email providers |
 | Not verifying webhook signatures | Always verify - attackers can send fake events to your endpoint |
 | Testing with fake emails (test@gmail.com) | Use `delivered@resend.dev` - fake addresses bounce and hurt reputation |
-| Template variable name mismatch | Variable names are case-sensitive - `USER_NAME` ≠ `user_name` |
+| Template variable name mismatch | Variable names are case-sensitive — must match the template definition exactly. Any casing is valid; `USER_NAME` and `firstName` are both fine as long as the send call matches. |
 | Sending high volume from new domain | Warm up gradually - sudden spikes trigger spam filters |
 
 ## Notes
