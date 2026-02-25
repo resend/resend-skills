@@ -4,7 +4,7 @@ description: Use when working with Resend email platform - routes to specific su
 license: MIT
 metadata:
     author: resend
-    version: "2.5.0"
+    version: "2.6.0"
     homepage: https://resend.com
     source: https://github.com/resend/resend-skills
 inputs:
