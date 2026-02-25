@@ -40,6 +40,18 @@ Editing a published template creates a new draft — the published version keeps
 | Publish | `resend.templates.publish(id)` |
 | Duplicate | `resend.templates.duplicate(id)` |
 
+### Chainable Create → Publish
+
+The SDK supports chaining `.publish()` after `.create()` or `.duplicate()`:
+
+```typescript
+const { data, error } = await resend.templates.create({
+  name: 'Welcome',
+  html: '<p>Hi {{{NAME}}}</p>',
+}).publish();
+// Template is created AND published in one call
+```
+
 ## Aliases
 
 An alias is a stable, human-readable slug you set at create time. Pass it in the `id` field anywhere you'd use the auto-generated template ID.

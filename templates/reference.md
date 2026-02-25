@@ -96,6 +96,19 @@ These cannot be used as custom variable keys — rename to `USER_FIRST_NAME`, `U
 | 60+ variables | Max 50 — pre-render complex content as a single HTML variable |
 | No idempotency key on sends | Template sends use the same endpoint — pass `idempotencyKey` for retryable operations |
 
+## Duplicate
+
+```typescript
+// Duplicate a template — returns a new draft copy
+const { data, error } = await resend.templates.duplicate('tmpl_abc123');
+// Returns: { id: 'tmpl_new456', object: 'template' }
+
+// Chainable — duplicate and publish in one call
+const { data, error } = await resend.templates.duplicate('tmpl_abc123').publish();
+```
+
+Useful for creating variants (e.g., A/B testing subject lines) or bootstrapping new templates from an existing one.
+
 ## Version History
 
 Every template maintains full version history. Reverting creates a new draft from a previous version without affecting the published version. Accessible via the Resend dashboard template editor.
