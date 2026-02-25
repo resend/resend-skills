@@ -286,7 +286,7 @@ const { data, error } = await resend.emails.send({
 ```
 
 **Expected bugs found:**
-1. **Variable names are wrong case**: `user_name` should be `USER_NAME`, `order_total` → `ORDER_TOTAL`, `delivery_date` → `DELIVERY_DATE` (case-sensitive)
+1. **Variable name mismatch**: The template defines `USER_NAME`, `ORDER_TOTAL`, `DELIVERY_DATE` but the send call uses `user_name`, `order_total`, `delivery_date`. Variable names are case-sensitive and must match the template definition exactly. (Any casing is valid in the template — the bug is the mismatch, not the use of lowercase.)
 2. **`html` and `template` are mutually exclusive**: Can't use both -- remove the `html` parameter
 3. **No idempotency key**: Missing from the send call
 
