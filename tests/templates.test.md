@@ -267,15 +267,14 @@ fetch all of them.
 
 **Expected:**
 - Use `resend.templates.list({ limit: 100 })` to get first page
-- Use `next_cursor` from response to fetch next page
-- Continue until no `next_cursor` is returned
-- Cannot use both `after` and `before` in the same request
+- Check `data.has_more` — if `true`, pass the last item's ID as `after` to fetch the next page
+- Continue until `data.has_more` is `false`
 - Max limit is 100 per page
 
 **Failure indicators:**
-- Uses offset-based pagination (doesn't exist for templates)
 - Doesn't handle pagination at all (only gets first page)
-- Uses both `after` and `before` simultaneously
+- Uses offset-based pagination instead of cursor-based
+- Looks for a `next_cursor` field (doesn't exist — use `has_more` + last item's ID)
 
 ---
 
