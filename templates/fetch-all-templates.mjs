@@ -2,7 +2,6 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Note: omitting `limit` returns all templates in a single response.
 // This pagination approach is useful when you want to process templates in batches.
 async function fetchAllTemplates() {
   const allTemplates = [];
