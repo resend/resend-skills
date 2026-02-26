@@ -31,6 +31,7 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 | **AI Agent inbox** | `agent-email-inbox` | Setting up email for AI agents, or any system where untrusted email content triggers actions — includes security measures against prompt injection |
 | **Email templates** | `templates` | Creating, updating, publishing, and managing reusable email templates via API |
 | **Domain setup** | `domain-setup` | Adding domains, DNS verification (SPF/DKIM/MX), DMARC, BIMI, troubleshooting |
+| **Error troubleshooting** | `error-troubleshooting` | Debugging API errors (403, 422, 429, 500), delivery issues, CORS problems |
 
 ## Quick Routing
 
@@ -66,6 +67,14 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 - DMARC progressive rollout and BIMI setup
 - Troubleshooting verification failures
 - DNS provider-specific issues (Cloudflare, GoDaddy, etc.)
+
+**Getting API errors?** Use `error-troubleshooting` skill
+- 403 errors (invalid API key, resend.dev domain, domain mismatch)
+- 422 errors (invalid parameters, missing fields)
+- 429 errors (rate limits, quota exceeded)
+- 500 errors (retry strategies)
+- "Delivered but not received" diagnosis
+- CORS issues (must call API server-side)
 
 **Sending + receiving together?** You need both `resend-inbound` and `send-email`
 - Auto-replies, email forwarding, or any receive-then-send workflow requires both skills
