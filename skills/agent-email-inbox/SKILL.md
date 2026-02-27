@@ -1,6 +1,6 @@
 ---
 name: agent-email-inbox
-description: Use when setting up an email inbox for an AI agent (Moltbot, Clawdbot, or similar) - configuring inbound email, webhooks, tunneling for local development, and implementing security measures to prevent prompt injection attacks.
+description: Set up a secure email inbox for AI agents using Resend. Use when building an AI agent that receives email, any automated system that processes untrusted email content and takes actions, or when email-triggered workflows need security against prompt injection. Covers webhook setup, sender allowlists, content filtering, sandboxed processing, and human-in-the-loop approval.
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys

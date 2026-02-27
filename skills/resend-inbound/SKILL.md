@@ -1,6 +1,6 @@
 ---
 name: resend-inbound
-description: Use when receiving emails with Resend - setting up inbound domains, processing email.received webhooks, retrieving email content/attachments, or forwarding received emails.
+description: Receive and process inbound emails with Resend. Use when setting up email receiving, configuring MX records, processing email.received webhooks, retrieving email content and attachments, or building email forwarding. Covers domain setup, webhook verification, and attachment handling.
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for retrieving email content and attachments. Get yours at https://resend.com/api-keys
