@@ -1,6 +1,10 @@
 ---
 name: templates
 description: Use when creating, updating, publishing, deleting, or listing Resend email templates via the API, or when defining template variables, understanding draft vs published state, or managing template lifecycle programmatically.
+inputs:
+    - name: RESEND_API_KEY
+      description: Resend API key for managing templates. Get yours at https://resend.com/api-keys
+      required: true
 ---
 
 # Resend Templates
