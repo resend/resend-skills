@@ -1,14 +1,8 @@
-```
- ____  _____ ____  _____ _   _ ____        ____  _  _____ _     _     ____
-|  _ \| ____/ ___|| ____| \ | |  _ \      / ___|| |/ /_ _| |   | |   / ___|
-| |_) |  _| \___ \|  _| |  \| | | | |_____\___ \| ' / | || |   | |   \___ \
-|  _ <| |___ ___) | |___| |\  | |_| |_____|___) | . \ | || |___| |___ ___) |
-|_| \_\_____|____/|_____|_| \_|____/      |____/|_|\_\___|_____|_____|____/
-```
+<img width="432" height="187" alt="ascii-text-art" src="https://github.com/user-attachments/assets/72f8ab6b-dafd-436c-bacb-d49c20d3f0be" />
 
 # Resend Skills
 
-A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to send and receive emails using the [Resend](https://resend.com) API.
+A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to send and receive emails using the [Resend](https://resend.com) email platform.
 
 ## Available Skills
 
