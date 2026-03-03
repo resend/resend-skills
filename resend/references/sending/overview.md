@@ -1,16 +1,4 @@
----
-name: send-email
-description: Use when sending transactional emails (welcome messages, order confirmations, password resets, receipts), notifications, or bulk emails via Resend API.
-inputs:
-    - name: RESEND_API_KEY
-      description: Resend API key for sending emails. Get yours at https://resend.com/api-keys
-      required: true
-    - name: RESEND_WEBHOOK_SECRET
-      description: Webhook signing secret for verifying delivery event payloads (bounced, delivered, opened). Found in the Resend dashboard under Webhooks.
-      required: false
----
-
-# Send Email with Resend
+# Sending Emails with Resend
 
 ## Overview
 
@@ -35,13 +23,13 @@ Resend provides two endpoints for sending emails:
 ## Quick Start
 
 1. **Detect project language** from config files (package.json, requirements.txt, go.mod, etc.)
-2. **Install SDK** (preferred) or use cURL - See [references/installation.md](references/installation.md)
+2. **Install SDK** (preferred) or use cURL - See [installation.md](../installation.md)
 3. **Choose single or batch** based on the decision matrix above
 4. **Implement best practices** - Idempotency keys, error handling, retries
 
 ## Best Practices (Critical for Production)
 
-Always implement these for production email sending. See [references/best-practices.md](references/best-practices.md) for complete implementations.
+Always implement these for production email sending. See [best-practices.md](best-practices.md) for complete implementations.
 
 ### Idempotency Keys
 
@@ -124,7 +112,7 @@ if (error) {
 console.log('Sent:', data.id);
 ```
 
-See [references/single-email-examples.md](references/single-email-examples.md) for all SDK implementations with error handling and retry logic.
+See [single-email-examples.md](single-email-examples.md) for all SDK implementations with error handling and retry logic.
 
 ## Batch Email
 
@@ -177,7 +165,7 @@ if (error) {
 console.log('Sent:', data.map(e => e.id));
 ```
 
-See [references/batch-email-examples.md](references/batch-email-examples.md) for all SDK implementations with validation, error handling, and retry logic.
+See [batch-email-examples.md](batch-email-examples.md) for all SDK implementations with validation, error handling, and retry logic.
 
 ## Large Batches (100+ Emails)
 
@@ -188,7 +176,7 @@ For sends larger than 100 emails, chunk into multiple batch requests:
 3. **Send chunks in parallel** for better throughput
 4. **Track results** per chunk to handle partial failures
 
-See [references/batch-email-examples.md](references/batch-email-examples.md) for complete chunking implementations.
+See [batch-email-examples.md](batch-email-examples.md) for complete chunking implementations.
 
 ## Deliverability
 
@@ -246,7 +234,7 @@ Track email delivery status in real-time using webhooks. Resend sends HTTP POST 
 
 **CRITICAL: Always verify webhook signatures.** Without verification, attackers can send fake events to your endpoint.
 
-See [references/webhooks.md](references/webhooks.md) for setup, signature verification code, and all event types.
+See [webhooks.md](../webhooks.md) for setup, signature verification code, and all event types.
 
 ## Tags
 
@@ -298,7 +286,7 @@ const { data, error } = await resend.emails.send({
 
 Templates must be **published** before use. Draft templates cannot send.
 
-To create, update, publish, or delete templates via API, use the `templates` skill.
+To create, update, publish, or delete templates via API, see the [templates reference](../templates.md).
 
 ## Testing
 

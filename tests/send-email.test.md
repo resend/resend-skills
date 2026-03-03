@@ -1,13 +1,13 @@
-# Test: Send Email Skill
+# Test: Resend Sending References
 
-**Skill under test:** `send-email`
+**Skill under test:** `resend` (sending references)
 **Skill type:** Reference/Technique
 **Test approach:** Application scenarios - can the agent correctly apply sending patterns, choose single vs batch, handle errors, and avoid common mistakes? Emphasis on Resend-specific behavior that differs from other email APIs.
 
 ## Setup
 
 ```
-[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the send-email skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend skill's sending references.
 ```
 
 ---

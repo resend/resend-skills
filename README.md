@@ -4,19 +4,26 @@
 
 A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to work with the [Resend](https://resend.com) email platform.
 
-## Available Skills
+## Skills
 
-### [`send-email`](./send-email)
-Send emails using the Resend API — single or batch. Supports transactional emails, notifications, and bulk sending (up to 100 emails per batch). Includes best practices for idempotency keys, error handling, and retry logic.
+### [`resend`](./resend/SKILL.md) — Core Platform Skill
 
-### [`templates`](./templates)
-Create, update, publish, and delete reusable email templates via the Resend API. Covers template lifecycle (draft → publish → send), variable syntax (`{{{VAR}}}`), variable constraints, reserved names, and cursor-based pagination for listing templates.
+The main Resend skill with decision trees and a capability index. Covers all API functionality through reference files:
 
-### [`resend-inbound`](./resend-inbound)
-Receive emails with Resend. Covers MX record setup, processing `email.received` webhooks, retrieving attachments, and forwarding received emails.
+| Reference | Description |
+|-----------|-------------|
+| [sending/overview.md](./resend/references/sending/overview.md) | Single and batch email sending — parameters, deliverability, tracking, tags, templates, testing, domain warm-up, suppression list |
+| [sending/single-email-examples.md](./resend/references/sending/single-email-examples.md) | SDK examples (Node.js, Python, Go, cURL) with idempotency, error handling, retry logic |
+| [sending/batch-email-examples.md](./resend/references/sending/batch-email-examples.md) | Batch validation, retry logic, chunking 100+ emails, production-ready service |
+| [sending/best-practices.md](./resend/references/sending/best-practices.md) | Idempotency keys, error codes, retry strategy, batch-specific practices |
+| [receiving.md](./resend/references/receiving.md) | Inbound email — MX record setup, webhook payload, retrieving content/attachments, forwarding, routing by recipient |
+| [templates.md](./resend/references/templates.md) | Template CRUD, variable syntax (`{{{VAR}}}`), constraints, reserved names, aliases, publish lifecycle, pagination |
+| [webhooks.md](./resend/references/webhooks.md) | All event types, webhook creation via API, signature verification, retry schedule, IP allowlist |
+| [installation.md](./resend/references/installation.md) | SDK install commands for Node.js, Python, Go, Ruby, PHP, Rust, Java, .NET, Elixir; cURL; language detection |
 
-### [`agent-email-inbox`](./agent-email-inbox)
-Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, and prompt injection protection.
+### [`agent-email-inbox`](./agent-email-inbox) — AI Agent Security Skill
+
+Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, prompt injection protection, and webhook tunneling for local development.
 
 ## Installation
 

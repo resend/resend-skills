@@ -1,13 +1,13 @@
-# Test: Templates Skill
+# Test: Resend Templates Reference
 
-**Skill under test:** `templates`
+**Skill under test:** `resend` (templates reference)
 **Skill type:** Reference/Technique
 **Test approach:** Application scenarios - can the agent correctly manage Resend templates, understand variable syntax, and avoid Resend-specific gotchas?
 
 ## Setup
 
 ```
-[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the templates skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend skill's templates reference.
 ```
 
 ---

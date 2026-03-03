@@ -54,7 +54,7 @@ This skill requires Resend SDK features for webhook verification (`webhooks.veri
 | Java | `resend-java` | >= 4.11.0 |
 | .NET | `Resend` | >= 0.2.1 |
 
-See `send-email` skill's [installation guide](../send-email/references/installation.md) for full installation commands.
+See the `resend` skill's [installation guide](../resend/references/installation.md) for full installation commands.
 
 ## Quick Start
 
@@ -988,7 +988,7 @@ For deep integration, implement Clawdbot's external channel plugin interface to 
 
 ## Sending Emails from Your Agent
 
-Use the `send-email` skill for sending. Quick example:
+See the [sending reference](../resend/references/sending/overview.md) for full details. Quick example:
 
 ```typescript
 import { Resend } from 'resend';
@@ -1210,8 +1210,8 @@ npm list resend
 
 **This is expected behavior.** The webhook delivers a notification to the user, who then instructs the agent how to respond. This is the safest approach — the user reviews each email before the agent acts on it.
 
-## Related Skills
+## Related
 
-- `send-email` - Sending emails from your agent
-- `resend-inbound` - Detailed inbound email processing
+- `resend` skill — [sending reference](../resend/references/sending/overview.md) for sending emails from your agent
+- `resend` skill — [receiving reference](../resend/references/receiving.md) for detailed inbound email processing
 - `email-best-practices` - Deliverability and compliance
