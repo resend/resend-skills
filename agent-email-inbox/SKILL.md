@@ -802,8 +802,6 @@ sudo tailscale funnel off
 https://<machine-name>.tail<hash>.ts.net/webhook
 ```
 
-Example: `https://ip-172-31-5-225.tail1b0d50.ts.net/webhook`
-
 **Security note:** Tailscale Funnel requires explicit approval to enable public access (you'll visit a URL in your browser to approve). This is a security feature - Funnel must be intentionally enabled, it's not on by default.
 
 **Real-world experience:** During development of this skill, we started with ngrok free tier and hit the 8-hour timeout, causing missed emails. Switching to Tailscale Funnel solved the problem permanently - the webhook has been stable ever since with zero maintenance.
