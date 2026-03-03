@@ -62,7 +62,7 @@ See `send-email` skill's [installation guide](../send-email/references/installat
 2. **Choose your security level** - Decide how to validate incoming emails *before* any are processed
 3. **Set up receiving domain** - Configure MX records for the user's custom domain (see Domain Setup section)
 4. **Create webhook endpoint** - Handle `email.received` events with security built in from the start. **The webhook endpoint MUST be a POST route.** Resend sends webhooks as POST requests — GET, PUT, PATCH, and other methods will not work.
-5. **Set up tunneling** (local dev) - Use ngrok or similar to expose your endpoint
+5. **Set up tunneling** (local dev) - Use Tailscale Funnel (recommended) or ngrok to expose your endpoint
 6. **Create webhook via API** - Use the Resend Webhook API to register your endpoint programmatically (see Webhook Setup section)
 7. **Connect to agent** - Pass validated emails to your AI agent for processing
 
@@ -464,19 +464,32 @@ After choosing your security level and setting up your domain, create a webhook 
 
 You need a public HTTPS URL before writing any code, because the URL determines your route path and will be registered with Resend. Resend requires HTTPS and verifies certificates.
 
-**Recommended: ngrok with a stable domain**
+**Recommended: Tailscale Funnel for permanent stable URLs**
 
 ```bash
-# Free tier (URL changes on every restart — update webhook registration each time)
-ngrok http 3000
+# Install Tailscale (one-time)
+curl -fsSL https://tailscale.com/install.sh | sh
 
-# Paid tier (stable URL — set once, never changes)
-ngrok http --domain=myagent.ngrok.io 3000
+# Authenticate (one-time - opens browser)
+sudo tailscale up
+
+# Start Funnel (one-time approval in browser)
+sudo tailscale funnel 3000
+
+# Your permanent URL (never changes):
+# https://<machine-name>.tail<hash>.ts.net
 ```
 
-If using the free tier, note the generated URL (e.g., `https://a1b2c3d4.ngrok-free.app`). You'll register this with Resend shortly.
+Your URL is displayed when you run `tailscale funnel`. It's permanent and will never change, even across restarts. Perfect for webhooks!
 
-See the **Local Development with Tunneling** section below for alternative options (Cloudflare Tunnel, VS Code, localtunnel).
+**Alternative: ngrok for quick testing**
+
+```bash
+ngrok http 3000  # Free tier: random URL changes on restart
+ngrok http --domain=myagent.ngrok.io 3000  # Paid tier: stable URL
+```
+
+See the **Local Development with Tunneling** section below for detailed setup instructions and other options (Cloudflare Tunnel, VS Code, localtunnel).
 
 #### Step 2: Choose your webhook path and NEVER change it
 
@@ -729,14 +742,71 @@ Your local server isn't accessible from the internet. Use tunneling to expose it
 > 🚨 **Critical: Persistent URLs Required**
 >
 > Webhook URLs are registered with Resend via the API. If your tunnel URL changes (e.g., ngrok restart on the free tier), you must delete and recreate the webhook registration via the API. For development, this is manageable. For anything persistent, you need either:
-> - A **paid tunnel service** with static URLs (ngrok paid, Cloudflare named tunnels)
+> - A **permanent tunnel** with stable URLs (Tailscale Funnel, paid ngrok, Cloudflare named tunnels)
 > - **Production deployment** to a real server (see Production Deployment section)
 >
 > Don't use ephemeral tunnel URLs for anything you expect to keep running.
 
-### ngrok (Recommended)
+### Tailscale Funnel (Recommended ⭐)
 
-The most popular and simplest tunneling solution. Use ngrok as the default choice for local development.
+**Tailscale Funnel is the best solution for webhook development and persistent agent setups.** It provides a permanent, stable HTTPS URL with valid certificates - completely free, with no timeouts or session limits.
+
+**Why Tailscale Funnel is better than ngrok for webhooks:**
+- ✅ **Permanent URL** - Never changes, even across restarts (no need to update Resend webhook config)
+- ✅ **No timeouts** - Free tier has no 8-hour session limits or usage restrictions
+- ✅ **Auto-reconnects** - Survives machine reboots automatically via systemd service
+- ✅ **Valid HTTPS certificates** - Automatic, trusted TLS certificates (not self-signed)
+- ✅ **Free forever** - No paid tier required for persistent webhooks
+- ✅ **Faster setup** - Two commands and you're done
+
+**When to use Tailscale Funnel:**
+- Development that needs to run for days/weeks
+- Persistent agent email inboxes
+- Any webhook setup where the URL should "just work" indefinitely
+- When you don't want to worry about tunnel maintenance
+
+**Quick setup:**
+```bash
+# 1. Install Tailscale (one-time)
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# 2. Authenticate (one-time - opens browser)
+sudo tailscale up
+
+# 3. Enable Funnel (one-time approval in browser)
+#    This allows public internet access to your service
+sudo tailscale funnel 3000
+
+# ✅ Done! Your permanent URL:
+# https://<machine-name>.tail<hash>.ts.net
+
+# The URL is shown when you run the funnel command.
+# It will never change.
+```
+
+**Running in background:**
+```bash
+# Tailscale Funnel runs as a systemd service automatically
+# It will survive reboots and reconnect automatically
+# No need for PM2, tmux, or manual restarts
+
+# Check status:
+sudo tailscale funnel status
+
+# Stop (if needed):
+sudo tailscale funnel off
+```
+
+**Your webhook URL format:**
+```
+https://<machine-name>.tail<hash>.ts.net/webhook
+```
+
+**Security note:** Tailscale Funnel requires explicit approval to enable public access (you'll visit a URL in your browser to approve). This is a security feature - Funnel must be intentionally enabled, it's not on by default.
+
+**Real-world experience:** During development of this skill, we started with ngrok free tier and hit the 8-hour timeout, causing missed emails. Switching to Tailscale Funnel solved the problem permanently - the webhook has been stable ever since with zero maintenance.
+
+### ngrok (Alternative)
 
 **Free tier limitations:**
 - URLs are random and change on every restart (e.g., `https://a1b2c3d4.ngrok-free.app`)
