@@ -68,14 +68,14 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 
 ## Signature Verification
 
-**Verify webhook signatures on every request.** Without verification, attackers can send fake webhooks to your endpoint.
+**Verify webhook signatures on every request.** Without verification, anyone can send fake webhooks to your endpoint.
 
 ### Why Verification Matters
 
 - Webhooks are unauthenticated HTTP POST requests
 - Anyone who knows your endpoint URL can send fake events
 - Verification ensures the webhook genuinely came from Resend
-- Unique signatures prevent replay attacks
+- Unique signatures prevent re-use of old payloads
 
 ### Required Headers
 
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
 
 | Mistake | Fix |
 |---------|-----|
-| Not verifying signatures | **Always verify** - attackers can send fake webhooks |
+| Not verifying signatures | **Always verify** — unverified webhooks can't be trusted |
 | Using parsed JSON body | Use raw request body - JSON parsing breaks signature |
 | Using `express.json()` middleware | Use `express.raw()` for webhook routes |
 | Hardcoding webhook secret | Store in environment variable |

@@ -267,7 +267,7 @@ if (event.type === 'email.received') {
 | MX record not lowest priority | Ensure Resend's MX has lowest number (highest priority) |
 | Adding MX to root domain with existing email | Use subdomain to avoid breaking existing email service |
 | Using expired download_url | URLs expire after 1 hour - call attachments API again for fresh URL |
-| Not verifying webhook signatures | Always verify - attackers can send fake events |
+| Not verifying webhook signatures | Always verify — unverified events can't be trusted |
 | Forgetting to return 200 OK | Resend retries on non-200 responses |
 
 ## Storage Note

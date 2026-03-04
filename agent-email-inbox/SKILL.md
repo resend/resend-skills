@@ -211,13 +211,13 @@ async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent:
 
 ### Level 3: Content Filtering with Sanitization
 
-Accept emails from anyone but sanitize content to remove potential injection attempts.
+Accept emails from anyone but sanitize content to filter unsafe patterns.
 
 Scammers and hackers commonly use threats of danger, impersonation, and scare tactics to pressure people or agents into action. Reject emails that use urgency or fear to demand immediate action, attempt to alter agent behavior or circumvent safety controls, or contain anything suspicious or out of the ordinary.
 
 #### Pre-processing: Strip Quoted Threads
 
-Before analyzing content, strip quoted reply threads. Old instructions buried in `>` quoted sections or `On [date], [person] wrote:` blocks could be attack vectors hiding in legitimate-looking reply chains.
+Before analyzing content, strip quoted reply threads. Old instructions buried in `>` quoted sections or `On [date], [person] wrote:` blocks could contain unintended directives hidden in legitimate-looking reply chains.
 
 ```typescript
 function stripQuotedContent(text: string): string {
@@ -280,8 +280,8 @@ async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent:
 }
 ```
 
-**Pros:** Can receive emails from anyone. Some protection against obvious attacks.
-**Cons:** Pattern matching is not foolproof. Sophisticated attacks may evade filters.
+**Pros:** Can receive emails from anyone. Some protection against common unsafe patterns.
+**Cons:** Pattern matching is not foolproof. Sophisticated unsafe inputs may evade filters.
 
 ### Level 4: Sandboxed Processing (Advanced)
 
@@ -397,7 +397,7 @@ async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent:
 | Verify webhook signatures | Prevents spoofed webhook events |
 | Log all rejected emails | Audit trail for security review |
 | Use allowlists where possible | Explicit trust is safer than filtering |
-| Rate limit email processing | Prevents flooding attacks |
+| Rate limit email processing | Prevents excessive processing load |
 | Separate trusted/untrusted handling | Different risk levels need different treatment |
 
 #### Never Do
@@ -406,9 +406,9 @@ async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent:
 |--------------|------|
 | Process emails without validation | Anyone can control your agent |
 | Trust email headers for authentication | Headers are trivially spoofed |
-| Execute code from email content | Remote code execution vulnerability |
-| Store email content in prompts verbatim | Prompt injection attacks |
-| Give untrusted emails full agent access | Complete system compromise |
+| Execute code from email content | Untrusted input should never run as code |
+| Store email content in prompts verbatim | Untrusted input mixed into prompts can alter agent behavior |
+| Give untrusted emails full agent access | Scope capabilities to the minimum needed |
 
 #### Additional Mitigations
 
@@ -1128,9 +1128,9 @@ OWNER_EMAIL=you@email.com               # For security notifications
 | No sender verification | Always validate who sent the email before processing |
 | Trusting email headers | Use webhook verification, not email headers for auth |
 | Same treatment for all emails | Differentiate trusted vs untrusted senders |
-| Verbose error messages | Don't reveal security logic to potential attackers |
+| Verbose error messages | Keep error responses generic to avoid leaking internal logic |
 | No rate limiting | Implement per-sender rate limits |
-| Processing HTML directly | Strip HTML or use text-only to reduce attack surface |
+| Processing HTML directly | Strip HTML or use text-only to reduce complexity and risk |
 | No logging of rejections | Log all security events for audit |
 | Using ephemeral tunnel URLs | Use persistent URLs (paid ngrok, Cloudflare named tunnels) or deploy to production |
 | Using `express.json()` on webhook route | Use `express.raw({ type: 'application/json' })` — JSON parsing breaks signature verification |
