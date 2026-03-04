@@ -244,7 +244,7 @@ Track email delivery status in real-time using webhooks. Resend sends HTTP POST 
 | `email.complained` | Unsubscribe user (spam complaint) |
 | `email.opened` / `email.clicked` | Track engagement (marketing only) |
 
-**CRITICAL: Always verify webhook signatures.** Without verification, attackers can send fake events to your endpoint.
+**Verify webhook signatures for every request.** Without verification, attackers can send fake events to your endpoint.
 
 See [references/webhooks.md](references/webhooks.md) for setup, signature verification code, and all event types.
 
@@ -287,7 +287,7 @@ const { data, error } = await resend.emails.send({
 });
 ```
 
-**IMPORTANT:** Variable names are **case-sensitive** and must match the template definition exactly. Any casing is valid — `USER_NAME`, `userName`, or `user_name` — as long as the send call uses the same casing as defined in the template.
+**Note:** Variable names are **case-sensitive** and must match the template definition exactly. Any casing is valid — `USER_NAME`, `userName`, or `user_name` — as long as the send call uses the same casing as defined in the template.
 
 | Fact | Detail |
 |------|--------|
@@ -302,7 +302,7 @@ To create, update, publish, or delete templates via API, use the `templates` ski
 
 ## Testing
 
-**WARNING: Never test with fake addresses at real email providers.**
+**Avoid testing with fake addresses at real email providers.**
 
 Using addresses like `test@gmail.com`, `example@outlook.com`, or `fake@yahoo.com` will:
 - **Bounce** - These addresses don't exist
