@@ -68,7 +68,7 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 
 ## Signature Verification
 
-**You MUST verify webhook signatures.** Without verification, attackers can send fake webhooks to your endpoint.
+**Verify webhook signatures on every request.** Without verification, attackers can send fake webhooks to your endpoint.
 
 ### Why Verification Matters
 
@@ -109,7 +109,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    // CRITICAL: Use raw body, not parsed JSON
+    // Important: Use raw body, not parsed JSON
     const payload = await req.text();
 
     // Throws an error if the webhook is invalid
