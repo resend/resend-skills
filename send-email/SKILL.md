@@ -244,7 +244,7 @@ Track email delivery status in real-time using webhooks. Resend sends HTTP POST 
 | `email.complained` | Unsubscribe user (spam complaint) |
 | `email.opened` / `email.clicked` | Track engagement (marketing only) |
 
-**Verify webhook signatures for every request.** Without verification, attackers can send fake events to your endpoint.
+**Verify webhook signatures for every request.** Without verification, anyone can send fake events to your endpoint.
 
 See [references/webhooks.md](references/webhooks.md) for setup, signature verification code, and all event types.
 
@@ -389,7 +389,7 @@ Resend automatically manages a suppression list of addresses that should not rec
 | Same idempotency key, different payload | Returns 409 error - use unique key per unique email content |
 | Tracking enabled for transactional emails | Disable open/click tracking for password resets, receipts - hurts deliverability |
 | Using "no-reply" sender address | Use real address like `support@` - improves trust signals with email providers |
-| Not verifying webhook signatures | Always verify - attackers can send fake events to your endpoint |
+| Not verifying webhook signatures | Always verify — unverified events can't be trusted |
 | Testing with fake emails (test@gmail.com) | Use `delivered@resend.dev` - fake addresses bounce and hurt reputation |
 | Template variable name mismatch | Variable names are case-sensitive — must match the template definition exactly. Any casing is valid; `USER_NAME` and `firstName` are both fine as long as the send call matches. |
 | Sending high volume from new domain | Warm up gradually - sudden spikes trigger spam filters |

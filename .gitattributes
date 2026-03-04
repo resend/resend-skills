@@ -1,0 +1,3 @@
+# Mark test files as linguist-generated so they are collapsed in diffs
+# and excluded from language statistics and automated code analysis.
+tests/*.test.md linguist-generated=true

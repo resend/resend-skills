@@ -16,7 +16,7 @@ Create, update, publish, and delete reusable email templates via the Resend API.
 Receive emails with Resend. Covers MX record setup, processing `email.received` webhooks, retrieving attachments, and forwarding received emails.
 
 ### [`agent-email-inbox`](./agent-email-inbox)
-Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, and prompt injection protection.
+Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, and content safety filtering.
 
 ## Installation
 
