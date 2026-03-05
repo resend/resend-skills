@@ -194,7 +194,7 @@ See [references/batch-email-examples.md](references/batch-email-examples.md) for
 
 Follow these practices to maximize inbox placement.
 
-For more help with deliverability, install the email-best-practices skill with `npx skills add resend/email-best-practices`.
+For detailed guidance on bounces, suppressions, spam troubleshooting, domain warmup, and audience hygiene, see [references/deliverability.md](references/deliverability.md). For domain verification and DMARC/BIMI setup, see the `domain-setup` sub-skill.
 
 ### Required
 
