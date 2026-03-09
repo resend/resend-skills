@@ -160,7 +160,7 @@ async function processEmailForAgent(
   const sender = eventData.from.toLowerCase();
 
   // Strict check: only exact matches
-  if (!ALLOWED_SENDERS.some(allowed => sender.includes(allowed.toLowerCase()))) {
+  if (!ALLOWED_SENDERS.some(allowed => sender === allowed.toLowerCase())) {
     console.log(`Rejected email from unauthorized sender: ${sender}`);
 
     // Optionally notify yourself of rejected emails
@@ -1041,7 +1041,7 @@ export async function handleIncomingEmail(
   // Apply security based on configured level
   switch (config.securityLevel) {
     case 'strict':
-      if (!config.allowedSenders.some(a => sender.includes(a.toLowerCase()))) {
+      if (!config.allowedSenders.some(a => sender === a.toLowerCase())) {
         await logRejection(event, 'sender_not_allowed');
         return;
       }
