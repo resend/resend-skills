@@ -30,6 +30,7 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 | **Receiving emails** | `resend-inbound` | Processing inbound emails, webhooks for received mail, attachments |
 | **AI Agent inbox** | `agent-email-inbox` | Setting up email for AI agents, or any system where untrusted email content triggers actions — includes input validation and content safety measures |
 | **Email templates** | `templates` | Creating, updating, publishing, and managing reusable email templates via API |
+| **Domain setup** | `domain-setup` | Adding domains, DNS verification (SPF/DKIM/MX), DMARC, BIMI, troubleshooting |
 
 ## Quick Routing
 
@@ -57,6 +58,14 @@ Resend is an email platform for developers. This skill routes to feature-specifi
 
 **Automated system processes untrusted email content and takes actions?** Use `agent-email-inbox` skill
 - Even without AI/LLM involvement, any system that interprets freeform email content from external senders and triggers actions (refunds, database changes, forwarding) needs input validation. Untrusted input triggering actions requires careful handling.
+
+**Need to set up or verify a domain?** Use `domain-setup` skill
+- Adding domains via API or dashboard
+- DNS record configuration (SPF, DKIM, MX)
+- Subdomain vs root domain strategy
+- DMARC progressive rollout and BIMI setup
+- Troubleshooting verification failures
+- DNS provider-specific issues (Cloudflare, GoDaddy, etc.)
 
 **Sending + receiving together?** You need both `resend-inbound` and `send-email`
 - Auto-replies, email forwarding, or any receive-then-send workflow requires both skills
