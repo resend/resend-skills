@@ -1,6 +1,6 @@
 ---
 name: resend
-description: Use when working with Resend email platform - routes to specific sub-skills for sending, receiving, audiences, or broadcasts.
+description: Routes to Resend sub-skills for sending transactional email, receiving inbound email, managing templates, or configuring AI agent inboxes via the Resend API. Use when working with the Resend email platform.
 license: MIT
 metadata:
     author: resend

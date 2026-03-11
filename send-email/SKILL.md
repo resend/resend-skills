@@ -1,6 +1,6 @@
 ---
 name: send-email
-description: Use when sending transactional emails (welcome messages, order confirmations, password resets, receipts), notifications, or bulk emails via Resend API.
+description: Sends transactional emails, notifications, and bulk emails via the Resend API — including composing, scheduling, tracking delivery, and managing attachments. Use when sending welcome messages, order confirmations, password resets, receipts, or batch notifications.
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for sending emails. Get yours at https://resend.com/api-keys
