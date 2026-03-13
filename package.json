@@ -1,8 +1,0 @@
-{
-  "name": "resend-skills",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "resend": "^6.9.3"
-  }
-}
