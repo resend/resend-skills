@@ -1,5 +1,15 @@
 # Webhook Setup — Tunneling, Registration, and Local Dev
 
+## Table of Contents
+
+- [Register Webhook via the API](#register-webhook-via-the-api)
+- [Webhook Signing Secret and Verification](#webhook-signing-secret-and-verification)
+- [Webhook Retry Behavior](#webhook-retry-behavior)
+- [Local Development with Tunneling](#local-development-with-tunneling)
+- [Webhook Path](#webhook-path)
+- [Production Deployment](#production-deployment)
+- [Clawdbot Integration](#clawdbot-integration)
+
 ## Register Webhook via the API
 
 **Prefer the Resend Webhook API** to create webhooks programmatically instead of asking users to do it manually in the dashboard. This is faster, less error-prone, and gives you the signing secret directly in the response.

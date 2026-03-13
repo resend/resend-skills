@@ -4,7 +4,7 @@ description: Use when working with the Resend email API — sending transactiona
 license: MIT
 metadata:
     author: resend
-    version: "2.7.1"
+    version: "3.0.0"
     homepage: https://resend.com
     source: https://github.com/resend/resend-skills
 inputs:
@@ -25,11 +25,7 @@ references:
 
 # Resend
 
-## Overview
-
-Resend is an email platform for developers. This skill covers sending, receiving, templates, and webhooks.
-
-## Quick Send (Node.js)
+## Quick Send — Node.js
 
 ```typescript
 import { Resend } from 'resend';
@@ -55,7 +51,7 @@ console.log('Sent:', data.id);
 
 **Key gotcha:** The Resend Node.js SDK does NOT throw exceptions — it returns `{ data, error }`. Always check `error` explicitly instead of using try/catch for API errors.
 
-### Quick Send (Python)
+## Quick Send — Python
 
 ```python
 import resend

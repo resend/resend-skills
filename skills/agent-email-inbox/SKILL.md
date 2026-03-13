@@ -1,6 +1,12 @@
 ---
 name: agent-email-inbox
-description: Use when setting up an email inbox for an AI agent (Moltbot, Clawdbot, or similar) - configuring inbound email, webhooks, tunneling for local development, and implementing content safety measures.
+description: Use when building any system where email content triggers actions — AI agent inboxes, automated support handlers, email-to-task pipelines, or any workflow processing untrusted inbound email. Always use this skill when the user wants to receive emails and act on them programmatically, even if they don't mention "agent" — the skill contains critical security patterns (sender allowlists, content filtering, sandboxed processing) that prevent untrusted email from controlling your system.
+license: MIT
+metadata:
+    author: resend
+    version: "3.0.0"
+    homepage: https://resend.com
+    source: https://github.com/resend/resend-skills
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys
@@ -18,7 +24,7 @@ references:
 
 ## Overview
 
-Moltbot (formerly Clawdbot) is an AI agent that can send and receive emails. This skill covers setting up a secure email inbox that allows your agent to be notified of incoming emails and respond appropriately, with content safety measures in place.
+This skill covers setting up a secure email inbox that allows your application or AI agent to receive and respond to emails, with content safety measures in place.
 
 **Core principle:** An AI agent's inbox receives untrusted input. Security configuration is important to handle this safely.
 
@@ -361,4 +367,3 @@ For security testing, send test emails from non-allowlisted addresses to verify 
 ## Related Skills
 
 - For full sending and receiving docs, install the `resend` skill
-- For deliverability and compliance, install the `email-best-practices` skill

@@ -2,6 +2,16 @@
 
 This reference contains full implementation code for each security level. See the main SKILL.md for a summary and when to use each level.
 
+## Table of Contents
+
+- [Level 1: Strict Allowlist](#level-1-strict-allowlist-recommended-for-most-use-cases)
+- [Level 2: Domain Allowlist](#level-2-domain-allowlist)
+- [Level 3: Content Filtering with Sanitization](#level-3-content-filtering-with-sanitization)
+- [Level 4: Sandboxed Processing](#level-4-sandboxed-processing-advanced)
+- [Level 5: Human-in-the-Loop](#level-5-human-in-the-loop-highest-security)
+- [Combining Security Levels](#combining-security-levels)
+- [Complete Example: Configurable Security](#complete-example-configurable-security)
+
 ## Level 1: Strict Allowlist (Recommended for Most Use Cases)
 
 Only process emails from explicitly approved addresses. Reject everything else.
