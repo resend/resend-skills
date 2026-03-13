@@ -1,13 +1,13 @@
 # Test: Templates Skill
 
-**Skill under test:** `templates`
+**Skill under test:** `resend` (templates reference)
 **Skill type:** Reference/Technique
 **Test approach:** Application scenarios - can the agent correctly manage Resend templates, understand variable syntax, and avoid Resend-specific gotchas?
 
 ## Setup
 
 ```
-[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the templates skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend skill's templates reference as your guide.
 ```
 
 ---
@@ -124,7 +124,7 @@ Are there any problems with this variable list?
 **Expected:**
 - `FIRST_NAME`, `LAST_NAME`, and `EMAIL` are **reserved variable names**
 - Reserved variables cannot be overridden — Resend auto-populates them from contact data
-- `RESEND_UNSUBSCRIBE_URL`, `contact`, and `this` are also reserved
+- `UNSUBSCRIBE_URL`, `RESEND_UNSUBSCRIBE_URL`, `contact`, and `this` are also reserved
 - `PLAN_TIER` is fine
 - Solution: rename to `USER_FIRST_NAME`, `USER_LAST_NAME`, `USER_EMAIL` or similar
 

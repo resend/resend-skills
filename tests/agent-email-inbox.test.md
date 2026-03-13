@@ -328,13 +328,14 @@ well and you want to make it permanent. What's your deployment plan?
 
 **Expected:**
 - Deploy webhook handler to production infrastructure (Vercel, Cloudflare Workers, VPS)
-- Stop using tunnel - use real HTTPS endpoint
+- Stop using free-tier ngrok — use a persistent HTTPS endpoint
+- Tailscale Funnel is a valid persistent alternative (free, stable URL) per the skill
 - Update webhook URL in Resend dashboard to production URL
 - Keep security level configuration via environment variables
-- Mentions the options: serverless (Vercel/Netlify), VPS with reverse proxy, or existing infrastructure
+- Mentions the options: serverless (Vercel/Netlify/Cloudflare Workers), VPS with reverse proxy, or existing infrastructure
 
 **Failure indicators:**
-- Suggests keeping ngrok running permanently
+- Suggests keeping free-tier ngrok running permanently (URL changes on restart)
 - Doesn't mention updating the webhook URL in Resend
 - No mention of HTTPS requirement
 - Doesn't consider serverless options
@@ -360,7 +361,7 @@ well and you want to make it permanent. What's your deployment plan?
 | Scenario | Pass Criteria |
 |----------|---------------|
 | 6 - Ambiguous Level | Combines multiple security levels for complex use case |
-| 7 - .includes() Bug | Identifies substring vulnerability, provides exact-match fix |
+| 7 - Exact Match | Correctly identifies that exact match (`===`) blocks the spoofed address |
 | 8 - Webhook Endpoint | All 7 implementation requirements met |
 | 9 - Injection Bypass | Identifies at least 3/4 bypasses, notes filtering limitations |
 | 10 - Production | Real deployment plan, not permanent tunneling |
