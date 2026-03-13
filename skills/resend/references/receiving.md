@@ -1,43 +1,14 @@
----
-name: resend-inbound
-description: Use when receiving emails with Resend - setting up inbound domains, processing email.received webhooks, retrieving email content/attachments, or forwarding received emails.
-inputs:
-    - name: RESEND_API_KEY
-      description: Resend API key for retrieving email content and attachments. Get yours at https://resend.com/api-keys
-      required: true
-    - name: RESEND_WEBHOOK_SECRET
-      description: Webhook signing secret for verifying inbound email event payloads. Found in the Resend dashboard under Webhooks.
-      required: true
----
-
 # Receive Emails with Resend
 
 ## Overview
 
-Resend processes incoming emails for your domain and sends webhook events to your endpoint. **Webhooks contain metadata only** - you must call separate APIs to retrieve email body and attachments.
-
-## SDK Version Requirements
-
-This skill requires Resend SDK features for webhook verification (`webhooks.verify()`) and email receiving (`emails.receiving.get()`). Always install the latest SDK version. If the project already has a Resend SDK installed, check the version and upgrade if needed.
-
-| Language | Package | Min Version |
-|----------|---------|-------------|
-| Node.js | `resend` | >= 6.9.2 |
-| Python | `resend` | >= 2.21.0 |
-| Go | `resend-go/v3` | >= 3.1.0 |
-| Ruby | `resend` | >= 1.0.0 |
-| PHP | `resend/resend-php` | >= 1.1.0 |
-| Rust | `resend-rs` | >= 0.20.0 |
-| Java | `resend-java` | >= 4.11.0 |
-| .NET | `Resend` | >= 0.2.1 |
-
-See `send-email` skill's [installation guide](../send-email/references/installation.md) for full installation commands.
+Resend processes incoming emails for your domain and sends webhook events to your endpoint. **Webhooks contain metadata only** — you must call separate APIs to retrieve email body and attachments.
 
 ## Quick Start
 
-1. **Configure receiving domain** - Use Resend's `.resend.app` domain or add MX record for custom domain
-2. **Set up webhook** - Subscribe to `email.received` event
-3. **Retrieve content** - Call Receiving API for body, Attachments API for files
+1. **Configure receiving domain** — Use Resend's `.resend.app` domain or add MX record for custom domain
+2. **Set up webhook** — Subscribe to `email.received` event
+3. **Retrieve content** — Call Receiving API for body, Attachments API for files
 
 ## Domain Setup
 
@@ -56,7 +27,7 @@ Add MX record to receive at `<anything>@yourdomain.com`.
 | **Type** | MX |
 | **Host** | Your domain or subdomain |
 | **Value** | Provided in Resend dashboard |
-| **Priority** | 10 (**lowest number** wins a conflict, but typically only multiples of 10 are used) |
+| **Priority** | 10 (**lowest number** wins a conflict) |
 
 **Critical:** Your MX record must have the lowest priority value, or emails won't route to Resend.
 
@@ -74,7 +45,7 @@ If you already have MX records (e.g., Google Workspace, Microsoft 365):
 support.acme.com.  MX  10  <resend-mx-value>
 ```
 
-If you set up Resend to receive email on a root domain, *all* traffic will be routed to Resend, not to any other mailbox. It's crucial, then, to use a subdomain with inbound emails.
+If you set up Resend to receive email on a root domain, *all* traffic will be routed to Resend, not to any other mailbox.
 
 ## Webhook Setup
 
@@ -82,7 +53,7 @@ If you set up Resend to receive email on a root domain, *all* traffic will be ro
 
 Dashboard → Webhooks → Add Webhook → Select `email.received`
 
-For local development, use tunneling (ngrok, VS Code Port Forwarding):
+For local development, use tunneling (ngrok, Tailscale Funnel, VS Code Port Forwarding):
 ```bash
 ngrok http 3000
 # Use https://abc123.ngrok.io/api/webhook as endpoint
@@ -184,7 +155,6 @@ for (const attachment of attachments) {
 const response = await fetch(attachment.download_url);
 const buffer = await response.arrayBuffer();
 
-// Save to storage, process, etc.
 await saveToStorage(attachment.filename, buffer);
 ```
 
@@ -226,7 +196,7 @@ export async function POST(req: Request) {
       })
     );
 
-    // 4. Forward the email
+    // 4. Forward the email (single send — batch doesn't support attachments)
     await resend.emails.send({
       from: 'Support System <system@acme.com>',
       to: ['team@acme.com'],
@@ -263,10 +233,10 @@ if (event.type === 'email.received') {
 
 | Mistake | Fix |
 |---------|-----|
-| Expecting body in webhook payload | Webhook has metadata only - call `resend.emails.receiving.get()` for body |
+| Expecting body in webhook payload | Webhook has metadata only — call `resend.emails.receiving.get()` for body |
 | MX record not lowest priority | Ensure Resend's MX has lowest number (highest priority) |
 | Adding MX to root domain with existing email | Use subdomain to avoid breaking existing email service |
-| Using expired download_url | URLs expire after 1 hour - call attachments API again for fresh URL |
+| Using expired download_url | URLs expire after 1 hour — call attachments API again for fresh URL |
 | Not verifying webhook signatures | Always verify — unverified events can't be trusted |
 | Forgetting to return 200 OK | Resend retries on non-200 responses |
 

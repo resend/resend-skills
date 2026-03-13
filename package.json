@@ -2,9 +2,6 @@
   "name": "resend-skills",
   "private": true,
   "type": "module",
-  "scripts": {
-    "test": "node --test tests/*.test.mjs"
-  },
   "dependencies": {
     "resend": "^6.9.3"
   }

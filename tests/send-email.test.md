@@ -1,13 +1,13 @@
-# Test: Send Email Skill
+# Test: Resend Sending
 
-**Skill under test:** `send-email`
+**Skill under test:** `resend` (sending references)
 **Skill type:** Reference/Technique
 **Test approach:** Application scenarios - can the agent correctly apply sending patterns, choose single vs batch, handle errors, and avoid common mistakes? Emphasis on Resend-specific behavior that differs from other email APIs.
 
 ## Setup
 
 ```
-[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the send-email skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend skill's sending references.
 ```
 
 ---
@@ -286,7 +286,7 @@ const { data, error } = await resend.emails.send({
 ```
 
 **Expected bugs found:**
-1. **Variable name mismatch**: The template defines `USER_NAME`, `ORDER_TOTAL`, `DELIVERY_DATE` but the send call uses `user_name`, `order_total`, `delivery_date`. Variable names are case-sensitive and must match the template definition exactly. (Any casing is valid in the template — the bug is the mismatch, not the use of lowercase.)
+1. **Variable name mismatch**: The template defines `USER_NAME`, `ORDER_TOTAL`, `DELIVERY_DATE` but the send call uses `user_name`, `order_total`, `delivery_date`. Variable names are case-sensitive and must match the template definition exactly.
 2. **`html` and `template` are mutually exclusive**: Can't use both -- remove the `html` parameter
 3. **No idempotency key**: Missing from the send call
 

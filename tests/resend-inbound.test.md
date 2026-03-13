@@ -1,13 +1,13 @@
 # Test: Resend Inbound Skill
 
-**Skill under test:** `resend-inbound`
+**Skill under test:** `resend` (receiving reference)
 **Skill type:** Reference/Technique
 **Test approach:** Application scenarios - can the agent correctly set up inbound email, handle webhooks, retrieve content, and avoid common mistakes? Emphasis on Resend-specific behavior that differs from other email webhook services.
 
 ## Setup
 
 ```
-[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend-inbound skill as your reference.
+[Test scaffold] For each scenario below, commit to a specific answer and write actual code — not pseudocode. Use the resend skill's receiving reference as your guide.
 ```
 
 ---
