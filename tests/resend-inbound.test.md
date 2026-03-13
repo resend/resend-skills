@@ -202,12 +202,12 @@ Write the routing logic handling all cases.
 
 **Expected:**
 - Routes based on `event.data.to` array (may have multiple entries)
-- Case B: both `to` and `cc` addresses are your domain -- decide which takes priority or handle both
+- Case B: checks both `to` and `cc` fields — decide which takes priority or handle both
 - Case C: must have a catch-all for unknown recipients
 - All arrive at same webhook (Resend doesn't support per-address routing)
+- Checking only `to[0]` is acceptable for simple cases but should acknowledge CC exists
 
 **Failure indicators:**
-- Only checks `to[0]` and ignores CC
 - Doesn't handle multiple recipients in `to`
 - No catch-all for unknown addresses
 - Tries to set up separate webhooks per address

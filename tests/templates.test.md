@@ -124,7 +124,7 @@ Are there any problems with this variable list?
 **Expected:**
 - `FIRST_NAME`, `LAST_NAME`, and `EMAIL` are **reserved variable names**
 - Reserved variables cannot be overridden — Resend auto-populates them from contact data
-- `RESEND_UNSUBSCRIBE_URL`, `contact`, and `this` are also reserved
+- `UNSUBSCRIBE_URL`, `RESEND_UNSUBSCRIBE_URL`, `contact`, and `this` are also reserved
 - `PLAN_TIER` is fine
 - Solution: rename to `USER_FIRST_NAME`, `USER_LAST_NAME`, `USER_EMAIL` or similar
 
