@@ -6,22 +6,38 @@ A collection of skills for AI coding agents following the Agent Skills format. T
 
 ## Available Skills
 
-### [`send-email`](./send-email)
-Send emails using the Resend API — single or batch. Supports transactional emails, notifications, and bulk sending (up to 100 emails per batch). Includes best practices for idempotency keys, error handling, and retry logic.
+### [`resend`](./skills/resend)
 
-### [`templates`](./templates)
-Create, update, publish, and delete reusable email templates via the Resend API. Covers template lifecycle (draft → publish → send), variable syntax (`{{{VAR}}}`), variable constraints, reserved names, and cursor-based pagination for listing templates.
+Unified skill for the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, and SDK setup for 8+ languages. Includes critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
 
-### [`resend-inbound`](./resend-inbound)
-Receive emails with Resend. Covers MX record setup, processing `email.received` webhooks, retrieving attachments, and forwarding received emails.
+**Reference files:**
+- `references/sending/overview.md` — Single vs batch, parameters, deliverability, testing
+- `references/sending/single-email-examples.md` — Full SDK examples (Node.js, Python, Go, cURL)
+- `references/sending/batch-email-examples.md` — Batch validation, chunking, retry logic
+- `references/sending/best-practices.md` — Idempotency, error handling, retries
+- `references/receiving.md` — Inbound domain setup, webhooks, attachments, forwarding
+- `references/templates.md` — Template CRUD, variables, lifecycle, aliases, pagination
+- `references/webhooks.md` — All event types, signature verification, retry schedule
+- `references/installation.md` — SDK install for all languages
 
-### [`agent-email-inbox`](./agent-email-inbox)
-Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels, trusted sender allowlists, and content safety filtering.
+### [`agent-email-inbox`](./skills/agent-email-inbox)
+
+Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels (strict allowlist, domain allowlist, content filtering, sandboxed processing, human-in-the-loop), webhook setup with tunneling for local dev, and content safety filtering.
+
+**Reference files:**
+- `references/security-levels.md` — Detailed implementation for each security level
+- `references/webhook-setup.md` — Tunneling, webhook creation, local dev, production deployment
+- `references/advanced-patterns.md` — Rate limiting, content limits, troubleshooting
 
 ## Installation
 
 ```bash
+# Install all skills
 npx skills add resend/resend-skills
+
+# Install individual skills
+npx skills add resend/resend-skills/resend
+npx skills add resend/resend-skills/agent-email-inbox
 ```
 
 ## Usage
@@ -32,7 +48,7 @@ Skills are automatically activated when relevant tasks are detected. Example pro
 - "Send batch notifications to all order customers"
 - "Create a reusable order confirmation template with variables"
 - "Set up an inbound email handler for support@myapp.com"
-- "Schedule a newsletter for tomorrow at 9am"
+- "Set up a secure email inbox for my AI agent"
 
 ## Supported SDKs
 

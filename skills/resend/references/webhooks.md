@@ -1,18 +1,19 @@
 # Webhooks
 
-Receive real-time notifications when email events occur (delivered, bounced, opened, etc.).
+Receive real-time notifications when email events occur (delivered, bounced, opened, received, etc.).
 
 ## When to Use Webhooks
 
 - Track delivery status in your database
 - Remove bounced addresses from mailing lists
 - Trigger follow-up actions when emails are opened/clicked
+- Process inbound emails (`email.received`)
 - Create alerts for failures or complaints
 - Build custom analytics dashboards
 
 ## Event Types
 
-### Email Events
+### Email Delivery Events
 
 | Event | Trigger | Use Case |
 |-------|---------|----------|
@@ -25,12 +26,20 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 | `email.delivery_delayed` | Temporary delivery issue (soft bounce) | Monitor, may resolve automatically |
 | `email.failed` | Send error (invalid recipient, quota, etc.) | Debug, alert |
 
+### Inbound Email Events
+
+| Event | Trigger | Use Case |
+|-------|---------|----------|
+| `email.received` | Email received at your inbound domain | Process incoming email, auto-reply, forward |
+
+The `email.received` payload contains metadata only (sender, recipient, subject, attachment list) — not the email body. Call `resend.emails.receiving.get()` to retrieve the body content. See [receiving.md](receiving.md) for full details.
+
 ### Bounce Types
 
 | Type | Event | Action |
 |------|-------|--------|
-| **Hard bounce (Permanent)** | `email.bounced` | Remove address immediately - never retry |
-| **Soft bounce (Transient)** | `email.delivery_delayed` | Monitor - Resend retries automatically |
+| **Hard bounce (Permanent)** | `email.bounced` | Remove address immediately — never retry |
+| **Soft bounce (Transient)** | `email.delivery_delayed` | Monitor — Resend retries automatically |
 | **Undetermined** | `email.bounced` | Treat as hard bounce if repeated |
 
 **Hard bounces** (`email.bounced`) are permanent failures. The address is invalid and will never accept mail. Continuing to send to hard-bounced addresses destroys your sender reputation.
@@ -50,8 +59,6 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 | ContentRejected | Contains disallowed content | You modify content |
 | AttachmentRejected | Attachment type/size rejected | You modify attachment |
 
-**Undetermined bounces** occur when the bounce message doesn't contain enough information for Resend to determine the reason. Treat repeated undetermined bounces as hard bounces.
-
 ### Other Events
 
 | Event | Trigger |
@@ -61,10 +68,73 @@ Receive real-time notifications when email events occur (delivered, bounced, ope
 
 ## Setup
 
-1. **Create endpoint** - POST endpoint that returns HTTP 200
-2. **Add webhook** - In Resend dashboard (resend.com/webhooks), add your URL and select events
-3. **Verify signatures** - **REQUIRED** - See [Signature Verification](#signature-verification)
-4. **Test locally** - Use ngrok or similar for local development
+1. **Create endpoint** — POST endpoint that returns HTTP 200
+2. **Add webhook** — In Resend dashboard (resend.com/webhooks), add your URL and select events
+3. **Verify signatures** — **REQUIRED** — See [Signature Verification](#signature-verification)
+4. **Test locally** — Use ngrok, Tailscale Funnel, or similar for local development
+
+### Create Webhook via API
+
+**Prefer the API** to create webhooks programmatically instead of using the dashboard. This is faster, less error-prone, and gives you the signing secret directly in the response.
+
+#### Node.js
+
+```typescript
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const { data, error } = await resend.webhooks.create({
+  endpoint: 'https://your-domain.com/webhook',
+  events: ['email.delivered', 'email.bounced', 'email.received'],
+});
+
+if (error) {
+  console.error('Failed to create webhook:', error);
+  throw error;
+}
+
+// IMPORTANT: Store the signing secret — you need it to verify incoming webhooks
+console.log('Webhook created:', data.id);
+console.log('Signing secret:', data.signing_secret); // whsec_xxxxxxxxxx
+```
+
+#### Python
+
+```python
+import resend
+
+resend.api_key = 're_xxxxxxxxx'
+
+webhook = resend.Webhooks.create(params={
+    "endpoint": "https://your-domain.com/webhook",
+    "events": ["email.delivered", "email.bounced", "email.received"],
+})
+
+print(f"Webhook created: {webhook['id']}")
+print(f"Signing secret: {webhook['signing_secret']}")
+```
+
+#### cURL
+
+```bash
+curl -X POST 'https://api.resend.com/webhooks' \
+  -H 'Authorization: Bearer re_xxxxxxxxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "endpoint": "https://your-domain.com/webhook",
+    "events": ["email.delivered", "email.bounced", "email.received"]
+  }'
+
+# Response:
+# {
+#   "object": "webhook",
+#   "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+#   "signing_secret": "whsec_xxxxxxxxxx"
+# }
+```
+
+The `signing_secret` is only returned once when you create the webhook. Store it as `RESEND_WEBHOOK_SECRET` immediately.
 
 ## Signature Verification
 
@@ -103,7 +173,6 @@ Example using Next.js:
 ```typescript
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db'; // Your database client (Prisma, Drizzle, etc.)
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -113,7 +182,6 @@ export async function POST(req: NextRequest) {
     const payload = await req.text();
 
     // Throws an error if the webhook is invalid
-    // Otherwise, returns the parsed payload object
     const event = resend.webhooks.verify({
       payload,
       headers: {
@@ -124,23 +192,22 @@ export async function POST(req: NextRequest) {
       secret: process.env.RESEND_WEBHOOK_SECRET,
     });
 
-    // Handle the verified event
     switch (event.type) {
       case 'email.delivered':
-        // update database with the email delivery status
+        // Update database with delivery status
         break;
-
       case 'email.bounced':
-        // Hard bounce - remove from mailing list immediately
+        // Hard bounce — remove from mailing list immediately
         break;
-
       case 'email.complained':
-        // Spam complaint - unsubscribe and flag
+        // Spam complaint — unsubscribe and flag
         break;
-
+      case 'email.received':
+        // Inbound email — retrieve body and process
+        const { data: email } = await resend.emails.receiving.get(event.data.email_id);
+        break;
       default:
-        // handle other events
-        return new Response('OK', { status: 200, body: 'Event skipped' });
+        break;
     }
 
     return new NextResponse('OK', { status: 200 });
@@ -156,7 +223,7 @@ export async function POST(req: NextRequest) {
 | Mistake | Fix |
 |---------|-----|
 | Not verifying signatures | **Always verify** — unverified webhooks can't be trusted |
-| Using parsed JSON body | Use raw request body - JSON parsing breaks signature |
+| Using parsed JSON body | Use raw request body — JSON parsing breaks signature |
 | Using `express.json()` middleware | Use `express.raw()` for webhook routes |
 | Hardcoding webhook secret | Store in environment variable |
 | Returning non-200 status for valid webhooks | Return 200 OK to acknowledge receipt |
@@ -174,8 +241,6 @@ If your endpoint doesn't return HTTP 200, Resend retries with exponential backof
 | 5 | 2 hours |
 | 6 | 5 hours |
 | 7 | 10 hours |
-
-Example: A webhook that fails 3 times before succeeding will be delivered ~35 minutes after the first attempt.
 
 **Tip:** Always return 200 quickly, then process asynchronously if needed. You can manually replay failed webhooks from the dashboard.
 
@@ -197,12 +262,12 @@ IPv6: `2600:1f24:64:8000::/52`
 Use tunneling tools to test webhooks locally:
 
 ```bash
+# Tailscale Funnel (recommended — permanent URL)
+sudo tailscale funnel 3000
+
 # ngrok
 ngrok http 3000
-
-# use the port that your server is running on (e.g. 3000)
-# Then use the ngrok URL in Resend dashboard
-# https://abc123.ngrok.io/webhooks/resend
+# Then use the tunnel URL in Resend dashboard
 ```
 
 ## Event Payload Example
