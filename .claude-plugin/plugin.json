@@ -9,5 +9,5 @@
   "homepage": "https://resend.com",
   "repository": "https://github.com/resend/resend-skills",
   "license": "MIT",
-  "keywords": ["email", "resend", "transactional", "webhooks", "agent-inbox"]
+  "keywords": ["email", "resend", "smtp", "notifications", "agent-inbox"]
 }
