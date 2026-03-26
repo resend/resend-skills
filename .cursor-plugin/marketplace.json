@@ -1,0 +1,18 @@
+{
+  "name": "resend-skills",
+  "owner": {
+    "name": "Resend",
+    "email": "support@resend.com"
+  },
+  "plugins": [
+    {
+      "name": "resend",
+      "description": "Send and receive emails with the Resend API — single/batch sending, inbound webhooks, templates, delivery tracking, and secure AI agent inboxes.",
+      "source": "./",
+      "version": "1.0.0",
+      "author": {
+        "name": "Resend"
+      }
+    }
+  ]
+}

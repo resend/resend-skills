@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "resend-skills",
+  "metadata": {
+    "description": "Resend email skills for Claude Code",
+    "version": "1.0.0"
+  },
+  "owner": {
+    "name": "Resend",
+    "email": "support@resend.com"
+  },
+  "plugins": [
+    {
+      "name": "resend",
+      "description": "Send and receive emails with the Resend API — single/batch sending, inbound webhooks, templates, delivery tracking, and secure AI agent inboxes.",
+      "source": "./",
+      "category": "developer-tools"
+    }
+  ]
+}
