@@ -1,5 +1,6 @@
 {
   "name": "resend",
+  "displayName": "Resend",
   "description": "Send and receive emails with the Resend API — single/batch sending, inbound webhooks, templates, delivery tracking, and secure AI agent inboxes.",
   "version": "1.0.0",
   "author": {
