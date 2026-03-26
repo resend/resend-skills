@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "resend": {
+      "command": "npx",
+      "args": ["-y", "resend-mcp"]
+    }
+  }
+}
