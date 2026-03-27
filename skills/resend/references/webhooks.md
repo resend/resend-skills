@@ -142,15 +142,15 @@ The `signing_secret` is only returned once when you create the webhook. Store it
 |-----------|---------|--------|
 | List | `resend.webhooks.list()` | `resend.Webhooks.list()` |
 | Get | `resend.webhooks.get(id)` | `resend.Webhooks.get(id)` |
-| Update | `resend.webhooks.update(id, params)` | `resend.Webhooks.update(id, params)` |
+| Update | `resend.webhooks.update(id, params)` | `resend.Webhooks.update(params)` — `webhook_id` inside params |
 | Delete | `resend.webhooks.remove(id)` | `resend.Webhooks.remove(id)` |
 
 ```typescript
 // List all webhooks
-const { data, error } = await resend.webhooks.list();
+const { data: webhooks, error: listError } = await resend.webhooks.list();
 
 // Update endpoint URL or subscribed events
-const { data, error } = await resend.webhooks.update(
+const { data: updated, error: updateError } = await resend.webhooks.update(
   '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
   {
     endpoint: 'https://new-domain.com/webhook',
@@ -159,7 +159,7 @@ const { data, error } = await resend.webhooks.update(
 );
 
 // Delete a webhook
-const { data, error } = await resend.webhooks.remove('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
+const { data: deleted, error: deleteError } = await resend.webhooks.remove('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
 ```
 
 **Key gotchas:**

@@ -33,7 +33,7 @@ const { data, error } = await resend.contacts.create({
     company: 'Acme Corp',
     signupDate: '2026-01-15',
   },
-  segments: ['seg_abc123'],
+  segments: [{ id: 'seg_abc123' }],
   topics: [
     { id: 'topic_product_updates', subscription: 'opt_in' },
     { id: 'topic_marketing', subscription: 'opt_out' },
@@ -56,8 +56,10 @@ contact = resend.Contacts.create({
         "plan": "enterprise",
         "company": "Acme Corp",
     },
-    "segments": ["seg_abc123"],
 })
+
+# Add to segment separately (Python SDK doesn't support segments/topics on create)
+resend.Contacts.Segments.add({"contact_id": contact["id"], "segment_id": "seg_abc123"})
 ```
 
 ## Get and Update
@@ -95,7 +97,7 @@ const { data: contacts, error: listErr } = await resend.contacts.list({
 | Mistake | Fix |
 |---------|-----|
 | Passing both `id` and `email` to get/update/remove | Use one or the other — not both |
-| Using `audienceId` | Segments replaced audiences — use `segmentId` |
+| Using `audienceId` (Node.js) | Segments replaced audiences — use `segmentId`. Python SDK still uses `audience_id` in create params |
 | Calling `.delete()` | SDK method is `.remove()` |
 | Expecting property deletion with empty string | Set property value to `null` to delete it |
 | Not checking `error` in Node.js | SDK returns `{ data, error }`, does not throw — always destructure and check |
