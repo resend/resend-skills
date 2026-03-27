@@ -1,6 +1,6 @@
 ---
 name: resend
-description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
+description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
 license: MIT
 metadata:
     author: resend
@@ -19,6 +19,13 @@ references:
     - receiving.md
     - templates.md
     - webhooks.md
+    - domains.md
+    - contacts.md
+    - broadcasts.md
+    - api-keys.md
+    - contact-properties.md
+    - segments.md
+    - topics.md
     - installation.md
     - fetch-all-templates.mjs
 ---
@@ -131,12 +138,19 @@ export async function POST(req: Request) {
 | **Send batch emails** | [sending/overview.md](references/sending/overview.md) → [sending/batch-email-examples.md](references/sending/batch-email-examples.md) |
 | **Full SDK examples** (Node.js, Python, Go, cURL) | [sending/single-email-examples.md](references/sending/single-email-examples.md) |
 | **Idempotency, retries, error handling** | [sending/best-practices.md](references/sending/best-practices.md) |
+| **Get, list, reschedule, cancel emails** | [sending/email-management.md](references/sending/email-management.md) |
 | **Receive inbound emails** | [receiving.md](references/receiving.md) — domain setup, webhooks, attachments |
 | **Manage templates** (CRUD, variables) | [templates.md](references/templates.md) — lifecycle, aliases, pagination |
-| **Set up webhooks** (all event types) | [webhooks.md](references/webhooks.md) — verification, retry schedule, IP allowlist |
+| **Set up webhooks** (events, verification) | [webhooks.md](references/webhooks.md) — verification, CRUD, retry schedule, IP allowlist |
+| **Manage domains** (create, verify, DNS) | [domains.md](references/domains.md) — regions, TLS, tracking, capabilities |
+| **Manage contacts** (CRUD, properties) | [contacts.md](references/contacts.md) — segments, topics, custom properties |
+| **Send broadcasts** (marketing campaigns) | [broadcasts.md](references/broadcasts.md) — lifecycle, scheduling, template variables |
+| **Manage API keys** | [api-keys.md](references/api-keys.md) — permission scoping, domain restrictions |
+| **Define contact properties** | [contact-properties.md](references/contact-properties.md) — custom fields for contacts |
+| **Manage segments** (contact groups) | [segments.md](references/segments.md) — broadcast targeting, contact grouping |
+| **Manage topics** (subscriptions) | [topics.md](references/topics.md) — opt-in/out preferences, broadcast filtering |
 | **Install SDK** (8+ languages) | [installation.md](references/installation.md) |
 | **Set up an AI agent inbox** | Install the `agent-email-inbox` skill — covers security levels for untrusted input |
-| **Marketing emails / newsletters** | Use [Resend Broadcasts](https://resend.com/broadcasts) — not batch sending |
 
 ## SDK Version Requirements
 
@@ -202,7 +216,7 @@ If your system processes untrusted email content and takes actions (refunds, dat
 
 ### Marketing Emails
 
-The sending capabilities in this skill are for **transactional email** (receipts, confirmations, notifications). For marketing campaigns to large subscriber lists with unsubscribe links and engagement tracking, use [Resend Broadcasts](https://resend.com/broadcasts).
+The sending capabilities in this skill are for **transactional email** (receipts, confirmations, notifications). For marketing campaigns to large subscriber lists with unsubscribe links and engagement tracking, use Resend Broadcasts — see [broadcasts.md](references/broadcasts.md) for the API.
 
 ### Domain Warm-up
 
