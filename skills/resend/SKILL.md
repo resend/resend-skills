@@ -200,6 +200,10 @@ Check for these files: `package.json` (Node.js), `requirements.txt`/`pyproject.t
 | 8 | **Sending with draft template** | Templates must be published before sending — call `.publish()` first |
 | 9 | **`html` + `template` in same send call** | Mutually exclusive — remove `html`/`text`/`react` when using template |
 | 10 | **MX record not lowest priority for inbound** | Ensure Resend's MX has the lowest number (highest priority) or emails won't route |
+| 11 | **403 when sending from `resend.dev`** | The default `onboarding@resend.dev` is a sandbox — it can only deliver to your Resend account email. Verify your own domain first |
+| 12 | **403 domain mismatch** | The `from` address domain must exactly match a verified domain. Verified `send.acme.com` but sending from `user@acme.com` will fail |
+| 13 | **Calling Resend API from the browser (CORS)** | The API does not support CORS — this is intentional to protect your API key. Always call from server-side (API routes, serverless functions) |
+| 14 | **401 `restricted_api_key`** | A sending-only API key was used on a non-sending endpoint (domains, contacts, etc.). Create a full-access key instead |
 
 ## Cross-Cutting Concerns
 
@@ -256,7 +260,8 @@ See [webhooks.md](references/webhooks.md) for full details, signature verificati
 | Code | Action |
 |------|--------|
 | 400, 422 | Fix request parameters, don't retry |
-| 401, 403 | Check API key / verify domain, don't retry |
+| 401 | Check API key — `restricted_api_key` means sending-only key used on non-sending endpoint |
+| 403 | Verify domain ownership — common causes: `resend.dev` sandbox, `from` domain mismatch, unverified domain |
 | 409 | Idempotency conflict — use new key or fix payload |
 | 429 | Rate limited — retry with exponential backoff (default rate limit: 2 req/s) |
 | 500 | Server error — retry with exponential backoff |
