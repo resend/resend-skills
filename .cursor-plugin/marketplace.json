@@ -1,0 +1,13 @@
+{
+  "name": "resend-skills",
+  "owner": {
+    "name": "Resend",
+    "email": "support@resend.com"
+  },
+  "plugins": [
+    {
+      "name": "resend",
+      "source": "./"
+    }
+  ]
+}
