@@ -1,0 +1,16 @@
+{
+  "name": "resend",
+  "displayName": "Resend",
+  "description": "Send and receive emails with the Resend API — single/batch sending, inbound webhooks, templates, delivery tracking, and secure AI agent inboxes.",
+  "version": "1.0.0",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "author": {
+    "name": "Resend",
+    "url": "https://resend.com"
+  },
+  "homepage": "https://resend.com",
+  "repository": "https://github.com/resend/resend-skills",
+  "license": "MIT",
+  "keywords": ["email", "resend", "smtp", "notifications", "agent-inbox"]
+}
