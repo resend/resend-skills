@@ -1,6 +1,6 @@
 {
   "name": "resend",
-  "description": "Send and receive emails with the Resend API — single/batch sending, inbound webhooks, templates, delivery tracking, and secure AI agent inboxes.",
+  "description": "Skills and MCP server for the Resend email platform — sending, receiving, templates, CLI, React Email, and deliverability best practices.",
   "version": "1.0.0",
   "author": {
     "name": "Resend",
