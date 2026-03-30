@@ -1,0 +1,103 @@
+name: Sync Skills from Source Repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: "Source repo (e.g. resend-cli)"
+        required: true
+      skill-path:
+        description: "Path to skill in source repo (e.g. skills/resend-cli or . for root)"
+        required: true
+      skill-name:
+        description: "Target directory name in skills/ (e.g. resend-cli)"
+        required: true
+      sha:
+        description: "Source commit SHA"
+        required: true
+      reviewer:
+        description: "GitHub username to request review from"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: sync-${{ inputs.skill-name }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout resend-skills
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Checkout source repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: resend/${{ inputs.repo }}
+          ref: ${{ inputs.sha }}
+          path: source
+
+      - name: Compare skills
+        id: diff
+        run: |
+          changed=false
+          skill_name="${{ inputs.skill-name }}"
+          skill_path="${{ inputs.skill-path }}"
+          src_dir="source/$skill_path"
+          target_dir="skills/$skill_name"
+
+          if [ ! -d "$target_dir" ]; then
+            echo "New skill: $skill_name"
+            changed=true
+          else
+            for item in SKILL.md references scripts assets; do
+              src="$src_dir/$item"
+              dst="$target_dir/$item"
+              if [ -e "$src" ] && ! diff -rq "$src" "$dst" > /dev/null 2>&1; then
+                echo "Changed: $skill_name/$item"
+                changed=true
+              fi
+              if [ -e "$dst" ] && [ ! -e "$src" ]; then
+                echo "Deleted: $skill_name/$item"
+                changed=true
+              fi
+            done
+          fi
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: Copy skills and open PR
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          skill_name="${{ inputs.skill-name }}"
+          skill_path="${{ inputs.skill-path }}"
+          src_dir="source/$skill_path"
+          short_sha="${{ inputs.sha }}"
+          short_sha="${short_sha::7}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "sync/$skill_name-$short_sha"
+
+          rm -rf "skills/$skill_name"
+          mkdir -p "skills/$skill_name"
+
+          cp "$src_dir/SKILL.md" "skills/$skill_name/"
+          for dir in references scripts assets; do
+            if [ -d "$src_dir/$dir" ]; then
+              cp -r "$src_dir/$dir" "skills/$skill_name/"
+            fi
+          done
+
+          git add skills/
+          git commit -m "sync: $skill_name skills from $short_sha"
+          git push origin "sync/$skill_name-$short_sha"
+
+          REVIEWER="${{ inputs.reviewer }}"
+          gh pr create \
+            --title "Sync $skill_name skills" \
+            --body "Automated sync from [resend/${{ inputs.repo }}@\`$short_sha\`](https://github.com/resend/${{ inputs.repo }}/commit/${{ inputs.sha }})." \
+            ${REVIEWER:+--reviewer "$REVIEWER"}
