@@ -2,66 +2,41 @@
 
 # Resend Skills
 
-A collection of skills for AI coding agents following the Agent Skills format. These skills enable AI agents to work with the [Resend](https://resend.com) email platform.
+A collection of skills for AI coding agents following the [Agent Skills](https://agentskills.io) format. Available as a plugin for Claude Code, Cursor, and OpenAI Codex, with an MCP server for tool access.
+
+## Install
+
+```bash
+npx skills add resend/resend-skills
+```
 
 ## Available Skills
 
-### [`resend`](./skills/resend)
+| Skill | Description | Source |
+|---|---|---|
+| [`resend`](./skills/resend) | Resend email API — sending, receiving, templates, webhooks, SDK setup | Authored here |
+| [`agent-email-inbox`](./skills/agent-email-inbox) | Secure email inbox for AI agents with graduated security levels | Authored here |
+| [`resend-cli`](./skills/resend-cli) | Operate Resend from the terminal — emails, domains, contacts, broadcasts | Synced from [resend/resend-cli](https://github.com/resend/resend-cli) |
+| [`react-email`](./skills/react-email) | Build HTML email templates with React components | Synced from [resend/react-email](https://github.com/resend/react-email) |
+| [`email-best-practices`](./skills/email-best-practices) | Deliverability, compliance, list management, transactional vs marketing | Synced from [resend/email-best-practices](https://github.com/resend/email-best-practices) |
 
-Unified skill for the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, and SDK setup for 8+ languages. Includes critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
+## MCP Server
 
-**Reference files:**
-- `references/sending/overview.md` — Single vs batch, parameters, deliverability, testing
-- `references/sending/single-email-examples.md` — Full SDK examples (Node.js, Python, Go, cURL)
-- `references/sending/batch-email-examples.md` — Batch validation, chunking, retry logic
-- `references/sending/best-practices.md` — Idempotency, error handling, retries
-- `references/receiving.md` — Inbound domain setup, webhooks, attachments, forwarding
-- `references/templates.md` — Template CRUD, variables, lifecycle, aliases, pagination
-- `references/webhooks.md` — All event types, signature verification, retry schedule
-- `references/installation.md` — SDK install for all languages
+The plugin includes the [Resend MCP server](https://github.com/resend/resend-mcp), giving agents tool access to the full Resend API.
 
-### [`agent-email-inbox`](./skills/agent-email-inbox)
+## Plugins
 
-Set up a secure email inbox for AI agents or any system where untrusted email content triggers actions. Includes security levels (strict allowlist, domain allowlist, content filtering, sandboxed processing, human-in-the-loop), webhook setup with tunneling for local dev, and content safety filtering.
+This repo serves as a plugin for multiple platforms:
 
-**Reference files:**
-- `references/security-levels.md` — Detailed implementation for each security level
-- `references/webhook-setup.md` — Tunneling, webhook creation, local dev, production deployment
-- `references/advanced-patterns.md` — Rate limiting, content limits, troubleshooting
+- **Claude Code** — `.claude-plugin/`
+- **Cursor** — `.cursor-plugin/`
+- **OpenAI Codex** — `.codex-plugin/`
 
-## Installation
+## Editing skills
 
-```bash
-# Install all skills
-npx skills add resend/resend-skills
+Skills marked **"Authored here"** can be edited directly in this repo.
 
-# Install individual skills
-npx skills add resend/resend-skills/resend
-npx skills add resend/resend-skills/agent-email-inbox
-```
-
-## Usage
-
-Skills are automatically activated when relevant tasks are detected. Example prompts:
-
-- "Send a welcome email to new users"
-- "Send batch notifications to all order customers"
-- "Create a reusable order confirmation template with variables"
-- "Set up an inbound email handler for support@myapp.com"
-- "Set up a secure email inbox for my AI agent"
-
-## Supported SDKs
-
-- Node.js / TypeScript
-- Python
-- Go
-- Ruby
-- PHP
-- Rust
-- Java
-- .NET
-- cURL
-- SMTP
+Skills marked **"Synced from"** are automatically synced from their source repos. **Do not edit them here** — changes will be overwritten on the next sync. Edit in the source repo instead.
 
 ## Prerequisites
 
