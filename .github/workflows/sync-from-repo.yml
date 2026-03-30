@@ -71,6 +71,8 @@ jobs:
 
       - name: Copy skills and open PR
         if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           skill_name="${{ inputs.skill-name }}"
           skill_path="${{ inputs.skill-path }}"
