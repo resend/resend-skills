@@ -1,10 +1,10 @@
 ---
 name: resend
-description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
+description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, viewing API request logs, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
 license: MIT
 metadata:
     author: resend
-    version: "3.1.0"
+    version: "3.2.0"
     homepage: https://resend.com
     source: https://github.com/resend/resend-skills
 inputs:
@@ -23,6 +23,7 @@ references:
     - contacts.md
     - broadcasts.md
     - api-keys.md
+    - logs.md
     - contact-properties.md
     - segments.md
     - topics.md
@@ -146,6 +147,7 @@ export async function POST(req: Request) {
 | **Manage contacts** (CRUD, properties) | [contacts.md](references/contacts.md) — segments, topics, custom properties |
 | **Send broadcasts** (marketing campaigns) | [broadcasts.md](references/broadcasts.md) — lifecycle, scheduling, template variables |
 | **Manage API keys** | [api-keys.md](references/api-keys.md) — permission scoping, domain restrictions |
+| **View API request logs** | [logs.md](references/logs.md) — list and retrieve API call history, debugging |
 | **Define contact properties** | [contact-properties.md](references/contact-properties.md) — custom fields for contacts |
 | **Manage segments** (contact groups) | [segments.md](references/segments.md) — broadcast targeting, contact grouping |
 | **Manage topics** (subscriptions) | [topics.md](references/topics.md) — opt-in/out preferences, broadcast filtering |
