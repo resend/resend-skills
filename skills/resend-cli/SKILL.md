@@ -10,7 +10,7 @@ description: >
 license: MIT
 metadata:
   author: resend
-  version: "1.8.0"
+  version: "1.9.0"
   homepage: https://resend.com
   source: https://github.com/resend/resend-cli
 inputs:
@@ -35,6 +35,41 @@ references:
 ---
 
 # Resend CLI
+
+## Installation
+
+Before running any `resend` commands, check whether the CLI is installed:
+
+```bash
+resend --version
+```
+
+If the command is not found, install it using one of the methods below:
+
+**cURL (macOS / Linux):**
+```bash
+curl -fsSL https://resend.com/install.sh | bash
+```
+
+**Homebrew (macOS / Linux):**
+```bash
+brew install resend/cli/resend
+```
+
+**Node.js:**
+```bash
+npm install -g resend-cli
+```
+
+**PowerShell (Windows):**
+```powershell
+irm https://resend.com/install.ps1 | iex
+```
+
+After installing, verify:
+```bash
+resend --version
+```
 
 ## Agent Protocol
 
