@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "resend-skills",
   "metadata": {
     "description": "Resend email skills for Claude Code"
