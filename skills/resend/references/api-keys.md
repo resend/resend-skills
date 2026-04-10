@@ -85,3 +85,14 @@ resend.ApiKeys.remove("api_key_id")
 | Calling `.delete()` instead of `.remove()` | Node.js SDK uses `.remove()` for all delete operations |
 | Ignoring `error` return | Node.js SDK returns `{ data, error }` — always check `error` |
 | Name over 50 characters | `name` has a 50-character limit |
+
+## Response Fields
+
+List returns metadata for each key:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | API key ID |
+| `name` | string | Display name |
+| `created_at` | string | Creation timestamp |
+| `last_used_at` | string \| null | Last time the key was used (null if never used) |

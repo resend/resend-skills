@@ -1,6 +1,6 @@
 ---
 name: resend
-description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, viewing API request logs, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
+description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, automations, events, viewing API request logs, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
 license: MIT
 metadata:
     author: resend
@@ -27,6 +27,8 @@ references:
     - contact-properties.md
     - segments.md
     - topics.md
+    - automations.md
+    - events.md
     - installation.md
     - fetch-all-templates.mjs
 ---
@@ -151,6 +153,8 @@ export async function POST(req: Request) {
 | **Define contact properties** | [contact-properties.md](references/contact-properties.md) — custom fields for contacts |
 | **Manage segments** (contact groups) | [segments.md](references/segments.md) — broadcast targeting, contact grouping |
 | **Manage topics** (subscriptions) | [topics.md](references/topics.md) — opt-in/out preferences, broadcast filtering |
+| **Create automations** (event-driven workflows) | [automations.md](references/automations.md) — steps, connections, runs, conditions |
+| **Define and send events** (automation triggers) | [events.md](references/events.md) — schemas, payloads, contact association |
 | **Install SDK** (8+ languages) | [installation.md](references/installation.md) |
 | **Set up an AI agent inbox** | Install the `agent-email-inbox` skill — covers security levels for untrusted input |
 

@@ -51,6 +51,7 @@ Resend provides two endpoints for sending emails:
 | `attachments` | array | File attachments (max 40MB total) |
 | `tags` | array | Key/value pairs for tracking (see [Tags](#tags)) |
 | `headers` | object | Custom headers |
+| `topic_id`* | string | Scope email to a topic — if the recipient contact has opted out of this topic, the email is silently skipped |
 
 *Parameter naming varies by SDK (e.g., `replyTo` in Node.js, `reply_to` in Python).
 

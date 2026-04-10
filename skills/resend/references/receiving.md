@@ -115,6 +115,31 @@ export async function POST(req: Request) {
 }
 ```
 
+## Listing Received Emails
+
+List all received emails with cursor-based pagination — useful for polling or backfilling without webhooks.
+
+```typescript
+const { data: emails } = await resend.emails.receiving.list({
+  limit: 20,
+  after: 'cursor_abc123', // optional, for forward pagination
+});
+
+for (const email of emails.data) {
+  console.log(email.from, email.subject, email.created_at);
+  console.log(email.attachments); // metadata only (id, filename, content_type, size)
+}
+// emails.has_more — true if more pages exist
+```
+
+```python
+emails = resend.Emails.Receiving.list({"limit": 20})
+for email in emails["data"]:
+    print(email["from"], email["subject"])
+```
+
+Pagination uses `after` (forward) or `before` (backward) cursors — mutually exclusive.
+
 ## Retrieving Email Content
 
 Webhooks exclude email body and headers. Call the Receiving API to get them:
@@ -144,9 +169,22 @@ const { data: attachments } = await resend.emails.receiving.attachments.list({
 
 for (const attachment of attachments) {
   console.log(attachment.filename);
-  console.log(attachment.download_url);  // Valid for 1 hour
+  console.log(attachment.download_url);  // signed URL, see expires_at
   console.log(attachment.expires_at);
 }
+```
+
+### Get a Single Attachment
+
+```typescript
+const { data: attachment } = await resend.emails.receiving.attachments.get({
+  emailId: event.data.email_id,
+  attachmentId: 'att_abc123',
+});
+
+console.log(attachment.download_url); // signed URL
+console.log(attachment.expires_at);   // expiration timestamp
+console.log(attachment.size);         // bytes
 ```
 
 ### Download Attachment Content
@@ -158,7 +196,7 @@ const buffer = await response.arrayBuffer();
 await saveToStorage(attachment.filename, buffer);
 ```
 
-**Important:** `download_url` expires after 1 hour. Call the API again for a fresh URL if needed.
+**Important:** `download_url` expires (see `expires_at` field). Call the API again for a fresh URL if needed.
 
 ## Forwarding Emails
 
@@ -236,7 +274,7 @@ if (event.type === 'email.received') {
 | Expecting body in webhook payload | Webhook has metadata only — call `resend.emails.receiving.get()` for body |
 | MX record not lowest priority | Ensure Resend's MX has lowest number (highest priority) |
 | Adding MX to root domain with existing email | Use subdomain to avoid breaking existing email service |
-| Using expired download_url | URLs expire after 1 hour — call attachments API again for fresh URL |
+| Using expired download_url | URLs expire (see `expires_at` field) — call attachments API again for a fresh URL |
 | Not verifying webhook signatures | Always verify — unverified events can't be trusted |
 | Forgetting to return 200 OK | Resend retries on non-200 responses |
 

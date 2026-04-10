@@ -72,6 +72,58 @@ if (error) console.error(error);
 resend.Emails.cancel("email_abc123")
 ```
 
+## Retrieving Attachments
+
+List and download attachments for sent emails. Returns metadata and a signed download URL.
+
+### SDK Methods
+
+| Operation | Node.js | Python |
+|-----------|---------|--------|
+| List | `resend.emails.attachments.list({ emailId })` | `resend.Emails.Attachments.list(email_id)` |
+| Get | `resend.emails.attachments.get({ emailId, attachmentId })` | `resend.Emails.Attachments.get(email_id, attachment_id)` |
+
+### Examples
+
+```typescript
+// List all attachments for a sent email
+const { data: attachments } = await resend.emails.attachments.list({
+  emailId: 'email_abc123',
+});
+
+for (const att of attachments.data) {
+  console.log(att.filename);      // 'invoice.pdf'
+  console.log(att.content_type);   // 'application/pdf'
+  console.log(att.size);           // bytes
+  console.log(att.download_url);   // signed URL, expires at att.expires_at
+}
+
+// Get a single attachment
+const { data: attachment } = await resend.emails.attachments.get({
+  emailId: 'email_abc123',
+  attachmentId: 'att_def456',
+});
+
+// Download the content
+const response = await fetch(attachment.download_url);
+const buffer = await response.arrayBuffer();
+```
+
+**Important:** `download_url` expires (see `expires_at` field). Call the API again for a fresh URL if needed.
+
+### Attachment Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Attachment ID |
+| `filename` | string | Original filename |
+| `content_type` | string | MIME type |
+| `content_id` | string | Content ID for inline attachments |
+| `content_disposition` | `"inline"` \| `"attachment"` | Display mode |
+| `download_url` | string | Signed download URL |
+| `expires_at` | string | When the download URL expires |
+| `size` | number | Size in bytes |
+
 ## Common Mistakes
 
 | Mistake | Fix |
