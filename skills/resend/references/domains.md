@@ -108,6 +108,7 @@ const { data, error } = await resend.domains.update({
 | `openTracking` | `true`, `false` | Domain default | |
 | `clickTracking` | `true`, `false` | Domain default | |
 | `capabilities` | `{ sending: 'enabled'\|'disabled', receiving: 'enabled'\|'disabled' }` | sending enabled | |
+| `trackingSubdomain` / `tracking_subdomain` | string | none | Subdomain for click/open tracking URLs (e.g., `"track"` → `track.yourdomain.com`). Set on create or update |
 
 ## Common Mistakes
 
