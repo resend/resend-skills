@@ -38,11 +38,21 @@ Each step has a `key` (unique within the graph), a `type`, and a `config` object
 | `trigger` | `{ event_name: string }` | Entry point — fires when the named event occurs |
 | `send_email` | `{ template: { id: string, variables?: object }, subject?: string, from?: string, reply_to?: string }` | Sends an email using a published template |
 | `delay` | `{ duration?: string, seconds?: number }` | Pauses the run. Provide exactly one: `duration` (e.g. `"30 minutes"`) or `seconds` |
-| `wait_for_event` | `{ event_name: string, timeout?: string, filter_rule?: object }` | Waits for an event. `timeout` is human-readable (e.g. `"1 hour"`) |
-| `condition` | Rule tree: `{ type, field, operator, value }` with `and`/`or` nesting | Branches based on contact data |
+| `wait_for_event` | `{ event_name: string, timeout?: string, filter_rule?: object }` | Waits for an event. `timeout` is human-readable (e.g. `"1 hour"`). `filter_rule` uses the same rule tree as `condition` but restricted to `event.*` fields |
+| `condition` | Rule tree (see below) | Branches based on contact data |
 | `contact_update` | `{ first_name?, last_name?, unsubscribed?, properties? }` | Updates the contact |
 | `contact_delete` | `{}` | Deletes the contact |
 | `add_to_segment` | `{ segment_id: string }` | Adds the contact to a segment |
+
+### Rule Tree (condition & filter_rule)
+
+Leaf nodes: `{ "type": "rule", "field": "<namespace>.<key>", "operator": "<op>", "value": "<val>" }`
+
+Groups: `{ "type": "and" | "or", "rules": [...] }` for nesting.
+
+Supported operators: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `contains`, `starts_with`, `ends_with`, `exists`, `is_empty`. The `exists` and `is_empty` operators require no `value`.
+
+For `condition` steps, fields reference contact data (e.g. `properties.plan`). For `filter_rule` in `wait_for_event`, fields are restricted to `event.*` (e.g. `event.status`).
 
 ### Connections
 
