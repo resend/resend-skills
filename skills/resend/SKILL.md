@@ -7,6 +7,20 @@ metadata:
     version: "3.3.1"
     homepage: https://resend.com
     source: https://github.com/resend/resend-skills
+    openclaw:
+        primaryEnv: RESEND_API_KEY
+        requires:
+            env:
+                - RESEND_API_KEY
+                - RESEND_WEBHOOK_SECRET
+        install:
+            - kind: node
+              package: resend
+              label: Resend Node.js SDK
+        links:
+            homepage: https://resend.com/docs/resend-skill
+            repository: https://github.com/resend/resend-skills
+            documentation: https://resend.com/docs/resend-skill
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys
