@@ -1,8 +1,16 @@
 ---
 name: email-best-practices
 description: Use when building email features, emails going to spam, high bounce rates, setting up SPF/DKIM/DMARC authentication, implementing email capture, ensuring compliance (CAN-SPAM, GDPR, CASL), handling webhooks, retry logic, or deciding transactional vs marketing.
+license: MIT
 metadata:
-  version: "1.0.0"
+  author: Resend
+  version: "1.0.1"
+  homepage: https://resend.com/agent-skills
+  source: https://github.com/resend/email-best-practices
+  openclaw:
+    links:
+      repository: https://github.com/resend/email-best-practices
+      documentation: https://resend.com/docs/email-best-practices-skill
 ---
 
 # Email Best Practices
