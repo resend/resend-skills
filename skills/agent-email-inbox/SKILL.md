@@ -12,7 +12,25 @@ metadata:
         requires:
             env:
                 - RESEND_API_KEY
-                - RESEND_WEBHOOK_SECRET
+        envVars:
+            - name: RESEND_API_KEY
+              required: true
+              description: Resend API key for sending and receiving emails
+            - name: RESEND_WEBHOOK_SECRET
+              required: false
+              description: Webhook signing secret for verifying inbound email event payloads
+            - name: SECURITY_LEVEL
+              required: false
+              description: Security level for inbound email processing (strict, moderate, permissive)
+            - name: ALLOWED_SENDERS
+              required: false
+              description: Comma-separated list of allowed sender email addresses
+            - name: ALLOWED_DOMAINS
+              required: false
+              description: Comma-separated list of allowed sender domains
+            - name: OWNER_EMAIL
+              required: false
+              description: Owner email address for forwarding or notifications
         install:
             - kind: node
               package: resend

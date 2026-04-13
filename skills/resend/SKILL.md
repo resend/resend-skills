@@ -12,7 +12,13 @@ metadata:
         requires:
             env:
                 - RESEND_API_KEY
-                - RESEND_WEBHOOK_SECRET
+        envVars:
+            - name: RESEND_API_KEY
+              required: true
+              description: Resend API key for sending and receiving emails
+            - name: RESEND_WEBHOOK_SECRET
+              required: false
+              description: Webhook signing secret for verifying event payloads
         install:
             - kind: node
               package: resend
