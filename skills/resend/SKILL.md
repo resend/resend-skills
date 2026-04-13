@@ -19,10 +19,6 @@ metadata:
             - name: RESEND_WEBHOOK_SECRET
               required: false
               description: Webhook signing secret for verifying event payloads
-        install:
-            - kind: node
-              package: resend
-              label: Resend Node.js SDK
         links:
             repository: https://github.com/resend/resend-skills
             documentation: https://resend.com/docs/resend-skill

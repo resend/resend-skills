@@ -31,10 +31,6 @@ metadata:
             - name: OWNER_EMAIL
               required: false
               description: Owner email address for forwarding or notifications
-        install:
-            - kind: node
-              package: resend
-              label: Resend Node.js SDK
         links:
             repository: https://github.com/resend/resend-skills
             documentation: https://resend.com/docs/agent-email-inbox-skill
