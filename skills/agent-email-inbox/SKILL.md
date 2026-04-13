@@ -4,9 +4,36 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "3.0.0"
-    homepage: https://resend.com
+    version: "3.0.1"
+    homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
+    openclaw:
+        primaryEnv: RESEND_API_KEY
+        requires:
+            env:
+                - RESEND_API_KEY
+        envVars:
+            - name: RESEND_API_KEY
+              required: true
+              description: Resend API key for sending and receiving emails
+            - name: RESEND_WEBHOOK_SECRET
+              required: false
+              description: Webhook signing secret for verifying inbound email event payloads
+            - name: SECURITY_LEVEL
+              required: false
+              description: Security level for inbound email processing (strict, moderate, permissive)
+            - name: ALLOWED_SENDERS
+              required: false
+              description: Comma-separated list of allowed sender email addresses
+            - name: ALLOWED_DOMAINS
+              required: false
+              description: Comma-separated list of allowed sender domains
+            - name: OWNER_EMAIL
+              required: false
+              description: Owner email address for forwarding or notifications
+        links:
+            repository: https://github.com/resend/resend-skills
+            documentation: https://resend.com/docs/agent-email-inbox-skill
 inputs:
     - name: RESEND_API_KEY
       description: Resend API key for sending and receiving emails. Get yours at https://resend.com/api-keys
