@@ -4,8 +4,8 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "3.0.0"
-    homepage: https://resend.com/docs/agent-email-inbox-skill
+    version: "3.0.1"
+    homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
         primaryEnv: RESEND_API_KEY
@@ -18,7 +18,7 @@ metadata:
               package: resend
               label: Resend Node.js SDK
         links:
-            homepage: https://resend.com/docs/agent-email-inbox-skill
+            homepage: https://resend.com/agent-skills
             repository: https://github.com/resend/resend-skills
             documentation: https://resend.com/docs/agent-email-inbox-skill
 inputs:
