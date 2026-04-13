@@ -18,7 +18,6 @@ metadata:
               package: resend
               label: Resend Node.js SDK
         links:
-            homepage: https://resend.com/agent-skills
             repository: https://github.com/resend/resend-skills
             documentation: https://resend.com/docs/agent-email-inbox-skill
 inputs:
