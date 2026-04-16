@@ -152,7 +152,7 @@ The catalog includes detailed guidance for:
 - Easier compliance management
 
 **Implementation:**
-- Use different subdomains (e.g., `t.yourdomain.com` for transactional, `m.yourdomain.com` for marketing)
+- Use different subdomains (e.g., `t.example.com` for transactional, `m.example.com` for marketing)
 
 ### Email Service Considerations
 

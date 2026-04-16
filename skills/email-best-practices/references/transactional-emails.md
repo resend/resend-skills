@@ -55,8 +55,8 @@ Keep under 90 characters.
 | Field | Best Practice | Example |
 |-------|--------------|---------|
 | From Name | App/company name, consistent | [App Name] |
-| From Email | Subdomain, real address | hello@mail.yourdomain.com |
-| Reply-To | Monitored inbox | support@yourdomain.com |
+| From Email | Subdomain, real address | hello@mail.example.com |
+| Reply-To | Monitored inbox | support@example.com |
 
 Avoid `noreply@` - users reply to transactional emails.
 

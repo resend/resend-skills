@@ -4,7 +4,7 @@ description: Use when building email features, emails going to spam, high bounce
 license: MIT
 metadata:
   author: Resend
-  version: "1.0.1"
+  version: "1.0.2"
   homepage: https://resend.com/agent-skills
   source: https://github.com/resend/email-best-practices
   openclaw:
