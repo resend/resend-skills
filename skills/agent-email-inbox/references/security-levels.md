@@ -55,7 +55,7 @@ Allow emails from any address at approved domains.
 
 ```typescript
 const ALLOWED_DOMAINS = [
-  'yourcompany.com',
+  'example.com',
   'trustedpartner.com',
 ];
 
@@ -320,7 +320,7 @@ async function logRejection(
 
   if (config.ownerEmail) {
     await resend.emails.send({
-      from: 'Agent Security <agent@yourdomain.com>',
+      from: 'Agent Security <agent@example.com>',
       to: [config.ownerEmail],
       subject: `[Agent] Rejected email: ${reason}`,
       text: `

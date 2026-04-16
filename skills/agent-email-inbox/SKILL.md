@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "3.0.1"
+    version: "3.0.2"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -144,11 +144,11 @@ Then add an MX record:
 | Setting | Value |
 |---------|-------|
 | **Type** | MX |
-| **Host** | Your domain or subdomain (e.g., `agent.yourdomain.com`) |
+| **Host** | Your domain or subdomain (e.g., `agent.example.com`) |
 | **Value** | Provided in Resend dashboard |
 | **Priority** | 10 (must be lowest number to take precedence) |
 
-**Use a subdomain** (e.g., `agent.yourdomain.com`) to avoid disrupting existing email services.
+**Use a subdomain** (e.g., `agent.example.com`) to avoid disrupting existing email services.
 
 **Tip:** Verify DNS propagation at [dns.email](https://dns.email).
 
@@ -333,7 +333,7 @@ async function sendAgentReply(to: string, subject: string, body: string, inReply
   }
 
   const { data, error } = await resend.emails.send({
-    from: 'Agent <agent@yourdomain.com>',
+    from: 'Agent <agent@example.com>',
     to: [to],
     subject: subject.startsWith('Re:') ? subject : `Re: ${subject}`,
     text: body,
@@ -357,7 +357,7 @@ RESEND_WEBHOOK_SECRET=whsec_xxxxxxxxx
 # Security Configuration
 SECURITY_LEVEL=strict                    # strict | domain | filtered | sandboxed
 ALLOWED_SENDERS=you@email.com,trusted@example.com
-ALLOWED_DOMAINS=yourcompany.com
+ALLOWED_DOMAINS=example.com
 OWNER_EMAIL=you@email.com               # For security notifications
 ```
 
