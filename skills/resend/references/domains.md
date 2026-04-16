@@ -27,7 +27,7 @@ Create → Add DNS records → Verify → Poll status → Send
 
 ## Use a Subdomain
 
-Prefer a subdomain (e.g., `send.yourdomain.com`) over the root domain:
+Prefer a subdomain (e.g., `send.example.com`) over the root domain:
 
 - **No MX conflicts** with existing email (Google Workspace, Microsoft 365)
 - **Isolated reputation** — if transactional reputation gets damaged, your root domain is unaffected
@@ -81,9 +81,9 @@ console.log(domain.status); // 'pending', 'verified', 'failed'
 ### Verify DNS Propagation
 
 ```bash
-dig TXT send.yourdomain.com +short
-dig MX send.yourdomain.com +short
-dig CNAME resend._domainkey.send.yourdomain.com +short
+dig TXT send.example.com +short
+dig MX send.example.com +short
+dig CNAME resend._domainkey.send.example.com +short
 ```
 
 ## Update Domain
@@ -103,25 +103,25 @@ const { data, error } = await resend.domains.update({
 | Parameter | Values | Default | Notes |
 |-----------|--------|---------|-------|
 | `region` | `us-east-1`, `eu-west-1`, `sa-east-1`, `ap-northeast-1` | `us-east-1` | **Immutable** after creation |
-| `customReturnPath` | string (e.g., `"bounce"`) | none | Results in `bounce@yourdomain.com` — helps DMARC alignment |
+| `customReturnPath` | string (e.g., `"bounce"`) | none | Results in `bounce@example.com` — helps DMARC alignment |
 | `tls` | `opportunistic`, `enforced` | `opportunistic` | |
 | `openTracking` | `true`, `false` | Domain default | |
 | `clickTracking` | `true`, `false` | Domain default | |
 | `capabilities` | `{ sending: 'enabled'\|'disabled', receiving: 'enabled'\|'disabled' }` | sending enabled | |
-| `trackingSubdomain` / `tracking_subdomain` | string | none | Subdomain for click/open tracking URLs (e.g., `"track"` → `track.yourdomain.com`). Set on create or update |
+| `trackingSubdomain` / `tracking_subdomain` | string | none | Subdomain for click/open tracking URLs (e.g., `"track"` → `track.example.com`). Set on create or update |
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| Using root domain when a subdomain would be safer | Consider `send.yourdomain.com` — avoids MX conflicts with existing email and isolates reputation |
+| Using root domain when a subdomain would be safer | Consider `send.example.com` — avoids MX conflicts with existing email and isolates reputation |
 | Sending before DNS records are added | Create returns DNS records — add them to your provider first, then verify |
 | Expecting `verify()` to be synchronous | Verify triggers async check — poll with `get()` to confirm status |
 | Trying to change `region` after creation | Region is **immutable** — delete and recreate the domain |
 | MX record value doesn't match region | MX must be region-specific (`feedback-smtp.{region}.amazonses.com`) — use the exact records from the create response |
 | Cloudflare proxy mode enabled | Disable proxy (orange → gray cloud) for all Resend DNS records — CNAME proxy breaks DKIM verification |
 | DNS provider auto-appends domain name | GoDaddy/Namecheap may turn `resend._domainkey.send.acme.com` into `resend._domainkey.send.acme.com.acme.com` — add a trailing dot or enter just the subdomain portion |
-| DNS records added to root instead of subdomain | DKIM CNAMEs go on `resend._domainkey.send.yourdomain.com`, not `resend._domainkey.yourdomain.com` |
+| DNS records added to root instead of subdomain | DKIM CNAMEs go on `resend._domainkey.send.example.com`, not `resend._domainkey.example.com` |
 | Calling `.delete()` | SDK method is `.remove()` |
 | Deleting a domain accidentally | Delete is permanent with no undo — verify intent before calling |
 | Using `enforced` TLS with recipients that don't support it | Use `opportunistic` (default) unless you know all recipients support TLS |

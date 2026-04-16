@@ -85,7 +85,7 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const { data, error } = await resend.webhooks.create({
-  endpoint: 'https://your-domain.com/webhook',
+  endpoint: 'https://example.com/webhook',
   events: ['email.delivered', 'email.bounced', 'email.received'],
 });
 
@@ -107,7 +107,7 @@ import resend
 resend.api_key = 're_xxxxxxxxx'
 
 webhook = resend.Webhooks.create(params={
-    "endpoint": "https://your-domain.com/webhook",
+    "endpoint": "https://example.com/webhook",
     "events": ["email.delivered", "email.bounced", "email.received"],
 })
 
@@ -122,7 +122,7 @@ curl -X POST 'https://api.resend.com/webhooks' \
   -H 'Authorization: Bearer re_xxxxxxxxx' \
   -H 'Content-Type: application/json' \
   -d '{
-    "endpoint": "https://your-domain.com/webhook",
+    "endpoint": "https://example.com/webhook",
     "events": ["email.delivered", "email.bounced", "email.received"]
   }'
 

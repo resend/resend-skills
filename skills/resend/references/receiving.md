@@ -20,7 +20,7 @@ No DNS configuration needed. Find your address in Dashboard → Emails → Recei
 
 ### Option 2: Custom Domain
 
-Add MX record to receive at `<anything>@yourdomain.com`.
+Add MX record to receive at `<anything>@example.com`.
 
 | Setting | Value |
 |---------|-------|

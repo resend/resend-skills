@@ -226,7 +226,7 @@ cloudflared tunnel create my-agent-webhook
 cloudflared tunnel run my-agent-webhook
 ```
 
-Now `https://webhook.yourdomain.com` always points to your local machine.
+Now `https://webhook.example.com` always points to your local machine.
 
 **Pros:** Free, persistent URLs, uses your own domain
 **Cons:** Requires owning a domain on Cloudflare, more setup
