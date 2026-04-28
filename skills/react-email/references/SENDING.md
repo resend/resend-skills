@@ -9,7 +9,7 @@ Important: Use verified domains in `from` addresses. Ask the user for the verifi
 When you have access to the Resend MCP tool:
 
 ```typescript
-import { render } from '@react-email/components';
+import { render } from 'react-email';
 import { WelcomeEmail } from './emails/welcome';
 
 // Render to HTML
@@ -79,7 +79,7 @@ await resend.emails.send({
 **Nodemailer:**
 
 ```tsx
-import { render } from '@react-email/components';
+import { render } from 'react-email';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -98,10 +98,34 @@ await transporter.sendMail({
 });
 ```
 
+**Mailgun:**
+
+```tsx
+import { render } from 'react-email';
+import FormData from 'form-data';
+import Mailgun from 'mailgun.js';
+import { WelcomeEmail } from './emails/welcome';
+
+const mailgun = new Mailgun(FormData);
+const client = mailgun.client({
+  username: 'api',
+  key: process.env.MAILGUN_API_KEY,
+});
+
+const html = await render(<WelcomeEmail name="John" verificationUrl="https://example.com/verify" />);
+
+await client.messages.create(process.env.MAILGUN_DOMAIN, {
+  from: 'noreply@example.com',
+  to: ['user@example.com'],
+  subject: 'Welcome',
+  html,
+});
+```
+
 **SendGrid:**
 
 ```tsx
-import { render } from '@react-email/components';
+import { render } from 'react-email';
 import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
