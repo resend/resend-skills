@@ -1,9 +1,11 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "resend",
-  "description": "Skills and MCP server for the Resend email platform — sending, receiving, templates, CLI, React Email, and deliverability best practices.",
+  "description": "Send and receive emails, build with React Email, follow deliverability best practices",
   "version": "1.0.0",
   "author": {
     "name": "Resend",
+    "email": "support@resend.com",
     "url": "https://resend.com"
   },
   "homepage": "https://resend.com",
