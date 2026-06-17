@@ -4,7 +4,7 @@ description: Use when working with the Resend email API — sending transactiona
 license: MIT
 metadata:
     author: resend
-    version: "3.3.3"
+    version: "3.4.0"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
 | **Receive inbound emails** | [receiving.md](references/receiving.md) — domain setup, webhooks, attachments |
 | **Manage templates** (CRUD, variables) | [templates.md](references/templates.md) — lifecycle, aliases, pagination |
 | **Set up webhooks** (events, verification) | [webhooks.md](references/webhooks.md) — verification, CRUD, retry schedule, IP allowlist |
-| **Manage domains** (create, verify, DNS) | [domains.md](references/domains.md) — regions, TLS, tracking, capabilities |
+| **Manage domains** (create, verify, claim, DNS) | [domains.md](references/domains.md) — regions, TLS, tracking, claiming, capabilities |
 | **Manage contacts** (CRUD, properties) | [contacts.md](references/contacts.md) — segments, topics, custom properties |
 | **Send broadcasts** (marketing campaigns) | [broadcasts.md](references/broadcasts.md) — lifecycle, scheduling, template variables |
 | **Manage API keys** | [api-keys.md](references/api-keys.md) — permission scoping, domain restrictions |
@@ -179,7 +179,7 @@ Always install the latest SDK version. These are the minimum versions for full f
 
 | Language | Package | Min Version | Install |
 |----------|---------|-------------|---------|
-| Node.js | `resend` | >= 6.9.2 | `npm install resend` |
+| Node.js | `resend` | >= 6.14.0 | `npm install resend` |
 | Python | `resend` | >= 2.21.0 | `pip install resend` |
 | Go | `resend-go/v3` | >= 3.1.0 | `go get github.com/resend/resend-go/v3` |
 | Ruby | `resend` | >= 1.0.0 | `gem install resend` |
@@ -188,7 +188,7 @@ Always install the latest SDK version. These are the minimum versions for full f
 | Java | `resend-java` | >= 4.11.0 | See [installation.md](references/installation.md) |
 | .NET | `Resend` | >= 0.2.1 | `dotnet add package Resend` |
 
-> **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()` or `emails.receiving.get()`.
+> **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, or `domains.claims.*`.
 
 See [installation.md](references/installation.md) for full installation commands, language detection, and cURL fallback.
 

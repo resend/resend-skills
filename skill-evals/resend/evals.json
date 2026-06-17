@@ -414,6 +414,17 @@
         "Uses the last item's ID as the after parameter",
         "Limits to 100 per page"
       ]
+    },
+    {
+      "id": 38,
+      "prompt": "Another team already verified acme.com in their own Resend account, but it's our domain. How do we take it over so we can send from it?",
+      "expected_output": "Routes to domains.md 'Claim a Domain'. Explains resend.domains.claims.create then verify then get; that the domain transfers with NEW DKIM keys so DNS must be updated and the domain re-verified before sending; and that claims are Node SDK only (resend >= 6.14.0), no CLI yet.",
+      "files": [],
+      "expectations": [
+        "Identifies this as a domain claim (resend.domains.claims.create / verify / get)",
+        "Notes the transferred domain gets new DKIM keys — DNS must be updated and the domain verified before sending",
+        "Mentions it is Node SDK only and requires resend >= 6.14.0 (no CLI equivalent yet)"
+      ]
     }
   ]
 }
