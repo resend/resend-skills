@@ -112,7 +112,7 @@ Claim methods are available via the **Node SDK** (`resend >= 6.14.0`) and the **
 
 | Operation | Method | Notes |
 |-----------|--------|-------|
-| Start claim | `resend.domains.claims.create({ name })` | Same body as `domains.create`. Returns a `domain_claim` with `domain_id` + the TXT `record` to add |
+| Start claim | `resend.domains.claims.create({ name })` | Accepts `name` (required) + optional `region`, `customReturnPath`, `openTracking`, `clickTracking`, `trackingSubdomain` (`domains.create` body minus `tls`/`capabilities`). Returns a `domain_claim` with `domain_id` + the TXT `record` to add |
 | Get claim | `resend.domains.claims.get(domainId)` | Latest claim for the placeholder domain — poll `status` |
 | Verify claim | `resend.domains.claims.verify(domainId)` | Triggers async DNS proof + transfer (not synchronous) |
 
