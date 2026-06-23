@@ -1,10 +1,10 @@
 {
   "mcpServers": {
     "resend": {
-      "command": "npx",
-      "args": ["-y", "resend-mcp"],
-      "env": {
-        "RESEND_API_KEY": "${RESEND_API_KEY}"
+      "type": "http",
+      "url": "https://mcp.resend.com",
+      "headers": {
+        "Authorization": "Bearer ${RESEND_API_KEY}"
       }
     }
   }
