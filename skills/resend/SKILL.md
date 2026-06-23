@@ -4,7 +4,7 @@ description: Use when working with the Resend email API — sending transactiona
 license: MIT
 metadata:
     author: resend
-    version: "3.4.1"
+    version: "3.4.2"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
