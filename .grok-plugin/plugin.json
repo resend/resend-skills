@@ -1,0 +1,21 @@
+{
+  "name": "resend",
+  "version": "1.0.0",
+  "description": "Resend skills for Grok — send, receive, and manage email: transactional and batch sending, inbound email agents, React Email templates, the Resend CLI, and deliverability best practices.",
+  "author": {
+    "name": "Resend",
+    "email": "support@resend.com",
+    "url": "https://resend.com/"
+  },
+  "homepage": "https://resend.com/",
+  "repository": "https://github.com/resend/grok-plugin",
+  "license": "MIT",
+  "keywords": [
+    "resend",
+    "email",
+    "transactional-email",
+    "inbound-email",
+    "react-email",
+    "deliverability"
+  ]
+}

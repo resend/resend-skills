@@ -33,6 +33,7 @@ This repo serves as a plugin for multiple platforms:
 - **Claude Code** — `.claude-plugin/`
 - **Cursor** — `.cursor-plugin/`
 - **OpenAI Codex** — `.codex-plugin/`
+- **Grok** — `.grok-plugin/`
 
 ## Editing skills
 
