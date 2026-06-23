@@ -8,7 +8,7 @@
     "url": "https://resend.com/"
   },
   "homepage": "https://resend.com/",
-  "repository": "https://github.com/resend/grok-plugin",
+  "repository": "https://github.com/resend/resend-skills",
   "license": "MIT",
   "keywords": [
     "resend",
