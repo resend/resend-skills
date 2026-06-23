@@ -124,6 +124,9 @@ if (error) {
 const { data: imp } = await resend.contacts.imports.get(data.id);
 console.log(imp.status, imp.counts);
 // e.g. 'completed' { total: 1200, created: 800, updated: 300, skipped: 75, failed: 25 }
+
+// List past imports, newest first; filter by status and paginate with after/before
+const { data: imports } = await resend.contacts.imports.list({ status: 'completed', limit: 20 });
 ```
 
 ### CSV columns
@@ -143,6 +146,8 @@ await resend.contacts.imports.create({
 ```
 
 > The SDK accepts camelCase (`firstName`, `lastName`); the raw `multipart/form-data` field is `column_map` with snake_case keys (`first_name`, `last_name`). `column_map`, `segments`, and `topics` are sent as JSON-encoded strings. Maximum file size is 100 MB.
+
+Properties that aren't already defined on your contacts are created automatically when you map them in the import; no need to pre-register them.
 
 ### Raw HTTP
 
