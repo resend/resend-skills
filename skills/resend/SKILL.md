@@ -4,7 +4,7 @@ description: Use when working with the Resend email API — sending transactiona
 license: MIT
 metadata:
     author: resend
-    version: "3.4.2"
+    version: "3.5.0"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -161,7 +161,7 @@ export async function POST(req: Request) {
 | **Manage templates** (CRUD, variables) | [templates.md](references/templates.md) — lifecycle, aliases, pagination |
 | **Set up webhooks** (events, verification) | [webhooks.md](references/webhooks.md) — verification, CRUD, retry schedule, IP allowlist |
 | **Manage domains** (create, verify, claim, DNS) | [domains.md](references/domains.md) — regions, TLS, tracking, claiming, capabilities |
-| **Manage contacts** (CRUD, properties) | [contacts.md](references/contacts.md) — segments, topics, custom properties |
+| **Manage contacts** (CRUD, properties) | [contacts.md](references/contacts.md) — segments, topics, custom properties, bulk CSV import |
 | **Send broadcasts** (marketing campaigns) | [broadcasts.md](references/broadcasts.md) — lifecycle, scheduling, template variables |
 | **Manage API keys** | [api-keys.md](references/api-keys.md) — permission scoping, domain restrictions |
 | **View API request logs** | [logs.md](references/logs.md) — list and retrieve API call history, debugging |
