@@ -24,7 +24,7 @@ Then select the ones you wish to install.
 
 ## MCP Server
 
-The plugin registers Resend's hosted [MCP server](https://github.com/resend/resend-mcp) at `https://mcp.resend.com` (streamable HTTP), giving agents tool access to the full Resend API. It authenticates with your `RESEND_API_KEY` via a bearer header — set that env var where your agent runs. Get a key at [resend.com/api-keys](https://resend.com/api-keys).
+The plugin registers Resend's hosted [MCP server](https://github.com/resend/resend-mcp) at `https://mcp.resend.com/mcp` (streamable HTTP), giving agents tool access to the full Resend API. It authenticates with your `RESEND_API_KEY` via a bearer header — set that env var where your agent runs. Get a key at [resend.com/api-keys](https://resend.com/api-keys).
 
 ## Plugins
 
