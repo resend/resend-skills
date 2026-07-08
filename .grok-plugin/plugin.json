@@ -1,6 +1,6 @@
 {
   "name": "resend",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Resend skills for Grok — send, receive, and manage email: transactional and batch sending, inbound email agents, React Email templates, the Resend CLI, and deliverability best practices.",
   "author": {
     "name": "Resend",
