@@ -12,6 +12,7 @@
       "name": "resend",
       "description": "Send and receive emails, build with React Email, follow deliverability best practices",
       "source": "./",
+      "icon": "./assets/app-icon.png",
       "category": "developer-tools",
       "homepage": "https://resend.com",
       "tags": ["email", "react-email", "deliverability", "transactional-email", "inbound-email", "mcp", "smtp", "notifications"]

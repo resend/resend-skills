@@ -2,7 +2,8 @@
   "name": "resend",
   "displayName": "Resend",
   "description": "Skills and MCP server for the Resend email platform — sending, receiving, templates, CLI, React Email, and deliverability best practices.",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "icon": "./assets/app-icon.png",
   "author": {
     "name": "Resend",
     "url": "https://resend.com"
