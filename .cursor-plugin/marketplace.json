@@ -7,8 +7,7 @@
   "plugins": [
     {
       "name": "resend",
-      "source": "./",
-      "icon": "./assets/app-icon.png"
+      "source": "./"
     }
   ]
 }
