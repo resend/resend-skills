@@ -2,7 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "resend",
   "description": "Send and receive emails, build with React Email, follow deliverability best practices",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "logo": "assets/app-icon.svg",
   "author": {
     "name": "Resend",
     "email": "support@resend.com",
