@@ -180,12 +180,12 @@ Always install the latest SDK version. These are the minimum versions for full f
 | Language | Package | Min Version | Install |
 |----------|---------|-------------|---------|
 | Node.js | `resend` | >= 6.14.0 | `npm install resend` |
-| Python | `resend` | >= 2.21.0 | `pip install resend` |
-| Go | `resend-go/v3` | >= 3.1.0 | `go get github.com/resend/resend-go/v3` |
-| Ruby | `resend` | >= 1.0.0 | `gem install resend` |
+| Python | `resend` | >= 2.34.0 | `pip install resend` |
+| Go | `resend-go/v3` | >= 3.11.0 | `go get github.com/resend/resend-go/v3` |
+| Ruby | `resend` | >= 1.6.0 | `gem install resend` |
 | PHP | `resend/resend-php` | >= 1.1.0 | `composer require resend/resend-php` |
-| Rust | `resend-rs` | >= 0.20.0 | `cargo add resend-rs` |
-| Java | `resend-java` | >= 4.11.0 | See [installation.md](references/installation.md) |
+| Rust | `resend-rs` | >= 0.26.1 | `cargo add resend-rs` |
+| Java | `resend-java` | >= 4.16.0 | See [installation.md](references/installation.md) |
 | .NET | `Resend` | >= 0.2.1 | `dotnet add package Resend` |
 
 > **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, or `domains.claims.*`.

@@ -418,12 +418,12 @@
     {
       "id": 38,
       "prompt": "Another team already verified acme.com in their own Resend account, but it's our domain. How do we take it over so we can send from it?",
-      "expected_output": "Routes to domains.md 'Claim a Domain'. Explains resend.domains.claims.create then verify then get; that the domain transfers with NEW DKIM keys so DNS must be updated and the domain re-verified before sending; and that claims are available via the Node SDK (resend >= 6.14.0) and the CLI (`resend domains claim`).",
+      "expected_output": "Routes to domains.md 'Claim a Domain'. Explains resend.domains.claims.create then verify then get; that the domain transfers with NEW DKIM keys so DNS must be updated and the domain re-verified before sending; and that claims are available in the Node.js, Python, Ruby, Go, Rust, and Java SDKs, and the CLI (`resend domains claim`).",
       "files": [],
       "expectations": [
         "Identifies this as a domain claim (resend.domains.claims.create / verify / get)",
         "Notes the transferred domain gets new DKIM keys — DNS must be updated and the domain verified before sending",
-        "Mentions it is available via the Node SDK (resend >= 6.14.0) and the CLI (`resend domains claim`)"
+        "Mentions availability in the Node.js, Python, Ruby, Go, Rust, and Java SDKs, and the CLI (`resend domains claim`)"
       ]
     }
   ]
