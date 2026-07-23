@@ -44,6 +44,26 @@ email = resend.Emails.get("email_abc123")
 print(email["status"])
 ```
 
+### Bounce Details
+
+When `last_event` is `bounced`, the response includes a `bounce` object with details from the receiving server. It is omitted for all other statuses, and is not included in the list endpoint.
+
+```json
+"bounce": {
+  "message": "The recipient's email provider sent a hard bounce message.",
+  "type": "Permanent",
+  "subType": "General",
+  "diagnosticCode": ["smtp; 550 5.1.1 user unknown"]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `message` | string \| null | Detailed bounce message from the receiving server |
+| `type` | string \| null | `Permanent`, `Transient`, or `Undetermined` |
+| `subType` | string \| null | e.g. `General`, `NoEmail`, `MailboxFull` — see [webhooks.md](../webhooks.md#bounce-types) for the full list |
+| `diagnosticCode` | string[] | SMTP diagnostic responses, including status code and reason |
+
 ### Reschedule a Scheduled Email
 
 ```typescript

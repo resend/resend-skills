@@ -54,6 +54,17 @@ Retrieve a sent email by ID.
 }
 ```
 
+When `last_event` is `bounced`, the output also includes a `bounce` object (omitted otherwise):
+
+```json
+"bounce": {
+  "message": "The recipient's email provider sent a hard bounce message.",
+  "type": "Permanent",
+  "subType": "General",
+  "diagnosticCode": ["smtp; 550 5.1.1 user unknown"]
+}
+```
+
 ---
 
 ## emails list
