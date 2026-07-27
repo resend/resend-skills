@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "3.0.2"
+    version: "3.0.3"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -40,7 +40,7 @@ inputs:
       required: true
     - name: RESEND_WEBHOOK_SECRET
       description: Webhook signing secret for verifying inbound email event payloads. Returned as `signing_secret` in the response when you create a webhook via the API.
-      required: true
+      required: false
 references:
     - security-levels.md
     - webhook-setup.md
