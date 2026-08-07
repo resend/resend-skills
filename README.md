@@ -28,7 +28,9 @@ The plugin registers Resend's hosted [MCP server](https://github.com/resend/rese
 
 ## Plugins
 
-This repo serves as a plugin for multiple platforms:
+This repo follows the [Agent Plugins](https://agent-plugins.org) open standard: `plugin.json` and `mcp.json` at the root, skills in `skills/`. Any conformant client can load it.
+
+It also serves as a plugin for these platforms through their own manifests:
 
 - **Claude Code** — `.claude-plugin/`
 - **Cursor** — `.cursor-plugin/`
