@@ -52,7 +52,7 @@ Groups: `{ "type": "and" | "or", "rules": [...] }` for nesting.
 
 Supported operators: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `contains`, `starts_with`, `ends_with`, `exists`, `is_empty`. The `exists` and `is_empty` operators require no `value`.
 
-For `condition` steps, fields reference contact data (e.g. `properties.plan`). For `filter_rule` in `wait_for_event`, fields are restricted to `event.*` (e.g. `event.status`).
+For `condition` steps, fields use the `contact.*`, `event.*`, or `wait_events.*` namespaces (e.g. `contact.properties.plan`). For `filter_rule` in `wait_for_event`, fields use `event.*` or `contact.*` (e.g. `event.status`).
 
 ### Connections
 
@@ -149,7 +149,7 @@ const { data, error } = await resend.automations.create({
     {
       key: 'check_plan',
       type: 'condition',
-      config: { type: 'rule', field: 'properties.plan', operator: 'eq', value: 'pro' },
+      config: { type: 'rule', field: 'contact.properties.plan', operator: 'eq', value: 'pro' },
     },
     { key: 'send_pro', type: 'send_email', config: { template: { id: 'tmpl_pro' }, from: 'Acme <hello@acme.com>' } },
     { key: 'send_free', type: 'send_email', config: { template: { id: 'tmpl_free' }, from: 'Acme <hello@acme.com>' } },
