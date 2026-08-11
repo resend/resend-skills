@@ -149,7 +149,7 @@ const { data, error } = await resend.automations.create({
     {
       key: 'check_plan',
       type: 'condition',
-      config: { type: 'rule', field: 'properties.plan', operator: 'equals', value: 'pro' },
+      config: { type: 'rule', field: 'properties.plan', operator: 'eq', value: 'pro' },
     },
     { key: 'send_pro', type: 'send_email', config: { template: { id: 'tmpl_pro' }, from: 'Acme <hello@acme.com>' } },
     { key: 'send_free', type: 'send_email', config: { template: { id: 'tmpl_free' }, from: 'Acme <hello@acme.com>' } },

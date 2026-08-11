@@ -178,7 +178,8 @@ const UNTRUSTED_CAPABILITIES: AgentCapabilities = {
 };
 
 async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent: EmailContent) {
-  const isTrusted = ALLOWED_SENDERS.includes(eventData.from.toLowerCase());
+  const sender = eventData.from.toLowerCase();
+  const isTrusted = ALLOWED_SENDERS.some(allowed => sender === allowed.toLowerCase());
 
   const capabilities = isTrusted ? TRUSTED_CAPABILITIES : UNTRUSTED_CAPABILITIES;
 
@@ -218,7 +219,8 @@ interface PendingAction {
 }
 
 async function processEmailForAgent(eventData: EmailReceivedEvent, emailContent: EmailContent) {
-  const isTrusted = ALLOWED_SENDERS.includes(eventData.from.toLowerCase());
+  const sender = eventData.from.toLowerCase();
+  const isTrusted = ALLOWED_SENDERS.some(allowed => sender === allowed.toLowerCase());
 
   if (isTrusted) {
     await agent.processEmail({ ... });
