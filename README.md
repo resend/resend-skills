@@ -2,7 +2,7 @@
 
 # Resend Skills
 
-A collection of skills for AI coding agents following the [Agent Skills](https://agentskills.io) format. Available as a plugin for Claude Code, Cursor, and OpenAI Codex. Includes an MCP server for tool access.
+A collection of skills for AI coding agents following the [Agent Skills](https://agentskills.io) format. Available as a plugin for Claude Code, Cursor, and any [Agent Plugins](https://agent-plugins.org) client. Includes an MCP server for tool access.
 
 ## Install
 
@@ -34,7 +34,6 @@ It also serves as a plugin for these platforms through their own manifests:
 
 - **Claude Code** — `.claude-plugin/`
 - **Cursor** — `.cursor-plugin/`
-- **OpenAI Codex** — `.codex-plugin/`
 - **Grok** — `.grok-plugin/`
 
 ## Editing skills
