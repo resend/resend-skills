@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "3.0.3"
+    version: "3.0.4"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -279,6 +279,10 @@ import { Resend } from 'resend';
 
 const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+const ALLOWED_SENDERS = (process.env.ALLOWED_SENDERS || '').split(',').filter(Boolean);
+const isAllowedSender = (sender) =>
+  ALLOWED_SENDERS.some(allowed => sender === allowed.toLowerCase());
 
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {

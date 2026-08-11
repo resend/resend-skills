@@ -284,7 +284,7 @@ export async function handleIncomingEmail(event: EmailReceivedWebhookEvent): Pro
 
     case 'domain':
       const domain = sender.split('@')[1];
-      if (!config.allowedDomains.includes(domain)) {
+      if (!config.allowedDomains.some(allowed => domain === allowed.toLowerCase())) {
         await logRejection(event, 'domain_not_allowed');
         return;
       }
