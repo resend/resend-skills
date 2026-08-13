@@ -18,7 +18,7 @@ Automations are created in a `disabled` state by default. Set `status: "enabled"
 | Update | `resend.automations.update(params)` | Partial update — name, status, or steps+connections |
 | Delete | `resend.automations.remove(id)` | Permanent |
 | Stop | `resend.automations.stop(id)` | Sets status to `disabled` |
-| Duplicate | — | cURL only, no SDK support yet |
+| Duplicate | `resend.automations.duplicate(id)` | Returns the new automation ID |
 | List Runs | `resend.automations.runs.list({ automationId, status? })` | Filter by run status |
 | Get Run | `resend.automations.runs.get({ automationId, runId })` | Returns run with executed steps |
 
@@ -210,14 +210,17 @@ const { data, error } = await resend.automations.stop('aut_abc123');
 
 ### Duplicate an Automation
 
-> **SDK availability:** Duplicate is currently only available via cURL. No SDK or the CLI supports it yet.
+> **SDK availability:** Duplicate is currently only available in the Node.js SDK and via cURL. Other SDKs and the CLI do not support it yet.
+
+```typescript
+const { data, error } = await resend.automations.duplicate('aut_abc123');
+// data.id is the new automation
+```
 
 ```bash
 curl -X POST 'https://api.resend.com/automations/aut_abc123/duplicate' \
      -H 'Authorization: Bearer re_xxxxxxxxx'
 ```
-
-Returns the new automation's `id`.
 
 ## Constraints
 
