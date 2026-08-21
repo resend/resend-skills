@@ -2,7 +2,7 @@
 
 ## Overview
 
-After sending, emails can be retrieved, listed, rescheduled, or cancelled. Updates are limited to `scheduled_at` only — content cannot be changed after creation.
+After sending, emails can be retrieved, listed, rescheduled, cancelled, or shared. Updates are limited to `scheduled_at` only — content cannot be changed after creation.
 
 ## SDK Methods
 
@@ -14,6 +14,7 @@ After sending, emails can be retrieved, listed, rescheduled, or cancelled. Updat
 | List | `resend.emails.list({ limit, offset })` | Paginated list of sent emails |
 | Update | `resend.emails.update({ id, scheduledAt })` | Reschedule only — no content changes |
 | Cancel | `resend.emails.cancel(id)` | Cancel a scheduled email before it sends |
+| Share | `resend.emails.share(id, { expiresIn })` | Create a public link for a sent or received email; `expiresIn` defaults to and caps at 48h |
 
 ### Python
 
@@ -23,6 +24,7 @@ After sending, emails can be retrieved, listed, rescheduled, or cancelled. Updat
 | List | `resend.Emails.list(params)` |
 | Update | `resend.Emails.update(params)` — params: `{ "id": ..., "scheduled_at": ... }` |
 | Cancel | `resend.Emails.cancel(id)` |
+| Share | `resend.Emails.share(email_id, params)` — params: `{ "expires_in": ... }` |
 
 ## Examples
 
@@ -70,6 +72,23 @@ if (error) console.error(error);
 
 ```python
 resend.Emails.cancel("email_abc123")
+```
+
+### Share a Sent or Received Email
+
+Creates a public, unauthenticated link — anyone with the URL can view the email. Works for both sent and received emails; the API detects which type the ID belongs to.
+
+```typescript
+const { data, error } = await resend.emails.share('email_abc123', {
+  expiresIn: '2 hours', // optional — human-readable duration, defaults to and caps at 48h
+});
+if (error) console.error(error);
+console.log(data.url);
+```
+
+```python
+shared = resend.Emails.share("email_abc123", {"expires_in": "2 hours"})
+print(shared["url"])
 ```
 
 ## Retrieving Attachments
@@ -213,3 +232,5 @@ for row in metrics.get("data", []):
 | Using `.list()` without pagination | Pass `limit` and `offset` to paginate through results |
 | Combining `email` and `broadcast` in metrics | These are mutually exclusive as dimensions and as filters — the request is rejected |
 | Expecting `unique_opened`/`open_rate`-style metrics without tracking enabled | Open/click tracking must be enabled on the sending domain for these to be meaningful |
+| Assuming a longer `expiresIn` is possible | 48 hours is the maximum — requesting more returns a validation error |
+| Treating share links as revocable | There's no revoke endpoint — the link is valid until it expires, no early invalidation |
