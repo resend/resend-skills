@@ -13,6 +13,7 @@ Send emails to audience segments. Broadcasts follow a two-step lifecycle: **crea
 | Cancel | `resend.broadcasts.cancel(id)` | `resend.Broadcasts.cancel(id)` |
 | Update | `resend.broadcasts.update(id, params)` | `resend.Broadcasts.update(params)` |
 | Delete | `resend.broadcasts.remove(id)` | `resend.Broadcasts.remove(id)` |
+| Clicked Links | `resend.broadcasts.clickedLinks(id, params?)` | `resend.Broadcasts.clicked_links(id, params?)` |
 
 ## Create Parameters
 
@@ -88,6 +89,9 @@ const { data, error } = await resend.broadcasts.cancel('bc_abc123');
 // Delete — draft or scheduled only (deleting a scheduled broadcast also
 // cancels its delivery). Sent broadcasts cannot be deleted.
 const { data, error } = await resend.broadcasts.remove('bc_abc123');
+
+// Clicked links — ranked by total clicks, paginated with cursors
+const { data, error } = await resend.broadcasts.clickedLinks('bc_abc123', { limit: 10 });
 ```
 
 ## Python Example
@@ -131,3 +135,4 @@ Use triple-mustache with a pipe for fallbacks: `{{{PROPERTY_KEY|fallback}}}`
 | `{{VAR}}` instead of `{{{VAR}}}` | Triple braces required for variable interpolation |
 | Ignoring `error` return | Node.js SDK returns `{ data, error }` — always check `error` |
 | `scheduledAt` format confusion | Accepts both ISO 8601 (`2025-03-15T10:00:00Z`) and natural language (`in 1 hour`) |
+| Treating clicked links' `id` as an entity ID | It's an opaque pagination cursor for that row — use it with `after`/`before`, not to look up the link elsewhere |
