@@ -14,6 +14,7 @@ Send emails to audience segments. Broadcasts follow a two-step lifecycle: **crea
 | Update | `resend.broadcasts.update(id, params)` | `resend.Broadcasts.update(params)` |
 | Delete | `resend.broadcasts.remove(id)` | `resend.Broadcasts.remove(id)` |
 | Clicked Links | `resend.broadcasts.clickedLinks(id, params?)` | `resend.Broadcasts.clicked_links(id, params?)` |
+| Recipients | `resend.broadcasts.recipients(id, params)` | `resend.Broadcasts.recipients(params)` |
 
 ## Create Parameters
 
@@ -94,6 +95,31 @@ const { data, error } = await resend.broadcasts.remove('bc_abc123');
 const { data, error } = await resend.broadcasts.clickedLinks('bc_abc123', { limit: 10 });
 ```
 
+## Recipients
+
+List who a broadcast was sent to, filtered by a single event `type`. Results are
+paginated with cursors (`after` / `before`).
+
+```typescript
+// Who opened it
+const { data, error } = await resend.broadcasts.recipients('bc_abc123', {
+  type: 'opened',
+});
+
+// Who bounced, filtered to permanent bounces only
+const { data, error } = await resend.broadcasts.recipients('bc_abc123', {
+  type: 'bounced',
+  bounceType: 'permanent',
+});
+```
+
+`type` is required: `sent`, `delivered`, `opened`, `clicked`, `bounced`,
+`complained`, `unsubscribed`, or `suppressed`. Each recipient row always has
+`id` (an opaque pagination cursor, not a real entity id), `contact_id`
+(nullable), and `email`. Depending on `type`, rows also include `count`
+(opened/clicked), `bounce_type` (bounced), or `clicked_links` (clicked).
+`bounce_type` is only meaningful when `type` is `bounced`.
+
 ## Python Example
 
 ```python
@@ -136,3 +162,4 @@ Use triple-mustache with a pipe for fallbacks: `{{{PROPERTY_KEY|fallback}}}`
 | Ignoring `error` return | Node.js SDK returns `{ data, error }` — always check `error` |
 | `scheduledAt` format confusion | Accepts both ISO 8601 (`2025-03-15T10:00:00Z`) and natural language (`in 1 hour`) |
 | Treating clicked links' `id` as an entity ID | It's an opaque pagination cursor for that row — use it with `after`/`before`, not to look up the link elsewhere |
+| Passing `bounceType` with a non-`bounced` type | It's silently ignored by some SDKs and rejected by the API — only meaningful when `type: 'bounced'` |
