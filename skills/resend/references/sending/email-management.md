@@ -124,6 +124,84 @@ const buffer = await response.arrayBuffer();
 | `expires_at` | string | When the download URL expires |
 | `size` | number | Size in bytes |
 
+## Retrieving Metrics
+
+Account-level email delivery and engagement metrics (sent, delivered, bounced, opened, clicked, etc.) for a date range. With no options, returns totals only. Optionally broken down by one or more dimensions: `period`, `domain`, `email`, `broadcast`.
+
+`email` and `broadcast` are mutually exclusive — as dimensions, and as filters (`emailId`/`broadcastId`). Requesting both, in either form, is rejected.
+
+### SDK Methods
+
+| Operation | Node.js | Python |
+|-----------|---------|--------|
+| Get metrics | `resend.emails.metrics(options)` | `resend.Emails.metrics(params)` |
+
+`options`/`params` (all optional):
+
+| Field (Node.js / Python) | Type | Notes |
+|-------|------|-------|
+| `startDate` / `start_date` | string | ISO 8601 date or datetime. Defaults to 6 days before `endDate` |
+| `endDate` / `end_date` | string | ISO 8601 date or datetime. Defaults to now |
+| `timezone` | string | IANA timezone, e.g. `America/New_York`. Defaults to UTC |
+| `granularity` | string | `hourly`, `daily`, `weekly`, or `monthly` — bucket size when `period` is a dimension. Defaults to `daily` |
+| `metrics` | string[] | Which metrics to include. Defaults to all |
+| `dimensions` | string[] | `period`, `domain`, `email`, `broadcast` — combinable except `email`+`broadcast` |
+| `domainId` / `domain_id` | string[] | Restrict to these sending domain IDs (max 100) |
+| `emailId` / `email_id` | string[] | Restrict to these email IDs (max 100). Cannot combine with `broadcast` dimension/`broadcastId` |
+| `broadcastId` / `broadcast_id` | string[] | Restrict to these broadcast IDs (max 100). Cannot combine with `email` dimension/`emailId` |
+
+### Examples
+
+```typescript
+// Totals only, default 6-day window
+const { data, error } = await resend.emails.metrics();
+if (error) {
+  console.error(error);
+  return;
+}
+console.log(data.totals.sent, data.totals.delivered);
+```
+
+```python
+# Totals only, default 6-day window
+metrics = resend.Emails.metrics({})
+print(metrics["totals"]["sent"], metrics["totals"]["delivered"])
+```
+
+```typescript
+// Broken down by period and broadcast, filtered to one broadcast
+const { data, error } = await resend.emails.metrics({
+  startDate: '2026-07-01',
+  endDate: '2026-07-08',
+  dimensions: ['period', 'broadcast'],
+  broadcastId: ['bc_abc123'],
+});
+if (error) console.error(error);
+
+for (const row of data.data ?? []) {
+  console.log(row.period, row.broadcast_name, row.delivered);
+}
+```
+
+```python
+metrics = resend.Emails.metrics({
+    "start_date": "2026-07-01",
+    "end_date": "2026-07-08",
+    "dimensions": ["period", "broadcast"],
+    "broadcast_id": ["bc_abc123"],
+})
+
+for row in metrics.get("data", []):
+    print(row["period"], row["broadcast_name"], row["delivered"])
+```
+
+### Metrics Response Fields
+
+| Field | Type | Description |
+|-------|------|--------------|
+| `totals` | object | Metric totals for the whole date range, keyed by metric name |
+| `data` | array \| absent | Per-dimension breakdown rows. Absent when no `dimensions` were requested |
+
 ## Common Mistakes
 
 | Mistake | Fix |
@@ -133,3 +211,5 @@ const buffer = await response.arrayBuffer();
 | Cancelling too late | Cancel before the `scheduled_at` time — there's a brief processing window before send |
 | Not checking `error` in Node.js | SDK returns `{ data, error }`, does not throw — always destructure and check |
 | Using `.list()` without pagination | Pass `limit` and `offset` to paginate through results |
+| Combining `email` and `broadcast` in metrics | These are mutually exclusive as dimensions and as filters — the request is rejected |
+| Expecting `unique_opened`/`open_rate`-style metrics without tracking enabled | Open/click tracking must be enabled on the sending domain for these to be meaningful |
