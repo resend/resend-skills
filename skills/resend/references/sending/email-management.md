@@ -82,8 +82,11 @@ Creates a public, unauthenticated link — anyone with the URL can view the emai
 const { data, error } = await resend.emails.share('email_abc123', {
   expiresIn: '2 hours', // optional — human-readable duration, defaults to and caps at 48h
 });
-if (error) console.error(error);
-console.log(data.url);
+if (error) {
+  console.error(error);
+} else {
+  console.log(data.url);
+}
 ```
 
 ```python
