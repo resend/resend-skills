@@ -162,4 +162,4 @@ Use triple-mustache with a pipe for fallbacks: `{{{PROPERTY_KEY|fallback}}}`
 | Ignoring `error` return | Node.js SDK returns `{ data, error }` — always check `error` |
 | `scheduledAt` format confusion | Accepts both ISO 8601 (`2025-03-15T10:00:00Z`) and natural language (`in 1 hour`) |
 | Treating clicked links' `id` as an entity ID | It's an opaque pagination cursor for that row — use it with `after`/`before`, not to look up the link elsewhere |
-| Passing `bounceType` with a non-`bounced` type | It's silently ignored by some SDKs and rejected by the API — only meaningful when `type: 'bounced'` |
+| Passing `bounceType` with a non-`bounced` type | Rejected with a 422 — only meaningful when `type: 'bounced'` |
