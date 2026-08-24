@@ -141,16 +141,16 @@ Auth resolves: `--api-key` flag > `RESEND_API_KEY` env > config file (`resend lo
 
 | Command Group | What it does |
 |--------------|-------------|
-| `emails` | send, get, list, batch, cancel, update |
+| `emails` | send, get, list, batch, cancel, update, metrics |
 | `emails receiving` | list, get, attachments, forward, listen |
 | `domains` | create, verify, get, claim, update, delete, list |
 | `logs` | list, get, open |
 | `careers` | list, apply — browse open positions at Resend and apply |
 | `suppressions` _(beta)_ | list, add, get, delete, batch — requires account enrollment |
-| `api-keys` | create, list, delete |
+| `api-keys` | create, list, update, delete |
 | `automations` | create, get, list, update, delete, duplicate, stop, open, runs |
 | `events` | create, get, list, update, delete, send, open |
-| `broadcasts` | create, send, update, delete, list |
+| `broadcasts` | create, send, get, update, delete, list, cancel, open, clicked-links, recipients |
 | `contacts` | create, update, delete, segments, topics, imports |
 | `contact-properties` | create, update, delete, list |
 | `segments` | create, get, list, delete, contacts |
