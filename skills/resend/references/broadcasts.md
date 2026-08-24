@@ -14,7 +14,7 @@ Send emails to audience segments. Broadcasts follow a two-step lifecycle: **crea
 | Update | `resend.broadcasts.update(id, params)` | `resend.Broadcasts.update(params)` |
 | Delete | `resend.broadcasts.remove(id)` | `resend.Broadcasts.remove(id)` |
 | Clicked Links | `resend.broadcasts.clickedLinks(id, params?)` | `resend.Broadcasts.clicked_links(id, params?)` |
-| Recipients | `resend.broadcasts.recipients(id, params)` | `resend.Broadcasts.recipients(params)` |
+| Recipients | `resend.broadcasts.recipients(id, params)` | `resend.Broadcasts.recipients(id, params)` |
 
 ## Create Parameters
 
