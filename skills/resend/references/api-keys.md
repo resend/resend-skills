@@ -1,6 +1,6 @@
 # API Keys
 
-Create, list, update (rename), and delete API keys programmatically. No get endpoint exists.
+Create, list, update, and delete API keys programmatically. No get endpoint exists.
 
 ## SDK Methods
 
