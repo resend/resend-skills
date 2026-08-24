@@ -156,7 +156,7 @@ export async function POST(req: Request) {
 | **Send batch emails** | [sending/overview.md](references/sending/overview.md) → [sending/batch-email-examples.md](references/sending/batch-email-examples.md) |
 | **Full SDK examples** (Node.js, Python, Go, cURL) | [sending/single-email-examples.md](references/sending/single-email-examples.md) |
 | **Idempotency, retries, error handling** | [sending/best-practices.md](references/sending/best-practices.md) |
-| **Get, list, reschedule, cancel emails** | [sending/email-management.md](references/sending/email-management.md) |
+| **Get, list, reschedule, cancel emails, retrieve metrics** | [sending/email-management.md](references/sending/email-management.md) |
 | **Receive inbound emails** | [receiving.md](references/receiving.md) — domain setup, webhooks, attachments |
 | **Manage templates** (CRUD, variables) | [templates.md](references/templates.md) — lifecycle, aliases, pagination |
 | **Set up webhooks** (events, verification) | [webhooks.md](references/webhooks.md) — verification, CRUD, retry schedule, IP allowlist |
