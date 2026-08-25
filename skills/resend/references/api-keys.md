@@ -85,7 +85,7 @@ keys = resend.ApiKeys.list()
 
 # Rename a key (only "name" is patchable)
 resend.ApiKeys.update({
-    "api_key_id": "api_key_id",
+    "id": "api_key_id",
     "name": "Production Sending Key v2",
 })
 
