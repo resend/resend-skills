@@ -10,10 +10,9 @@ Group contacts for broadcast targeting. Segments replaced legacy "audiences" —
 |-----------|--------|
 | Create | `resend.segments.create(params)` |
 | Get | `resend.segments.get(id)` |
+| Update | `resend.segments.update(id, { name })` — rename only |
 | List | `resend.segments.list(params?)` |
 | Delete | `resend.segments.remove(id)` — not `.delete()` |
-
-No update endpoint — delete and recreate to rename a segment.
 
 ### Python
 
@@ -21,6 +20,7 @@ No update endpoint — delete and recreate to rename a segment.
 |-----------|--------|
 | Create | `resend.Segments.create(params)` |
 | Get | `resend.Segments.get(id)` |
+| Update | `resend.Segments.update(id, params)` — rename only |
 | List | `resend.Segments.list(params?)` |
 | Delete | `resend.Segments.remove(id)` |
 
@@ -29,6 +29,23 @@ No update endpoint — delete and recreate to rename a segment.
 ```typescript
 const { data, error } = await resend.segments.create({
   name: 'Active Users',
+});
+
+if (error) {
+  console.error(error);
+  return;
+}
+
+console.log(data.id); // seg_xxxxxxxx
+```
+
+## Update Segment
+
+Rename an existing segment. `name` is the only field — the response only returns `object` and `id`, not the new `name`.
+
+```typescript
+const { data, error } = await resend.segments.update('seg_xxx', {
+  name: 'Active Users (Q3)',
 });
 
 if (error) {
@@ -72,6 +89,6 @@ await resend.broadcasts.create({
 | Mistake | Fix |
 |---------|-----|
 | Using `audienceId` | Audiences are deprecated — use `segmentId` |
-| Calling `.update()` | No update endpoint — `.remove()` then `.create()` to rename |
+| Expecting `name` back from `.update()` | The update response only returns `object` and `id` |
 | Calling `.delete()` | SDK method is `.remove()` |
 | Expecting contacts auto-added | Contacts must be explicitly added via `contacts.segments.add()` |
