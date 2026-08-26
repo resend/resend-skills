@@ -53,7 +53,7 @@ if (error) {
   return;
 }
 
-console.log(data.id); // seg_xxxxxxxx
+console.log(data.id); // UUID, e.g. 78261eea-8f8b-4381-83c6-79fa7120f1cf
 ```
 
 ## Managing Contacts in Segments
@@ -89,6 +89,5 @@ await resend.broadcasts.create({
 | Mistake | Fix |
 |---------|-----|
 | Using `audienceId` | Audiences are deprecated — use `segmentId` |
-| Expecting `name` back from `.update()` | The update response only returns `object` and `id` |
 | Calling `.delete()` | SDK method is `.remove()` |
 | Expecting contacts auto-added | Contacts must be explicitly added via `contacts.segments.add()` |
