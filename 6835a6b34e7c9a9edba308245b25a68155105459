@@ -1,0 +1,31 @@
+skill-evals/resend/evals.json
+  s_c790f9e5a7a07b::t_3d73bf0108c17e 421,426
+skills/resend/references/domains.md
+  s_c790f9e5a7a07b::t_3695bb23b78229 28
+  s_c790f9e5a7a07b::t_02a437a2a842ed 111,119
+  s_c790f9e5a7a07b::t_2374e595b04016 147-166
+  s_c790f9e5a7a07b::t_ed461587213339 201
+  s_c790f9e5a7a07b::t_4e9d8f8c1f3d5e 120
+skills/resend/SKILL.md
+  s_c790f9e5a7a07b::t_0232ae39e37ab0 183-185,187-188
+skills/resend/references/installation.md
+  s_c790f9e5a7a07b::t_fc9379e5b1f8fc 12-14,16-17
+  s_c790f9e5a7a07b::t_9eaf6aa55913d6 93
+  s_c790f9e5a7a07b::t_4780301af45545 101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "6835a6b34e7c9a9edba308245b25a68155105459",
+  "prompts": {},
+  "sessions": {
+    "s_c790f9e5a7a07b": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "465191f0-3bcf-434f-8786-36e5a02f3bc7",
+        "model": "grok-4.5"
+      },
+      "human_author": "João Melo <jopcmelo@gmail.com>"
+    }
+  }
+}

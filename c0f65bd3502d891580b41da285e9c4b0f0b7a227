@@ -1,0 +1,28 @@
+skills/resend/references/domains.md
+  s_a6cd714394bc21::t_32aaae5fca8b5d 115
+skills/resend-cli/SKILL.md
+  s_a6cd714394bc21::t_87db27ea709792 14
+skills/resend-cli/references/domains.md
+  s_a6cd714394bc21::t_c73e8c0dca2133 105-107
+skill-evals/resend/evals.json
+  s_a6cd714394bc21::t_020b094a07707a 426
+  s_a6cd714394bc21::t_30cea47ec0e644 421
+skills/resend/SKILL.md
+  s_a6cd714394bc21::t_a683db7e9e76aa 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "c0f65bd3502d891580b41da285e9c4b0f0b7a227",
+  "prompts": {},
+  "sessions": {
+    "s_a6cd714394bc21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a62b2e71-32c2-4f96-be76-1e3903e0a2b0",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": null
+    }
+  }
+}

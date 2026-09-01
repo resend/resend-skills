@@ -1,0 +1,23 @@
+skills/resend/references/domains.md
+  s_a6cd714394bc21::t_415e9e525d78eb 111
+  s_a6cd714394bc21::t_2cae85ea320d4d 179
+  s_a6cd714394bc21::t_dd627666f8b942 28
+skills/resend/SKILL.md
+  s_a6cd714394bc21::t_36292ced83c5c9 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f3e1cbccbecf3e10835d1db15f5f570eedaa447a",
+  "prompts": {},
+  "sessions": {
+    "s_a6cd714394bc21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a62b2e71-32c2-4f96-be76-1e3903e0a2b0",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "João Melo <jopcmelo@gmail.com>"
+    }
+  }
+}

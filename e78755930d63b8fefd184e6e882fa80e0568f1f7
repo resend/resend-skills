@@ -1,0 +1,32 @@
+skills/resend/SKILL.md
+  s_a6cd714394bc21::t_766e3f9a7bfe4f 163
+  s_a6cd714394bc21::t_b82f16adfb6e7d 7
+  s_a6cd714394bc21::t_f62ee672749bd0 191
+  s_a6cd714394bc21::t_cb8c0680705c93 182
+skills/resend/references/installation.md
+  s_a6cd714394bc21::t_14cbc6503bd083 11
+  s_a6cd714394bc21::t_118665f87fa315 3
+  s_a6cd714394bc21::t_e1985be25e6b7d 20
+skills/resend/references/domains.md
+  s_a6cd714394bc21::t_3375b0fa9bf78f 28-29
+  s_a6cd714394bc21::t_d2469954ecf9ad 103-146
+  s_a6cd714394bc21::t_2d7ed6f91d1e43 176-179
+skill-evals/resend/evals.json
+  s_a6cd714394bc21::t_fd52ac25a18396 417-427
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "e78755930d63b8fefd184e6e882fa80e0568f1f7",
+  "prompts": {},
+  "sessions": {
+    "s_a6cd714394bc21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a62b2e71-32c2-4f96-be76-1e3903e0a2b0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "João Melo <jopcmelo@gmail.com>"
+    }
+  }
+}

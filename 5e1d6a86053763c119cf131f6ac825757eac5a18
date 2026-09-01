@@ -1,0 +1,28 @@
+skill-evals/resend/evals.json
+  s_a6cd714394bc21::t_30cea47ec0e644 421
+  s_a6cd714394bc21::t_020b094a07707a 426
+skills/resend-cli/references/domains.md
+  s_a6cd714394bc21::t_c73e8c0dca2133 105-107
+skills/resend-cli/SKILL.md
+  s_a6cd714394bc21::t_87db27ea709792 14
+skills/resend/SKILL.md
+  s_a6cd714394bc21::t_a683db7e9e76aa 7
+skills/resend/references/domains.md
+  s_a6cd714394bc21::t_32aaae5fca8b5d 115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "5e1d6a86053763c119cf131f6ac825757eac5a18",
+  "prompts": {},
+  "sessions": {
+    "s_a6cd714394bc21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a62b2e71-32c2-4f96-be76-1e3903e0a2b0",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "João Melo <jopcmelo@gmail.com>"
+    }
+  }
+}
