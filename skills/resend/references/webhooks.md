@@ -144,6 +144,9 @@ The `signing_secret` is only returned once when you create the webhook. Store it
 | Get | `resend.webhooks.get(id)` | `resend.Webhooks.get(id)` |
 | Update | `resend.webhooks.update(id, params)` | `resend.Webhooks.update(params)` — `webhook_id` inside params |
 | Delete | `resend.webhooks.remove(id)` | `resend.Webhooks.remove(id)` |
+| List Events | `resend.webhooks.events.list({ webhookId, ...params })` | `resend.Webhooks.list_events(webhook_id, params?)` |
+| Get Event | `resend.webhooks.events.get({ webhookId, eventId })` | `resend.Webhooks.get_event(webhook_id, event_id)` |
+| List Event Attempts | `resend.webhooks.events.attempts.list({ webhookId, eventId, ...params })` | `resend.Webhooks.list_event_attempts(webhook_id, event_id, params?)` |
 
 ```typescript
 // List all webhooks
@@ -166,6 +169,42 @@ const { data: deleted, error: deleteError } = await resend.webhooks.remove('4dd3
 - `signing_secret` is only in the create response — `get` does not return it
 - Update can change `endpoint` and `events` — partial updates supported
 - Use `.remove()` not `.delete()` in the Node.js SDK
+
+### Delivery History (Events and Attempts)
+
+Inspect what Resend delivered to a webhook and how the endpoint responded. Use this
+to debug an endpoint that is missing events or returning errors, instead of asking
+the user to check the dashboard.
+
+```typescript
+// 1. Find the event — most recent first, forward-only pagination
+const { data: events, error } = await resend.webhooks.events.list({
+  webhookId: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
+  limit: 20,
+});
+if (error) throw error;
+// events.data[i]: { id, type, created_at, status }
+// status: 'pending' | 'attempting' | 'success' | 'failed'
+const eventId = events.data[0].id;
+
+// 2. See the exact payload Resend sent, and when the next retry is due
+const { data: event } = await resend.webhooks.events.get({
+  webhookId: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
+  eventId,
+});
+// event.next_attempt_at is null once status is 'success' or 'failed'
+// event.payload is the JSON body your endpoint received
+
+// 3. See what your endpoint returned on each try
+const { data: attempts } = await resend.webhooks.events.attempts.list({
+  webhookId: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
+  eventId,
+});
+// attempts.data[i]: { id, http_status_code, response, sent_at }
+```
+
+Both lists take `limit` (1–100, default 20) and `after` (the last `id` of the
+previous page). There is no `before` — the API rejects it with a 422.
 
 ## Signature Verification
 
@@ -273,7 +312,7 @@ If your endpoint doesn't return HTTP 200, Resend retries with exponential backof
 | 6 | 5 hours |
 | 7 | 10 hours |
 
-**Tip:** Always return 200 quickly, then process asynchronously if needed. You can manually replay failed webhooks from the dashboard.
+**Tip:** Always return 200 quickly, then process asynchronously if needed. You can manually replay failed webhooks from the dashboard, and inspect each attempt's `http_status_code` and response body through the API — see [Delivery History](#delivery-history-events-and-attempts).
 
 ## IP Allowlist
 
