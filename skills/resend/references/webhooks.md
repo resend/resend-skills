@@ -146,6 +146,7 @@ The `signing_secret` is only returned once when you create the webhook. Store it
 | Delete | `resend.webhooks.remove(id)` | `resend.Webhooks.remove(id)` |
 | List Events | `resend.webhooks.events.list({ webhookId, ...params })` | `resend.Webhooks.list_events(webhook_id, params?)` |
 | Get Event | `resend.webhooks.events.get({ webhookId, eventId })` | `resend.Webhooks.get_event(webhook_id, event_id)` |
+| Replay Event | `resend.webhooks.events.replay({ webhookId, eventId })` | `resend.Webhooks.replay_event(webhook_id, event_id)` |
 | List Event Attempts | `resend.webhooks.events.attempts.list({ webhookId, eventId, ...params })` | `resend.Webhooks.list_event_attempts(webhook_id, event_id, params?)` |
 
 ```typescript
@@ -195,7 +196,14 @@ const { data: event } = await resend.webhooks.events.get({
 // event.next_attempt_at is null once status is 'success' or 'failed'
 // event.payload is the JSON body your endpoint received
 
-// 3. See what your endpoint returned on each try
+// 3. Manually replay a failed or missed event — queues one more delivery
+const { data: replayed, error: replayError } = await resend.webhooks.events.replay({
+  webhookId: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
+  eventId,
+});
+// replayed.id is the same event ID — replay does not schedule automatic retries
+
+// 4. See what your endpoint returned on each try
 const { data: attempts } = await resend.webhooks.events.attempts.list({
   webhookId: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
   eventId,
@@ -205,6 +213,9 @@ const { data: attempts } = await resend.webhooks.events.attempts.list({
 
 Both lists take `limit` (1–100, default 20) and `after` (the last `id` of the
 previous page). There is no `before` — the API rejects it with a 422.
+
+Replay returns a 422 if the webhook is disabled, or if the event's payload is
+no longer available.
 
 ## Signature Verification
 
