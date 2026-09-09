@@ -20,7 +20,7 @@ Fine-grained subscription preferences — contacts opt in or out per topic. Topi
 |-----------|--------|
 | Create | `resend.Topics.create(params)` |
 | Get | `resend.Topics.get(id)` |
-| List | `resend.Topics.list()` |
+| List | `resend.Topics.list(params?)` — `limit`, `after`, `before` |
 | Update | `resend.Topics.update(id, params)` |
 | Delete | `resend.Topics.remove(id)` |
 
@@ -43,7 +43,7 @@ console.log(data.id); // topic_xxxxxxxx
 
 ## Update Topic
 
-`defaultSubscription` is **immutable** after creation. Only `name` and `description` can be updated through the SDK. The API also accepts `visibility`.
+`defaultSubscription` is **immutable** after creation. Only `name`, `description`, and `visibility` can be updated.
 
 ```typescript
 const { data, error } = await resend.topics.update({
@@ -51,6 +51,11 @@ const { data, error } = await resend.topics.update({
   name: 'Product News',
   description: 'News about our products',
 });
+
+if (error) {
+  console.error(error);
+  return;
+}
 ```
 
 ## Managing Contact Subscriptions
@@ -89,7 +94,7 @@ await resend.broadcasts.create({
 | Name max length | 50 characters |
 | Description max length | 200 characters |
 | `defaultSubscription` | `"opt_in"` or `"opt_out"` — immutable after create |
-| `visibility` | `"public"` (shown on preference page) or `"private"` (default). API only, not in the Node or Python SDK types yet |
+| `visibility` | `"public"` (shown on the unsubscribe page) or `"private"` (default) |
 
 ## Common Mistakes
 
@@ -99,6 +104,4 @@ await resend.broadcasts.create({
 | Trying to change `defaultSubscription` | Immutable after creation — delete and recreate with new value |
 | Calling `.delete()` | SDK method is `.remove()` |
 | `visibility: "hidden"` | Not a valid value — use `"private"` |
-| Passing `visibility` to the Node or Python SDK | Not in the SDK types yet. Set it with the REST API or in the dashboard |
-| Expecting `list()` to accept pagination | `topics.list()` takes no params — returns all topics |
 | Broadcast without `topicId` | Goes to all contacts in segment regardless of topic preferences |

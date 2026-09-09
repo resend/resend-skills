@@ -109,9 +109,14 @@ List and download attachments for sent emails. Returns metadata and a signed dow
 
 ```typescript
 // List all attachments for a sent email
-const { data: attachments } = await resend.emails.attachments.list({
+const { data: attachments, error } = await resend.emails.attachments.list({
   emailId: 'email_abc123',
 });
+
+if (error) {
+  console.error(error);
+  return;
+}
 
 for (const att of attachments.data) {
   console.log(att.filename);      // 'invoice.pdf'
@@ -121,10 +126,15 @@ for (const att of attachments.data) {
 }
 
 // Get a single attachment
-const { data: attachment } = await resend.emails.attachments.get({
+const { data: attachment, error: getError } = await resend.emails.attachments.get({
   emailId: 'email_abc123',
   id: 'att_def456',
 });
+
+if (getError) {
+  console.error(getError);
+  return;
+}
 
 // Download the content
 const response = await fetch(attachment.download_url);

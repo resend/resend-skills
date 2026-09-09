@@ -213,19 +213,33 @@ export async function POST(req: Request) {
 
   if (event.type === 'email.received') {
     // 1. Get email content
-    const { data: email } = await resend.emails.receiving.get(
+    const { data: email, error: emailError } = await resend.emails.receiving.get(
       event.data.email_id
     );
 
+    if (emailError) {
+      console.error(emailError);
+      return new Response('Failed to fetch email', { status: 500 });
+    }
+
     // 2. Get attachments (if any)
-    const { data: attachmentList } = await resend.emails.receiving.attachments.list({
-      emailId: event.data.email_id,
-    });
+    const { data: attachmentList, error: attachmentsError } =
+      await resend.emails.receiving.attachments.list({
+        emailId: event.data.email_id,
+      });
+
+    if (attachmentsError) {
+      console.error(attachmentsError);
+      return new Response('Failed to list attachments', { status: 500 });
+    }
 
     // 3. Download and encode attachments
     const attachments = await Promise.all(
       attachmentList.data.map(async (att) => {
         const res = await fetch(att.download_url);
+        if (!res.ok) {
+          throw new Error(`Failed to download ${att.filename}`);
+        }
         const buffer = Buffer.from(await res.arrayBuffer());
         return {
           filename: att.filename,
@@ -235,14 +249,19 @@ export async function POST(req: Request) {
     );
 
     // 4. Forward the email (single send — batch doesn't support attachments)
-    await resend.emails.send({
+    const { error: sendError } = await resend.emails.send({
       from: 'Support System <system@acme.com>',
       to: ['team@acme.com'],
       subject: `Fwd: ${email.subject}`,
-      html: email.html,
-      text: email.text,
+      html: email.html ?? undefined,
+      text: email.text ?? undefined,
       attachments,
     });
+
+    if (sendError) {
+      console.error(sendError);
+      return new Response('Failed to forward email', { status: 500 });
+    }
   }
 
   return new Response('OK', { status: 200 });
