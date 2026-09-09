@@ -254,7 +254,7 @@ export async function POST(req: Request) {
       to: ['team@acme.com'],
       subject: `Fwd: ${email.subject}`,
       html: email.html ?? undefined,
-      text: email.text ?? undefined,
+      text: email.text ?? '',
       attachments,
     });
 
