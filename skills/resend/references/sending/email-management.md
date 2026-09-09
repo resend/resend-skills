@@ -103,7 +103,7 @@ List and download attachments for sent emails. Returns metadata and a signed dow
 | Operation | Node.js | Python |
 |-----------|---------|--------|
 | List | `resend.emails.attachments.list({ emailId })` | `resend.Emails.Attachments.list(email_id)` |
-| Get | `resend.emails.attachments.get({ emailId, attachmentId })` | `resend.Emails.Attachments.get(email_id, attachment_id)` |
+| Get | `resend.emails.attachments.get({ emailId, id })` | `resend.Emails.Attachments.get(email_id, attachment_id)` |
 
 ### Examples
 
@@ -123,7 +123,7 @@ for (const att of attachments.data) {
 // Get a single attachment
 const { data: attachment } = await resend.emails.attachments.get({
   emailId: 'email_abc123',
-  attachmentId: 'att_def456',
+  id: 'att_def456',
 });
 
 // Download the content

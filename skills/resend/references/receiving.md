@@ -167,7 +167,7 @@ const { data: attachments } = await resend.emails.receiving.attachments.list({
   emailId: event.data.email_id,
 });
 
-for (const attachment of attachments) {
+for (const attachment of attachments.data) {
   console.log(attachment.filename);
   console.log(attachment.download_url);  // signed URL, see expires_at
   console.log(attachment.expires_at);
@@ -179,7 +179,7 @@ for (const attachment of attachments) {
 ```typescript
 const { data: attachment } = await resend.emails.receiving.attachments.get({
   emailId: event.data.email_id,
-  attachmentId: 'att_abc123',
+  id: 'att_abc123',
 });
 
 console.log(attachment.download_url); // signed URL
@@ -224,7 +224,7 @@ export async function POST(req: Request) {
 
     // 3. Download and encode attachments
     const attachments = await Promise.all(
-      attachmentList.map(async (att) => {
+      attachmentList.data.map(async (att) => {
         const res = await fetch(att.download_url);
         const buffer = Buffer.from(await res.arrayBuffer());
         return {
