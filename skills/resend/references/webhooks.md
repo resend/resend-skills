@@ -166,7 +166,7 @@ const { data: updated, error: updateError } = await resend.webhooks.update(
 // Delete a webhook
 const { data: deleted, error: deleteError } = await resend.webhooks.remove('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
 
-// Rotate the signing secret — payloads delivered after this are signed with the new one
+// Rotate the signing secret — for 24 hours payloads are signed with both secrets, then only the new one
 const { data: rotated, error: rotateError } = await resend.webhooks.rotateSigningSecret('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
 // rotated: { object: 'webhook', id, signing_secret: 'whsec_...' }
 // Update RESEND_WEBHOOK_SECRET with rotated.signing_secret right away
