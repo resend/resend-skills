@@ -173,8 +173,7 @@ const { data: rotated, error: rotateError } = await resend.webhooks.rotateSignin
 ```
 
 **Key gotchas:**
-- `signing_secret` is only in the create and rotate responses — `get` does not return it
-- Rotate if the secret leaked or you lost it — there is no way to read the current one back
+- `signing_secret` is in the create, get, and rotate responses — read it back with `get`, rotate it if it leaked
 - Update can change `endpoint` and `events` — partial updates supported
 - Use `.remove()` not `.delete()` in the Node.js SDK
 
