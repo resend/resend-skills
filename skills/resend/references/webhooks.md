@@ -144,6 +144,7 @@ The `signing_secret` is only returned once when you create the webhook. Store it
 | Get | `resend.webhooks.get(id)` | `resend.Webhooks.get(id)` |
 | Update | `resend.webhooks.update(id, params)` | `resend.Webhooks.update(params)` — `webhook_id` inside params |
 | Delete | `resend.webhooks.remove(id)` | `resend.Webhooks.remove(id)` |
+| Rotate Signing Secret | `resend.webhooks.rotateSigningSecret(id)` | `resend.Webhooks.rotate_signing_secret(webhook_id)` |
 | List Events | `resend.webhooks.events.list({ webhookId, ...params })` | `resend.Webhooks.list_events(webhook_id, params?)` |
 | Get Event | `resend.webhooks.events.get({ webhookId, eventId })` | `resend.Webhooks.get_event(webhook_id, event_id)` |
 | Replay Event | `resend.webhooks.events.replay({ webhookId, eventId })` | `resend.Webhooks.replay_event(webhook_id, event_id)` |
@@ -164,10 +165,15 @@ const { data: updated, error: updateError } = await resend.webhooks.update(
 
 // Delete a webhook
 const { data: deleted, error: deleteError } = await resend.webhooks.remove('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
+
+// Rotate the signing secret — for 24 hours payloads are signed with both secrets, then only the new one
+const { data: rotated, error: rotateError } = await resend.webhooks.rotateSigningSecret('4dd369bc-aa82-4ff3-97de-514ae3000ee0');
+// rotated: { object: 'webhook', id, signing_secret: 'whsec_...' }
+// Update RESEND_WEBHOOK_SECRET with rotated.signing_secret right away
 ```
 
 **Key gotchas:**
-- `signing_secret` is only in the create response — `get` does not return it
+- `signing_secret` is in the create, get, and rotate responses — read it back with `get`, rotate it if it leaked
 - Update can change `endpoint` and `events` — partial updates supported
 - Use `.remove()` not `.delete()` in the Node.js SDK
 
