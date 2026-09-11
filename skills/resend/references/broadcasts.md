@@ -11,6 +11,7 @@ Send emails to audience segments. Broadcasts follow a two-step lifecycle: **crea
 | List | `resend.broadcasts.list(params)` | `resend.Broadcasts.list(params)` |
 | Send | `resend.broadcasts.send(id, params?)` | `resend.Broadcasts.send(params)` |
 | Cancel | `resend.broadcasts.cancel(id)` | `resend.Broadcasts.cancel(id)` |
+| Duplicate | `resend.broadcasts.duplicate(id)` | `resend.Broadcasts.duplicate(id)` |
 | Update | `resend.broadcasts.update(id, params)` | `resend.Broadcasts.update(params)` |
 | Delete | `resend.broadcasts.remove(id)` | `resend.Broadcasts.remove(id)` |
 | Clicked Links | `resend.broadcasts.clickedLinks(id, params?)` | `resend.Broadcasts.clicked_links(id, params?)` |
@@ -69,7 +70,7 @@ const { data, error } = await resend.broadcasts.create({
 });
 ```
 
-## Get, List, Update, Cancel, Delete
+## Get, List, Update, Cancel, Duplicate, Delete
 
 ```typescript
 // Get
@@ -86,6 +87,10 @@ const { data, error } = await resend.broadcasts.update('bc_abc123', {
 // Cancel a queued or scheduled broadcast — stops a queued send mid-flight, or
 // reverts a scheduled one to draft. Does not remove the broadcast.
 const { data, error } = await resend.broadcasts.cancel('bc_abc123');
+
+// Duplicate — creates a new draft named "<name> (copy)" with the same content.
+// Works on any broadcast, including sent ones. Returns the new broadcast's id.
+const { data, error } = await resend.broadcasts.duplicate('bc_abc123');
 
 // Delete — draft or scheduled only (deleting a scheduled broadcast also
 // cancels its delivery). Sent broadcasts cannot be deleted.
