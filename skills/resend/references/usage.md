@@ -96,7 +96,7 @@ curl -s "https://api.resend.com/usage" \
 | `broadcasts.used` | number | No | Broadcasts sent |
 | `broadcasts.limit` | null | Always null | Broadcasts have no plan cap — this field is always `null` |
 | `ai_credits.used` | number | No | AI credits consumed in the current period |
-| `ai_credits.limit` | number \| null | Yes | Plan's AI credit cap. `null` when the plan doesn't include AI credits |
+| `ai_credits.limit` | number \| null | Yes | Plan's AI credit cap. `null` when the plan grants unlimited AI credits |
 | `ai_credits.next_increase_at` | timestamp \| null | Yes | When credits are next scheduled to increase. `null` if no increase is scheduled |
 | `automation_runs.used` | number | No | Automation runs in the current period |
 | `automation_runs.limit` | number | No | Plan's automation run cap — always a number |
