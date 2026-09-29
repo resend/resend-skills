@@ -65,7 +65,9 @@ The `email.received` payload contains metadata only (sender, recipient, subject,
 |-------|---------|
 | `domain.created` / `updated` / `deleted` | Domain configuration changes |
 | `contact.created` / `updated` / `deleted` | Contact list changes (not from CSV imports) |
+| `contact.topics.updated` | Contact's topic subscriptions change |
 | `suppression.added` / `removed` | Email address added to or removed from the suppression list |
+| `topic.created` / `updated` / `deleted` | Topic created, updated, or deleted |
 
 ## Setup
 
