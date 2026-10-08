@@ -4,7 +4,7 @@ description: Use when working with the Resend email API — sending transactiona
 license: MIT
 metadata:
     author: resend
-    version: "3.13.0"
+    version: "3.14.0"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -177,22 +177,11 @@ export async function POST(req: Request) {
 
 ## SDK Version Requirements
 
-Always install the latest SDK version. These are the minimum versions for full functionality (sending, receiving, webhook verification):
+Always install the latest SDK version. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, or `domains.claims.*`.
 
-| Language | Package | Min Version | Install |
-|----------|---------|-------------|---------|
-| Node.js | `resend` | >= 6.14.0 | `npm install resend` |
-| Python | `resend` | >= 2.34.0 | `pip install resend` |
-| Go | `resend-go/v3` | >= 3.11.0 | `go get github.com/resend/resend-go/v3` |
-| Ruby | `resend` | >= 1.6.0 | `gem install resend` |
-| PHP | `resend/resend-php` | >= 1.1.0 | `composer require resend/resend-php` |
-| Rust | `resend-rs` | >= 0.26.1 | `cargo add resend-rs` |
-| Java | `resend-java` | >= 4.16.0 | See [installation.md](references/installation.md) |
-| .NET | `Resend` | >= 0.2.1 | `dotnet add package Resend` |
+> **If the project already has a Resend SDK installed**, check its version against the minimum versions in [installation.md](references/installation.md) and upgrade if it's below.
 
-> **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, or `domains.claims.*`.
-
-See [installation.md](references/installation.md) for full installation commands, language detection, and cURL fallback.
+See [installation.md](references/installation.md) for the minimum version per language, full installation commands, language detection, and cURL fallback.
 
 ## Common Setup
 
