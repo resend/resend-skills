@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions �
 license: MIT
 metadata:
     author: resend
-    version: "3.0.4"
+    version: "3.0.5"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -78,11 +78,13 @@ Sender → Email → Resend (MX) → Webhook → Your Server → AI Agent
 
 This skill requires Resend SDK features for webhook verification (`webhooks.verify()`) and email receiving (`emails.receiving.get()`). Always install the latest SDK version. If the project already has a Resend SDK installed, check the version and upgrade if needed.
 
+These minimums cover only those two features. The `resend` skill lists higher minimums because it also covers newer features such as domain claims (`domains.claims.*`). If both skills are loaded, use the higher version.
+
 | Language | Package | Min Version |
 |----------|---------|-------------|
 | Node.js | `resend` | >= 6.9.2 |
 | Python | `resend` | >= 2.21.0 |
-| Go | `resend-go/v3` | >= 3.1.0 |
+| Go | `resend-go/v4` | >= 4.0.0 |
 | Ruby | `resend` | >= 1.0.0 |
 | PHP | `resend/resend-php` | >= 1.1.0 |
 | Rust | `resend-rs` | >= 0.20.0 |
