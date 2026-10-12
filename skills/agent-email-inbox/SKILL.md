@@ -305,26 +305,24 @@ export async function POST(req: NextRequest) {
   if (event.type === 'inbox.email.received') {
     const { inbox_id, thread_id, email_id } = event.data;
 
-    if (thread_id && email_id) {
-      // The webhook payload has no body. Fetch the email to read it.
-      const { data: email, error } = await resend.inboxes.threads.emails.get({
-        inboxId: inbox_id,
-        threadId: thread_id,
-        emailId: email_id,
-      });
+    // The webhook payload has no body. Fetch the email to read it.
+    const { data: email, error } = await resend.inboxes.threads.emails.get({
+      inboxId: inbox_id,
+      threadId: thread_id,
+      emailId: email_id,
+    });
 
-      if (error) {
-        // A non-2xx response makes Resend retry the webhook later
-        return new NextResponse('Error', { status: 500 });
-      }
-
-      // Apply the security level chosen above
-      await processEmailForAgent(email, {
-        inboxId: inbox_id,
-        threadId: thread_id,
-        emailId: email_id,
-      });
+    if (error) {
+      // A non-2xx response makes Resend retry the webhook later
+      return new NextResponse('Error', { status: 500 });
     }
+
+    // Apply the security level chosen above
+    await processEmailForAgent(email, {
+      inboxId: inbox_id,
+      threadId: thread_id,
+      emailId: email_id,
+    });
   }
 
   return new NextResponse('OK', { status: 200 });

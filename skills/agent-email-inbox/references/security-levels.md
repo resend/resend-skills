@@ -283,8 +283,6 @@ export async function handleIncomingEmail(event: WebhookEventPayload): Promise<v
   if (event.type !== 'inbox.email.received') return;
 
   const { inbox_id, thread_id, email_id } = event.data;
-  if (!thread_id || !email_id) return;
-
   const thread = { inboxId: inbox_id, threadId: thread_id, emailId: email_id };
   const { data: email, error } = await resend.inboxes.threads.emails.get(thread);
   if (error) throw new Error(`Failed to fetch email: ${error.message}`);
