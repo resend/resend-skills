@@ -92,8 +92,9 @@
       "expectations": [
         "Reads body as raw text, not req.json()",
         "Includes webhook signature verification with svix headers",
-        "Gets email content via resend.emails.receiving.get() (not from webhook payload)",
+        "Handles the inbox.email.received event and gets the email body via resend.inboxes.threads.emails.get() (not from webhook payload)",
         "Uses exact-match sender validation (===), not .includes()",
+        "Extracts the address from a `Name <address>` sender before the comparison",
         "Returns 200 OK even for rejected emails to prevent retry storms",
         "Logs rejected or suspicious emails"
       ]
