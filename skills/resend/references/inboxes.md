@@ -223,6 +223,7 @@ const { data: forwarded } = await resend.inboxes.threads.emails.forward({
 ```
 
 **Key gotchas:**
+- `threads.emails.list` returns the emails oldest first. Pass the last `id` as `after` for the next, newer page.
 - The `emailId` comes from `threads.emails.list` or from `matched_email_id` in a search result, not from `resend.emails`.
 - Reply sends right away, with no stored draft. For a received email, the reply goes to its `Reply-To` addresses, or to its sender. For an email the inbox sent, it goes to that email's `to` recipients. Set `replyAll: true` to also copy the other recipients. You cannot set `to` on a reply.
 - Reply needs `html` or `text` with more than whitespace. Without `subject`, the thread subject is used with a `Re:` prefix. Forward uses a `Fwd:` prefix.
