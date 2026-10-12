@@ -1,6 +1,6 @@
 ---
 name: resend
-description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, automations, events, viewing API request logs, checking account usage and quotas, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
+description: Use when working with the Resend email API — sending transactional emails (single or batch), receiving inbound emails via webhooks, managing email templates, tracking delivery events, managing domains, contacts, broadcasts, webhooks, API keys, inboxes (threads, labels, drafts, replies), automations, events, viewing API request logs, checking account usage and quotas, or setting up the Resend SDK. Always use this skill when the user mentions Resend, even for simple tasks like "send an email with Resend" — the skill contains critical gotchas (idempotency keys, webhook verification, template variable syntax) that prevent common production issues.
 license: MIT
 metadata:
     author: resend
@@ -45,6 +45,7 @@ references:
     - automations.md
     - events.md
     - usage.md
+    - inboxes.md
     - installation.md
     - fetch-all-templates.mjs
 ---
@@ -172,6 +173,7 @@ export async function POST(req: Request) {
 | **Create automations** (event-driven workflows) | [automations.md](references/automations.md) — steps, connections, runs, conditions |
 | **Define and send events** (automation triggers) | [events.md](references/events.md) — schemas, payloads, contact association |
 | **Check account usage and quotas** | [usage.md](references/usage.md) — emails, contacts, segments, broadcasts, AI credits, automation runs, domains, rate limit |
+| **Manage inboxes** (threads, replies, drafts) | [inboxes.md](references/inboxes.md) — labels, folders, search, agent settings, inbox webhook events |
 | **Install SDK** (8+ languages) | [installation.md](references/installation.md) |
 | **Set up an AI agent inbox** | Install the `agent-email-inbox` skill — covers security levels for untrusted input |
 
