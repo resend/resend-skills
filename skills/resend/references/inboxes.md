@@ -13,27 +13,27 @@ If an agent acts on the content of received emails, also install the `agent-emai
 | Create inbox | `resend.inboxes.create(params)` | `resend.Inboxes.create(params)` |
 | List inboxes | `resend.inboxes.list(params?)` | `resend.Inboxes.list(params?)` |
 | Get inbox | `resend.inboxes.get(idOrEmail)` | `resend.Inboxes.get(inbox_id)` |
-| Update inbox | `resend.inboxes.update(id, params)` | `resend.Inboxes.update(params)` |
+| Update inbox | `resend.inboxes.update(id, params)` | `resend.Inboxes.update(params)`, `id` inside params |
 | Delete inbox | `resend.inboxes.remove(id)` | `resend.Inboxes.remove(inbox_id)` |
 | Get agent settings | `resend.inboxes.agent.get({ inboxId })` | `resend.Inboxes.Agent.get(inbox_id)` |
-| Update agent settings | `resend.inboxes.agent.update({ inboxId, ...params })` | `resend.Inboxes.Agent.update(params)` |
+| Update agent settings | `resend.inboxes.agent.update({ inboxId, ...params })` | `resend.Inboxes.Agent.update(params)`, `inbox_id` inside params |
 | List labels | `resend.inboxes.labels.list({ inboxId })` | `resend.Inboxes.Labels.list(inbox_id)` |
-| Create label | `resend.inboxes.labels.create({ inboxId, ...params })` | `resend.Inboxes.Labels.create(params)` |
-| Update label | `resend.inboxes.labels.update({ inboxId, labelId, ...params })` | `resend.Inboxes.Labels.update(params)` |
+| Create label | `resend.inboxes.labels.create({ inboxId, ...params })` | `resend.Inboxes.Labels.create(params)`, `inbox_id` inside params |
+| Update label | `resend.inboxes.labels.update({ inboxId, labelId, ...params })` | `resend.Inboxes.Labels.update(params)`, `inbox_id` and `id` inside params |
 | Delete label | `resend.inboxes.labels.remove({ inboxId, labelId })` | `resend.Inboxes.Labels.remove(inbox_id, label_id)` |
-| List threads | `resend.inboxes.threads.list({ inboxId, ...params })` | `resend.Inboxes.Threads.list(params)` |
-| Search threads | `resend.inboxes.threads.search({ inboxId, ...params })` | `resend.Inboxes.Threads.search(params)` |
+| List threads | `resend.inboxes.threads.list({ inboxId, ...params })` | `resend.Inboxes.Threads.list(inbox_id, params?)` |
+| Search threads | `resend.inboxes.threads.search({ inboxId, ...params })` | `resend.Inboxes.Threads.search(inbox_id, params?)` |
 | Get thread | `resend.inboxes.threads.get({ inboxId, threadId })` | `resend.Inboxes.Threads.get(inbox_id, thread_id)` |
-| Update thread | `resend.inboxes.threads.update({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.update(params)` |
+| Update thread | `resend.inboxes.threads.update({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.update(params)`, `inbox_id` and `id` inside params |
 | Delete thread | `resend.inboxes.threads.remove({ inboxId, threadId })` | `resend.Inboxes.Threads.remove(inbox_id, thread_id)` |
-| List thread emails | `resend.inboxes.threads.emails.list({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.Emails.list(params)` |
+| List thread emails | `resend.inboxes.threads.emails.list({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.Emails.list(inbox_id, thread_id, params?)` |
 | Get thread email | `resend.inboxes.threads.emails.get({ inboxId, threadId, emailId })` | `resend.Inboxes.Threads.Emails.get(inbox_id, thread_id, email_id)` |
-| Reply to thread email | `resend.inboxes.threads.emails.reply({ inboxId, threadId, emailId, ...params })` | `resend.Inboxes.Threads.Emails.reply(params)` |
-| Forward thread email | `resend.inboxes.threads.emails.forward({ inboxId, threadId, emailId, ...params })` | `resend.Inboxes.Threads.Emails.forward(params)` |
-| List drafts | `resend.inboxes.drafts.list({ inboxId, ...params })` | `resend.Inboxes.Drafts.list(params)` |
-| Create draft | `resend.inboxes.drafts.create({ inboxId, ...params })` | `resend.Inboxes.Drafts.create(params)` |
+| Reply to thread email | `resend.inboxes.threads.emails.reply({ inboxId, threadId, emailId, ...params })` | `resend.Inboxes.Threads.Emails.reply(params)`, `inbox_id`, `thread_id` and `email_id` inside params |
+| Forward thread email | `resend.inboxes.threads.emails.forward({ inboxId, threadId, emailId, ...params })` | `resend.Inboxes.Threads.Emails.forward(params)`, `inbox_id`, `thread_id` and `email_id` inside params |
+| List drafts | `resend.inboxes.drafts.list({ inboxId, ...params })` | `resend.Inboxes.Drafts.list(inbox_id, params?)` |
+| Create draft | `resend.inboxes.drafts.create({ inboxId, ...params })` | `resend.Inboxes.Drafts.create(params)`, `inbox_id` inside params |
 | Get draft | `resend.inboxes.drafts.get({ inboxId, draftId })` | `resend.Inboxes.Drafts.get(inbox_id, draft_id)` |
-| Update draft | `resend.inboxes.drafts.update({ inboxId, draftId, ...params })` | `resend.Inboxes.Drafts.update(params)` |
+| Update draft | `resend.inboxes.drafts.update({ inboxId, draftId, ...params })` | `resend.Inboxes.Drafts.update(params)`, `inbox_id` and `id` inside params |
 | Delete draft | `resend.inboxes.drafts.remove({ inboxId, draftId })` | `resend.Inboxes.Drafts.remove(inbox_id, draft_id)` |
 | Send draft | `resend.inboxes.drafts.send({ inboxId, draftId })` | `resend.Inboxes.Drafts.send(inbox_id, draft_id)` |
 
