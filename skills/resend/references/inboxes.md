@@ -211,7 +211,7 @@ const { data: reply } = await resend.inboxes.threads.emails.reply({
   attachments: [
     { filename: 'receipt.txt', content: Buffer.from('Order 1041 refunded').toString('base64') },
   ],
-});
+}, { idempotencyKey: `refund-reply/${emailId}` });
 // reply: { id } (the sent email ID)
 
 // Forward the email with its attachments
@@ -221,7 +221,7 @@ const { data: forwarded } = await resend.inboxes.threads.emails.forward({
   emailId,
   to: ['delivered@resend.dev'],
   text: 'Flagging this refund request for you.',
-});
+}, { idempotencyKey: `refund-forward/${emailId}` });
 // forwarded: { id } (the sent email ID)
 ```
 
@@ -234,6 +234,7 @@ const { data: forwarded } = await resend.inboxes.threads.emails.forward({
 - Forward needs `to`. It quotes the original email and sends its attachments with your `attachments`. Together they can have up to 10 files and 25 MB of `content`. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the request returns 422.
 - `attachments` has the same shape as on `resend.emails.send()`.
 - Reply and forward return only the sent email ID.
+- Reply and forward take an `idempotencyKey` option, as on `resend.emails.send()`. See [Idempotency Keys](#idempotency-keys).
 
 ## Drafts
 
@@ -253,7 +254,7 @@ const { data: draft } = await resend.inboxes.drafts.create({
       contentType: 'text/plain',
     },
   ],
-});
+}, { idempotencyKey: 'refund-draft/order-1041' });
 // draft: { object: 'inbox_draft', id }
 
 const { data: drafts } = await resend.inboxes.drafts.list({ inboxId, limit: 20 });
@@ -277,7 +278,10 @@ await resend.inboxes.drafts.update({
   ],
 });
 
-const { data: sent } = await resend.inboxes.drafts.send({ inboxId, draftId: draft.id });
+const { data: sent } = await resend.inboxes.drafts.send(
+  { inboxId, draftId: draft.id },
+  { idempotencyKey: `refund-draft-send/${draft.id}` },
+);
 // sent: { id } (the sent email ID)
 
 // Discard a draft you do not want to send
@@ -295,6 +299,21 @@ await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
 - Send needs at least one `to` recipient, a non-empty `subject`, and `html` or `text`, or it returns 422. A reply draft created without `subject` has an empty subject with no `Re:` prefix, so set one before you send it. Update, remove or send on a draft that was already sent returns 409.
 - `drafts.list` returns only unsent drafts, most recently updated first.
+- Create and send take an `idempotencyKey` option. See [Idempotency Keys](#idempotency-keys).
+
+## Idempotency Keys
+
+Create draft, send draft, reply and forward accept an idempotency key, the same as `resend.emails.send()`. Pass it in the options argument: `{ idempotencyKey }` in Node.js, `{"idempotency_key": ...}` in Python. Use it when you retry these calls, so a retry does not create a second draft or send a second email.
+
+| Key Facts | |
+|-----------|---|
+| **Operations** | `drafts.create`, `drafts.send`, `threads.emails.reply`, `threads.emails.forward`. No other inbox operation takes it |
+| **Format** | `<event-type>/<entity-id>` (e.g., `refund-reply/<email-id>`) |
+| **Length** | 1 to 256 characters |
+| **Expiration** | 24 hours |
+| **Same key + same payload** | Returns the first response without a new draft or email. The response has the `idempotent-replayed: true` header |
+| **Same key + different payload** | Returns 409 `invalid_idempotent_request` |
+| **Same key while the first request runs** | Returns 409 `concurrent_idempotent_requests` |
 
 ## Webhook Events
 
