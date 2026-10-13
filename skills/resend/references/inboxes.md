@@ -208,6 +208,7 @@ const { data: reply } = await resend.inboxes.threads.emails.reply({
   threadId,
   emailId,
   text: 'Refund issued for order 1041.',
+  headers: { 'X-Ticket-Id': '4821' },
   attachments: [
     { filename: 'receipt.txt', content: Buffer.from('Order 1041 refunded').toString('base64') },
   ],
@@ -232,7 +233,7 @@ const { data: forwarded } = await resend.inboxes.threads.emails.forward({
 - With `replyAll: true`, a reply to a received email also copies the other `To` addresses and the `cc` of that email. A reply-all to an email the inbox sent goes to its Reply-To when that is not the inbox address, else to its `to`, and copies its `cc`. The inbox address is left out, and duplicates are removed.
 - Reply needs `html` or `text` with more than whitespace. Without `subject`, the thread subject is used with a `Re:` prefix. Forward uses a `Fwd:` prefix.
 - Forward needs `to`. It quotes the original email and sends its attachments with your `attachments`. Together they can have up to 10 files and 25 MB of `content`. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the request returns 422.
-- `attachments` has the same shape as on `resend.emails.send()`.
+- `attachments` and `headers` have the same shape as on `resend.emails.send()`. Resend sets `In-Reply-To`, `References` and `Reply-To`. Setting one of them in `headers`, in any letter case, returns 422.
 - Reply and forward return only the sent email ID.
 - Reply and forward take an `idempotencyKey` option, as on `resend.emails.send()`. See [Idempotency Keys](#idempotency-keys).
 
@@ -279,7 +280,7 @@ await resend.inboxes.drafts.update({
 });
 
 const { data: sent } = await resend.inboxes.drafts.send(
-  { inboxId, draftId: draft.id },
+  { inboxId, draftId: draft.id, headers: { 'X-Ticket-Id': '4821' } },
   { idempotencyKey: `refund-draft-send/${draft.id}` },
 );
 // sent: { id } (the sent email ID)
@@ -299,6 +300,7 @@ await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
 - Send needs at least one `to` recipient, a non-empty `subject`, and `html` or `text`, or it returns 422. A reply draft created without `subject` has an empty subject with no `Re:` prefix, so set one before you send it. Update, remove or send on a draft that was already sent returns 409.
 - `drafts.list` returns only unsent drafts, most recently updated first.
+- `drafts.send` takes `headers`, an object of string values, as on `resend.emails.send()`. Create and update do not take headers. `In-Reply-To`, `References` and `Reply-To` return 422.
 - Create and send take an `idempotencyKey` option. See [Idempotency Keys](#idempotency-keys).
 
 ## Idempotency Keys
@@ -332,6 +334,7 @@ Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#o
 |---------|-----|
 | Using an email address on `update`, `remove` or a sub-resource | Only `inboxes.get` accepts an address. Use the inbox ID everywhere else |
 | Reading fields from the create response | Create inbox, label and draft return only `{ object, id }`. Call `get` |
+| Setting `Reply-To` in `headers` on a reply, forward or draft send | Resend sets `In-Reply-To`, `References` and `Reply-To`. Leave them out of `headers` |
 | Passing `to` on a reply | Reply sets `to` from the email you reply to. Use `forward` to send to someone new |
 | Using an ID from `resend.emails.list()` as `emailId` | Use the ID from `threads.emails.list` or `matched_email_id` from a search |
 | Expecting `threads.remove` to delete at once | It moves the thread to `trash` for 30 days. Update `folder` to restore it |
