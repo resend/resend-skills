@@ -128,6 +128,7 @@ await resend.inboxes.labels.remove({ inboxId, labelId: label.id });
 - `color` is a `#RRGGBB` hex string. The API returns it in uppercase. Without `color`, the API picks a random color.
 - An inbox has at most 100 labels. Names are unique per inbox, compared without case. A duplicate name or a full inbox returns 422.
 - The list is not paginated. It returns every label, oldest first.
+- To label a thread, call `threads.update` with `addLabelIds`. `removeLabelIds` takes it off the thread and keeps the label. Only `labels.remove` deletes it.
 - Deleting a label removes it from every thread. It does not send `inbox.thread.labels.updated` for those threads.
 
 ## Threads
@@ -182,7 +183,8 @@ const { data: trashed } = await resend.inboxes.threads.remove({ inboxId, threadI
 - Search can be up to about a minute behind new emails. All filters must match. `query`, `from`, `to`, `cc`, `bcc`, `hasAttachment`, `startDate` and `endDate` must all match the same email in the thread.
 - In `query`, every word must match. Wrap words in double quotes for an exact phrase. Start a word with `-` to exclude it.
 - A search result has `matched_email_id`, the email that matched, and `highlights`, the matched text with each match in `**`. The thread email endpoints accept `matched_email_id` as `emailId`.
-- Update needs at least one field. A label ID cannot be in both `addLabelIds` and `removeLabelIds`. Each takes 1 to 10 IDs. `labelId` still works but is deprecated. Use `addLabelIds`.
+- Update needs at least one of `read`, `folder`, `addLabelIds` or `removeLabelIds`. Each label array takes 1 to 10 IDs. A label ID cannot be in both arrays, or the request returns 422.
+- `removeLabelIds` takes the label off the thread. The label itself stays on the inbox.
 - `remove` moves the thread to `trash` and deletes it after 30 days. To restore it, update `folder` to `inbox`, `archive` or `spam`.
 
 ## Thread Emails
@@ -242,19 +244,35 @@ const { data: draft } = await resend.inboxes.drafts.create({
   to: ['delivered@resend.dev'],
   subject: 'Refund for order 1041',
   text: 'Refund issued for order 1041.',
+  attachments: [
+    {
+      filename: 'receipt.txt',
+      content: Buffer.from('Order 1041 refunded').toString('base64'),
+      contentType: 'text/plain',
+    },
+  ],
 });
 // draft: { object: 'inbox_draft', id }
 
 const { data: drafts } = await resend.inboxes.drafts.list({ inboxId, limit: 20 });
 
 const { data: saved } = await resend.inboxes.drafts.get({ inboxId, draftId: draft.id });
-// saved: { object, id, type, to, cc, bcc, subject, html, text, thread_id, reply_to_email_id, email_id, created_at, updated_at }
+// saved: { object, id, type, to, cc, bcc, subject, html, text, thread_id, reply_to_email_id, email_id, created_at, updated_at, attachments }
+// saved.attachments[i]: { id, filename, content_type, size }
 
+// Replace the body and every attachment
 await resend.inboxes.drafts.update({
   inboxId,
   draftId: draft.id,
   html: '<p>Refund issued for order 1041.</p>',
   text: 'Refund issued for order 1041.',
+  attachments: [
+    {
+      filename: 'invoice-1041.txt',
+      content: Buffer.from('Invoice 1041, refunded in full').toString('base64'),
+      contentType: 'text/plain',
+    },
+  ],
 });
 
 const { data: sent } = await resend.inboxes.drafts.send({ inboxId, draftId: draft.id });
@@ -262,13 +280,16 @@ const { data: sent } = await resend.inboxes.drafts.send({ inboxId, draftId: draf
 
 // Discard a draft you do not want to send
 const { data: other } = await resend.inboxes.drafts.create({ inboxId, subject: 'Notes' });
+await resend.inboxes.drafts.update({ inboxId, draftId: other.id, attachments: [] });
 await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 ```
 
 **Key gotchas:**
 - For a reply draft, pass `threadId` and `replyToEmailId` together. Without `to`, the API addresses it like a reply. Send `to: []` to leave it empty.
 - Each email can have one unsent reply draft. Creating another returns 200 with the ID of the existing draft, not 201.
-- A draft needs at least one non-empty `to`, `cc`, `bcc`, `subject`, `text` or `html`. `to`, `cc` and `bcc` together have at most 50 recipients.
+- A draft needs at least one non-empty `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. `to`, `cc` and `bcc` together have at most 50 recipients.
+- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` or `contentId` returns 422. A draft holds up to 10 files and 25 MB.
+- An update with `attachments` replaces every attachment on the draft. Send `[]` to remove them all. Omit the field to keep them.
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
 - Send needs at least one `to` recipient, or it returns 422. Update, remove or send on a draft that was already sent returns 409.
 - `drafts.list` returns only unsent drafts, most recently updated first.
@@ -279,6 +300,7 @@ Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#o
 
 - Each payload `data` has `source` (`api`, `dashboard`, `agent` or `system`) and `inbox_id`, plus `thread_id`, `email_id` or `draft_id` where they apply.
 - Email and draft payloads carry the object without `html` or `text`. Call `threads.emails.get()` or `drafts.get()` for the body.
+- The `draft` object in `inbox.draft.*` payloads lists `attachments` as `{ id, filename, content_type, size }`, without the file content.
 - `inbox.deleted` carries only `inbox_id`. `inbox.draft.deleted` has no `draft` object.
 - `inbox.thread.labels.updated` carries one label, in `added` or `removed`.
 - Sending a draft sends both `inbox.draft.sent` and `inbox.email.sent`, in no fixed order.
@@ -294,5 +316,7 @@ Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#o
 | Expecting `threads.remove` to delete at once | It moves the thread to `trash` for 30 days. Update `folder` to restore it |
 | Setting `folder: 'sent'` | `sent` is set by the API. Use `inbox`, `archive`, `spam` or `trash` |
 | Using a named color like `'red'` | Use a `#RRGGBB` hex string |
+| Passing a `path` attachment to a draft | Drafts store their files. Send `content`, `filename` and `contentType` |
+| Sending `attachments` on a draft update to add one file | It replaces every attachment. Send the full list |
 | Updating only `html` on a draft that has `text` | The omitted body part becomes `null`. Send both |
 | Expecting a new email to show in search at once | Search can be up to about a minute behind. Use `threads.list` for the newest threads |
