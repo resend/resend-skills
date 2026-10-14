@@ -88,7 +88,7 @@ const { data: agent } = await resend.inboxes.agent.get({ inboxId });
 const { data: updated } = await resend.inboxes.agent.update({
   inboxId,
   instructions: 'Answer refund questions yourself. Escalate legal threats.',
-  tone: 'friendly and concise',
+  tone: 'concise_professional',
   enabledActions: ['draft_reply', 'add_labels'],
 });
 ```
@@ -97,8 +97,8 @@ const { data: updated } = await resend.inboxes.agent.update({
 - An inbox without an agent returns `instructions: null`, `tone: null` and `enabled_actions: []`. Update creates the agent when the inbox has none.
 - Omitted fields keep their value. Send `null` to clear `instructions` or `tone`.
 - `enabledActions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive_thread` and `delete_thread`.
-- `instructions` is at most 4000 characters and `tone` at most 64.
-- `tone` is one of the presets `concise_professional`, `concise_casual`, `expanded_professional` and `expanded_casual`, or custom text in the owner's own words. Custom text is trimmed and must not be empty. Older dashboard values such as `Concise · Casual` come back as custom text.
+- `instructions` is at most 4000 characters.
+- `tone` is one of `concise_professional`, `concise_casual`, `expanded_professional` and `expanded_casual`.
 
 ## Labels
 
