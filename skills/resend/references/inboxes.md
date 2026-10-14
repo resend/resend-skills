@@ -145,7 +145,7 @@ const { data: threads } = await resend.inboxes.threads.list({
   read: false,
   limit: 20,
 });
-// threads.data[i]: { id, subject, from, to, cc, bcc, labels, message_count, has_attachment, has_draft, read, received_at, folder }
+// threads.data[i]: { id, subject, from, to, cc, bcc, labels, email_count, has_attachment, has_draft, read, received_at, folder }
 
 // Find threads by text, sender, recipient, attachment or date
 const { data: results } = await resend.inboxes.threads.search({
