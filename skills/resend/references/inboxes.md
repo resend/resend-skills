@@ -83,20 +83,20 @@ const { data: deleted } = await resend.inboxes.remove('b3e2b2b6-3f0e-4c8e-9ad3-2
 const inboxId = 'b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1';
 
 const { data: agent } = await resend.inboxes.agent.get({ inboxId });
-// agent: { object: 'inbox_agent', instructions, tone, enabled_actions }
+// agent: { object: 'inbox_agent', instructions, tone, actions }
 
 const { data: updated } = await resend.inboxes.agent.update({
   inboxId,
   instructions: 'Answer refund questions yourself. Escalate legal threats.',
   tone: 'concise_professional',
-  enabledActions: ['draft_reply', 'add_labels'],
+  actions: ['draft_reply', 'add_labels'],
 });
 ```
 
 **Key gotchas:**
-- An inbox without an agent returns `instructions: null`, `tone: null` and `enabled_actions: []`. Update creates the agent when the inbox has none.
+- An inbox without an agent returns `instructions: null`, `tone: null` and `actions: []`. Update creates the agent when the inbox has none.
 - Omitted fields keep their value. Send `null` to clear `instructions` or `tone`.
-- `enabledActions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive_thread` and `delete_thread`.
+- `actions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive_thread` and `delete_thread`.
 - `instructions` is at most 4000 characters.
 - `tone` is one of `concise_professional`, `concise_casual`, `expanded_professional` and `expanded_casual`.
 
