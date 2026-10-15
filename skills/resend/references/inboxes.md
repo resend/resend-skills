@@ -95,7 +95,7 @@ const { data: updated } = await resend.inboxes.agent.update({
 **Key gotchas:**
 - An inbox without an agent returns `instructions: null`, `tone: null` and `actions: []`. Update creates the agent when the inbox has none.
 - Omitted fields keep their value. Send `null` to clear `instructions` or `tone`.
-- `actions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive_thread` and `delete_thread`.
+- `actions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive` and `move_to_trash`.
 - `instructions` is at most 4000 characters.
 - `tone` is one of `concise_professional`, `concise_casual`, `expanded_professional` and `expanded_casual`.
 
