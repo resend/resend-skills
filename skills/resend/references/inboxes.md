@@ -83,7 +83,6 @@ const { data: deleted } = await resend.inboxes.remove('b3e2b2b6-3f0e-4c8e-9ad3-2
 const inboxId = 'b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1';
 
 const { data: agent } = await resend.inboxes.agent.get({ inboxId });
-// agent: { object: 'inbox_agent', instructions, tone, actions }
 
 const { data: updated } = await resend.inboxes.agent.update({
   inboxId,
