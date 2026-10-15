@@ -52,11 +52,11 @@ const { data: created, error } = await resend.inboxes.create({
 
 // List inboxes, newest first
 const { data: inboxes } = await resend.inboxes.list({ limit: 20 });
-// inboxes.data[i]: { id, name, email_address, from_name, unread, last_received }
+// inboxes.data[i]: { id, name, email_address, from_name, unread, last_received, created_at, updated_at }
 
 // Get an inbox by ID or by email address
 const { data: inbox } = await resend.inboxes.get('support@acme.com');
-// inbox: { object, id, name, email_address, domain_id, receiving_address, from_name, unread, drafts, last_received, created_at }
+// inbox: { object, id, name, email_address, domain_id, receiving_address, from_name, unread, drafts, last_received, created_at, updated_at }
 
 // Change the internal name or the name recipients see
 const { data: updated } = await resend.inboxes.update('b3e2b2b6-3f0e-4c8e-9ad3-2f43a1e2c7f1', {
