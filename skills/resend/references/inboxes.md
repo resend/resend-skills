@@ -2,7 +2,7 @@
 
 An inbox sends and receives email at one address on your domain. Received and sent emails group into threads. Each thread is in one folder and can carry labels. Drafts hold unsent emails, and agent settings tell an AI agent how to handle the threads of the inbox.
 
-Inboxes need Node.js `resend` 6.33.0 or later, or Python `resend` 2.50.0 or later.
+Inboxes need Node.js `resend` 6.34.1 or later, or Python `resend` 2.50.0 or later.
 
 If an agent acts on the content of received emails, also install the `agent-email-inbox` skill. It covers the security levels for untrusted input.
 
@@ -26,6 +26,9 @@ If an agent acts on the content of received emails, also install the `agent-emai
 | Get thread | `resend.inboxes.threads.get({ inboxId, threadId })` | `resend.Inboxes.Threads.get(inbox_id, thread_id)` |
 | Update thread | `resend.inboxes.threads.update({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.update(params)`, `inbox_id` and `id` inside params |
 | Delete thread | `resend.inboxes.threads.remove({ inboxId, threadId })` | `resend.Inboxes.Threads.remove(inbox_id, thread_id)` |
+| Add thread labels | `resend.inboxes.threads.labels.add({ inboxId, threadId, labels })` | `resend.Inboxes.Threads.Labels.add(params)`, `inbox_id`, `thread_id` and `labels` inside params |
+| Set thread labels | `resend.inboxes.threads.labels.set({ inboxId, threadId, labels })` | `resend.Inboxes.Threads.Labels.set(params)`, `inbox_id`, `thread_id` and `labels` inside params |
+| Remove thread label | `resend.inboxes.threads.labels.remove({ inboxId, threadId, labelId })` | `resend.Inboxes.Threads.Labels.remove(inbox_id, thread_id, label_id)` |
 | List thread emails | `resend.inboxes.threads.emails.list({ inboxId, threadId, ...params })` | `resend.Inboxes.Threads.Emails.list(inbox_id, thread_id, params?)` |
 | Get thread email | `resend.inboxes.threads.emails.get({ inboxId, threadId, emailId })` | `resend.Inboxes.Threads.Emails.get(inbox_id, thread_id, email_id)` |
 | Reply to thread email | `resend.inboxes.threads.emails.reply({ inboxId, threadId, emailId, ...params })` | `resend.Inboxes.Threads.Emails.reply(params)`, `inbox_id`, `thread_id` and `email_id` inside params |
@@ -38,6 +41,8 @@ If an agent acts on the content of received emails, also install the `agent-emai
 | Send draft | `resend.inboxes.drafts.send({ inboxId, draftId })` | `resend.Inboxes.Drafts.send(inbox_id, draft_id)` |
 
 Use `.remove()`, not `.delete()`, in the Node.js SDK.
+
+Every inbox endpoint takes the inbox ID or the inbox email address in the path. In Node.js, pass `emailAddress` in place of `inboxId`, for example `{ emailAddress: 'support@acme.com', threadId }`. `get`, `update` and `remove` take either one as the first argument. In Python, `inbox_id` takes either one.
 
 ## Inboxes
 
@@ -72,8 +77,9 @@ const { data: deleted } = await resend.inboxes.remove('b3e2b2b6-3f0e-4c8e-9ad3-2
 - Create returns only `{ object, id }`. Call `get` for the other fields.
 - Without `forwarding`, the domain must have receiving enabled, DKIM and SPF verified, and the inbound MX record verified or pending. With `forwarding: true`, the domain only needs DKIM and SPF, and Resend returns a `receiving_address` to forward mail to.
 - Create returns 422 for a domain that does not meet these rules, 409 for an address already in use, 403 when the team is at the inbox limit of its plan, and 451 for a blocked account.
-- `get` accepts the inbox ID or its email address, without case. Every other inbox endpoint accepts only the inbox ID.
-- List items carry fewer fields than `get`.
+- The email address in the path matches without case. An unknown ID or address returns 404 `not_found`.
+- The local part of `emailAddress` can contain only letters, numbers, `.`, `_`, `%` and `-`. A `+` returns 422.
+- List items carry fewer fields than `get`. `created_at`, `updated_at` and `last_received` are ISO 8601 strings.
 - `fromName` is a plain name, not `Name <email>`. It cannot contain a colon, `<`, `>`, or line breaks. An empty string removes it.
 - Update needs at least one of `name` or `fromName`.
 
@@ -91,6 +97,7 @@ const { data: updated } = await resend.inboxes.agent.update({
   tone: 'concise_professional',
   actions: ['draft_reply', 'add_labels'],
 });
+// updated: { object: 'inbox_agent', id }
 ```
 
 **Key gotchas:**
@@ -99,6 +106,7 @@ const { data: updated } = await resend.inboxes.agent.update({
 - `actions` replaces the whole set, without duplicates. Send `[]` to disable all actions. The values are `draft_reply`, `forward_thread`, `add_labels`, `assign_thread`, `mark_as_spam`, `archive` and `move_to_trash`.
 - `instructions` is at most 4000 characters.
 - `tone` is one of `concise_professional`, `concise_casual`, `expanded_professional` and `expanded_casual`.
+- Update returns only `{ object, id }`. Call `get` for the settings.
 
 ## Labels
 
@@ -129,7 +137,7 @@ await resend.inboxes.labels.remove({ inboxId, labelId: label.id });
 - `color` is a `#RRGGBB` hex string. The API returns it in uppercase. Without `color`, the API picks a random color.
 - An inbox has at most 100 labels. Names are unique per inbox, compared without case. A duplicate name or a full inbox returns 422.
 - The list is not paginated. It returns every label, oldest first.
-- To label a thread, call `threads.update` with `addLabelIds`. `removeLabelIds` takes it off the thread and keeps the label. Only `labels.remove` deletes it.
+- To label a thread, call `threads.labels.add`. `threads.labels.remove` takes the label off the thread and keeps it on the inbox. Only `labels.remove` deletes it.
 - Deleting a label removes it from every thread. It does not send `inbox.thread.labels.updated` for those threads.
 
 ## Threads
@@ -157,20 +165,24 @@ const { data: results } = await resend.inboxes.threads.search({
   startDate: '2026-09-01',
   endDate: '2026-09-30',
 });
-// results.data[i]: the thread fields plus matched_email_id and highlights
+// results.data[i]: the thread fields plus matched_email_id
 
 const { data: thread } = await resend.inboxes.threads.get({ inboxId, threadId });
 // thread: { object, id, subject, folder, labels, read }
 
-// Mark read, move to a folder, add and remove labels
+// Mark read and move to a folder
 const { data: changed } = await resend.inboxes.threads.update({
   inboxId,
   threadId,
   read: true,
   folder: 'archive',
-  addLabelIds: [labelId],
 });
-await resend.inboxes.threads.update({ inboxId, threadId, removeLabelIds: [labelId] });
+
+// Add labels, replace all labels, or remove one label
+const { data: added } = await resend.inboxes.threads.labels.add({ inboxId, threadId, labels: [labelId] });
+// added: { object: 'list', data: [{ id, name, color }] }, every label now on the thread
+await resend.inboxes.threads.labels.set({ inboxId, threadId, labels: [labelId] });
+await resend.inboxes.threads.labels.remove({ inboxId, threadId, labelId });
 
 // Move the thread to trash
 const { data: trashed } = await resend.inboxes.threads.remove({ inboxId, threadId });
@@ -183,10 +195,11 @@ const { data: trashed } = await resend.inboxes.threads.remove({ inboxId, threadI
 - `after` and `before` take a thread ID, not a date. Pass only one of them. A cursor thread that is not in the selected folders returns 404.
 - Search can be up to about a minute behind new emails. All filters must match. `query`, `from`, `to`, `cc`, `bcc`, `hasAttachment`, `startDate` and `endDate` must all match the same email in the thread. When you set any of them, that email must itself be in one of `folders`.
 - In `query`, every word must match. Wrap words in double quotes for an exact phrase. Start a word with `-` to exclude it.
-- A search result has `matched_email_id`, the email that matched, and `highlights`, the matched text with each match in `**`. The thread email endpoints accept `matched_email_id` as `emailId`.
-- Update needs at least one of `read`, `folder`, `addLabelIds` or `removeLabelIds`. Each label array takes 1 to 10 IDs. A label ID cannot be in both arrays, or the request returns 422.
-- `removeLabelIds` takes the label off the thread. The label itself stays on the inbox.
-- Update applies `read`, `folder`, added labels, then removed labels. It is not atomic. A 404 for a label leaves the earlier changes applied.
+- A search result has `matched_email_id`, the `id` of the email that matched. Pass it as `emailId` to the thread email endpoints.
+- Update needs at least one of `read` or `folder`.
+- `threads.labels.add` takes 1 to 10 label IDs and keeps the labels already on the thread. `threads.labels.set` takes 0 to 100 IDs and replaces every label. Send `[]` to clear them.
+- `threads.labels.remove` takes one label off the thread. The label itself stays on the inbox.
+- All three return every label on the thread after the change. An unknown label ID returns 404.
 - `remove` moves the thread to `trash` and deletes it after 30 days. To restore it, update `folder` to `inbox`, `archive` or `spam`.
 
 ## Thread Emails
@@ -233,7 +246,8 @@ const { data: forwarded } = await resend.inboxes.threads.emails.forward({
 - Reply sends right away, with no stored draft. For a received email, the reply goes to its `Reply-To` addresses, or to its sender. For an email the inbox sent, it goes to that email's `to` recipients. You cannot set `to` on a reply.
 - With `replyAll: true`, a reply to a received email also copies the other `To` addresses and the `cc` of that email. A reply-all to an email the inbox sent goes to its Reply-To when that is not the inbox address, else to its `to`, and copies its `cc`. The inbox address is left out, and duplicates are removed.
 - Reply needs `html` or `text` with more than whitespace. Without `subject`, the thread subject is used with a `Re:` prefix. Forward uses a `Fwd:` prefix.
-- Forward needs `to`. It quotes the original email and sends its attachments with your `attachments`. Together they can have up to 10 files and 25 MB of `content`. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the request returns 422.
+- Forward needs `to`. It quotes the original email and sends its attachments with your `attachments`. An original attachment that was sent from a URL (`path`) cannot be forwarded, and the request returns 422.
+- The `content` of all attachments can total at most 25 MB. On a forward, the original attachments count toward it. A `path` file does not count, because Resend fetches it at send time. The whole email, encoded, can be at most 40 MB.
 - `attachments` and `headers` have the same shape as on `resend.emails.send()`. Resend sets `In-Reply-To`, `References` and `Reply-To`. Setting one of them in `headers`, in any letter case, returns 422. An empty header name, or a line break or null character in a name or value, also returns 422.
 - An empty file, a blocked file type, or a `path` that is not an `http` or `https` URL, or that points to `localhost`, returns 422.
 - Reply and forward return only the sent email ID.
@@ -267,7 +281,7 @@ const { data: saved } = await resend.inboxes.drafts.get({ inboxId, draftId: draf
 // saved.attachments[i]: { id, filename, content_type, size }
 
 // Replace the body and every attachment
-await resend.inboxes.drafts.update({
+const { data: changed } = await resend.inboxes.drafts.update({
   inboxId,
   draftId: draft.id,
   html: '<p>Refund issued for order 1041.</p>',
@@ -280,6 +294,7 @@ await resend.inboxes.drafts.update({
     },
   ],
 });
+// changed: { object: 'inbox_draft', id }
 
 const { data: sent } = await resend.inboxes.drafts.send(
   { inboxId, draftId: draft.id, headers: { 'X-Ticket-Id': '4821' } },
@@ -297,10 +312,13 @@ await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 - For a reply draft, pass `threadId` and `replyToEmailId` together. Without `to`, the API addresses it like a reply. Send `to: []` to leave it empty.
 - Each email can have one unsent reply draft. Creating another returns 200 with the ID of the existing draft, not 201. That request ignores every other field except `attachments`, which replaces the attachments of the existing draft.
 - A draft needs at least one non-empty `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. `to`, `cc` and `bcc` together have at most 50 recipients.
-- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` or `contentId` returns 422. The files on a draft can total 25 MB, with no limit on the count. An empty file or a blocked file type, such as `.exe`, returns 422.
+- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` or `contentId` returns 422. The files on a draft can total at most 25 MB. An empty file or a blocked file type, such as `.exe`, returns 422.
 - An update with `attachments` replaces every attachment on the draft. Send `[]` to remove them all. Omit the field to keep them.
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
-- Send needs at least one `to` recipient, a non-empty `subject`, and `html` or `text`, or it returns 422. A reply draft created without `subject` has an empty subject with no `Re:` prefix, so set one before you send it. Update, remove or send on a draft that was already sent returns 409.
+- Send needs at least one `to` recipient and `html` or `text`, or it returns 422. A new-thread draft also needs a non-empty `subject`.
+- A reply draft created without `subject` uses the thread subject with a `Re:` prefix.
+- The sent email, encoded, can be at most 40 MB.
+- Update, remove or send on a draft that was already sent returns 409.
 - `drafts.list` returns only unsent drafts, most recently updated first.
 - `drafts.send` takes `headers`, an object of string values, as on `resend.emails.send()`. Create and update do not take headers. The header rules of reply and forward apply.
 - Create and send take an `idempotencyKey` option. See [Idempotency Keys](#idempotency-keys).
@@ -320,6 +338,13 @@ Create draft, send draft, reply and forward accept an idempotency key, the same 
 | **Same key + different payload** | Returns 409 `invalid_idempotent_request` |
 | **Same key while the first request runs** | Returns 409 `concurrent_idempotent_requests` |
 
+## API Key Permissions
+
+- A full access key can call every inbox endpoint.
+- A sending access key can call only reply, forward, create draft and send draft. Every other inbox endpoint returns 401 `restricted_api_key`.
+- A sending access key limited to one domain works only on inboxes of that domain. An inbox on another domain returns 403.
+- An agent that reads emails or lists threads needs a full access key.
+
 ## Webhook Events
 
 Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#other-events).
@@ -328,15 +353,18 @@ Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#o
 - Email and draft payloads carry the object without `html` or `text`. Call `threads.emails.get()` or `drafts.get()` for the body.
 - The `draft` object in `inbox.draft.*` payloads lists `attachments` as `{ id, filename, content_type, size }`, without the file content.
 - `inbox.deleted` carries only `inbox_id`. `inbox.draft.deleted` has no `draft` object.
-- `inbox.thread.labels.updated` carries one label, in `added` or `removed`.
+- `inbox.created` and `inbox.updated` carry `inbox`, with the fields of `inboxes.get()`. Its timestamps are ISO 8601 strings.
+- `inbox.thread.labels.updated` lists the changed labels in `added` and `removed`. One `threads.labels.set` call can fill both. A call that changes nothing sends no event.
 - Sending a draft sends both `inbox.draft.sent` and `inbox.email.sent`, in no fixed order.
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| Using an email address on `update`, `remove` or a sub-resource | Only `inboxes.get` accepts an address. Use the inbox ID everywhere else |
-| Reading fields from the create response | Create inbox, label and draft return only `{ object, id }`. Call `get` |
+| Reading fields from a create or update response | Create and update of inboxes, labels and drafts, and agent update, return only `{ object, id }`. Call `get` |
+| Labeling a thread with `threads.update` | Update takes only `read` and `folder`. Use `threads.labels.add`, `set` or `remove` |
+| Calling `threads.labels.set` to add one label | `set` replaces every label on the thread. Use `add` |
+| Reading threads with a sending access key | That key can only reply, forward, create drafts and send drafts. Use a full access key |
 | Setting `Reply-To` in `headers` on a reply, forward or draft send | Resend sets `In-Reply-To`, `References` and `Reply-To`. Leave them out of `headers` |
 | Passing `to` on a reply | Reply sets `to` from the email you reply to. Use `forward` to send to someone new |
 | Using an ID from `resend.emails.list()` as `emailId` | Use the ID from `threads.emails.list` or `matched_email_id` from a search |

@@ -73,7 +73,7 @@ Or use the Svix fallback (see [webhook-setup.md](webhook-setup.md)).
 
 ### "Cannot read properties of undefined (reading 'threads')" or "(reading 'get')"
 
-**Cause:** Resend SDK version too old. `resend.inboxes.*` needs `resend` >= 6.33.0, and `emails.receiving.get()` also needs a recent SDK.
+**Cause:** Resend SDK version too old. `resend.inboxes.*` needs `resend` >= 6.34.1, and `emails.receiving.get()` also needs a recent SDK.
 **Fix:**
 ```bash
 npm install resend@latest

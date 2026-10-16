@@ -73,7 +73,7 @@ The `email.received` payload contains metadata only (sender, recipient, subject,
 | `inbox.email.received` / `sent` | Inbound email added to a thread, or outbound email accepted for delivery and added to a thread |
 | `inbox.thread.folder.updated` | Thread moved between folders |
 | `inbox.thread.assigned` / `unassigned` | Thread assigned, reassigned, or unassigned |
-| `inbox.thread.labels.updated` | Label applied to or removed from a thread |
+| `inbox.thread.labels.updated` | Labels added to or removed from a thread |
 | `inbox.draft.created` / `updated` / `sent` / `deleted` | Draft created, edited, sent, or discarded |
 
 Inbox event payloads carry no email or draft body. See [inboxes.md](inboxes.md#webhook-events).
