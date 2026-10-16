@@ -310,13 +310,13 @@ await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 
 **Key gotchas:**
 - For a reply draft, pass `threadId` and `replyToEmailId` together. Without `to`, the API addresses it like a reply. Send `to: []` to leave it empty.
-- Each email can have one unsent reply draft. Creating another returns 200 with the ID of the existing draft, not 201. That request ignores every other field except `attachments`, which replaces the attachments of the existing draft.
+- Each email can have one unsent reply draft. Creating another returns 200 with the ID of the existing draft, not 201. That request ignores every other field except `attachments`, which replaces the attachments of the existing draft. With the `draft_reply` action on, the inbox agent can create that draft before you do.
 - A draft needs at least one non-empty `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. `to`, `cc` and `bcc` together have at most 50 recipients.
-- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` or `contentId` returns 422. The files on a draft can total at most 25 MB. An empty file or a blocked file type, such as `.exe`, returns 422.
+- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` without `content`, or a `contentId`, returns 422. The files on a draft can total at most 25 MB. An empty file or a blocked file type, such as `.exe`, returns 422.
 - An update with `attachments` replaces every attachment on the draft. Send `[]` to remove them all. Omit the field to keep them.
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
 - Send needs at least one `to` recipient and `html` or `text`, or it returns 422. A new-thread draft also needs a non-empty `subject`.
-- A reply draft created without `subject` uses the thread subject with a `Re:` prefix.
+- A reply draft created without `subject` has an empty subject. Send uses the thread subject with a `Re:` prefix.
 - The sent email, encoded, can be at most 40 MB.
 - Update, remove or send on a draft that was already sent returns 409.
 - `drafts.list` returns only unsent drafts, most recently updated first.
