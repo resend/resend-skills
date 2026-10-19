@@ -21,41 +21,66 @@ Your endpoint must:
 - Accept POST requests
 - Return 2xx status quickly (within 5 seconds)
 - Handle duplicate events (idempotent processing)
-
-```typescript
-app.post('/webhooks/resend', async (req, res) => {
-  // Return 200 immediately to acknowledge receipt
-  res.status(200).send('OK');
-
-  // Process asynchronously
-  processWebhookAsync(req.body).catch(console.error);
-});
-```
-
-### 2. Verify Signatures
-
-Always verify webhook signatures to prevent spoofing.
+- Verify the signature before using the event
 
 ```typescript
 import { Webhook } from 'svix';
 
 const webhook = new Webhook(process.env.RESEND_WEBHOOK_SECRET);
 
-app.post('/webhooks/resend', (req, res) => {
-  try {
-    const payload = webhook.verify(
-      JSON.stringify(req.body),
-      {
+app.post(
+  '/webhooks/resend',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    let event;
+    try {
+      event = webhook.verify(req.body.toString(), {
         'svix-id': req.headers['svix-id'],
         'svix-timestamp': req.headers['svix-timestamp'],
         'svix-signature': req.headers['svix-signature'],
-      }
-    );
-    // Process verified payload
-  } catch (err) {
-    return res.status(400).send('Invalid signature');
-  }
-});
+      });
+    } catch (err) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    // Return 200 immediately to acknowledge receipt
+    res.status(200).send('OK');
+
+    // Process asynchronously
+    processWebhookAsync(event).catch(console.error);
+  },
+);
+```
+
+### 2. Verify Signatures
+
+Always verify webhook signatures to prevent spoofing.
+
+Pass `webhook.verify` the raw request body. The signature covers the exact bytes Resend sent. Parsing that JSON and calling `JSON.stringify` changes whitespace and key order, so a real webhook fails verification.
+
+On Express, mount `express.raw({ type: 'application/json' })` on this route and pass `req.body.toString()`. On the Next.js App Router, pass `await req.text()`.
+
+```typescript
+import { Webhook } from 'svix';
+
+const webhook = new Webhook(process.env.RESEND_WEBHOOK_SECRET);
+
+app.post(
+  '/webhooks/resend',
+  express.raw({ type: 'application/json' }),
+  (req, res) => {
+    try {
+      const payload = webhook.verify(req.body.toString(), {
+        'svix-id': req.headers['svix-id'],
+        'svix-timestamp': req.headers['svix-timestamp'],
+        'svix-signature': req.headers['svix-signature'],
+      });
+      // Process verified payload
+    } catch (err) {
+      return res.status(400).send('Invalid signature');
+    }
+  },
+);
 ```
 
 ### 3. Register Webhook URL
