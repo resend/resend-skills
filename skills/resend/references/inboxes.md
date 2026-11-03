@@ -270,6 +270,8 @@ const { data: draft } = await resend.inboxes.drafts.create({
       content: Buffer.from('Order 1041 refunded').toString('base64'),
       contentType: 'text/plain',
     },
+    // Resend downloads a `path` file when the draft is saved
+    { filename: 'invoice.pdf', path: 'https://example.com/invoice.pdf' },
   ],
 }, { idempotencyKey: 'refund-draft/order-1041' });
 // draft: { object: 'inbox_draft', id }
@@ -312,7 +314,7 @@ await resend.inboxes.drafts.remove({ inboxId, draftId: other.id });
 - For a reply draft, pass `threadId` and `replyToEmailId` together. Without `to`, the API addresses it like a reply. Send `to: []` to leave it empty.
 - Each email can have one unsent reply draft. Creating another returns 200 with the ID of the existing draft, not 201. That request ignores every other field except `attachments`, which replaces the attachments of the existing draft. With the `draft_reply` action on, the inbox agent can create that draft before you do.
 - A draft needs at least one non-empty `to`, `cc`, `bcc`, `subject`, `text`, `html` or `attachments`. `to`, `cc` and `bcc` together have at most 50 recipients.
-- The draft stores its attachments, so each one needs `content` (base64), `filename` and `contentType`. A `path` without `content`, or a `contentId`, returns 422. The files on a draft can total at most 25 MB. An empty file or a blocked file type, such as `.exe`, returns 422.
+- Each draft attachment needs `filename` plus either `content` (base64, with `contentType`) or `path` (an `http` or `https` URL). Resend downloads a `path` file when the draft is saved, not when it is sent, and `contentType` defaults to the downloaded file's type. When both are sent, `content` wins and `path` is ignored. A `contentId`, or a `path` that cannot be downloaded, returns 422, and all downloads must finish within 20 seconds together. The files on a draft can total at most 25 MB, downloads included. An empty file or a blocked file type, such as `.exe`, returns 422.
 - An update with `attachments` replaces every attachment on the draft. Send `[]` to remove them all. Omit the field to keep them.
 - An update that sets `text` or `html` replaces the whole body. The part you omit becomes `null`, so send both to keep both.
 - Send needs at least one `to` recipient and `html` or `text`, or it returns 422. A new-thread draft also needs a non-empty `subject`.
@@ -371,7 +373,6 @@ Inboxes send `inbox.*` events. See the event list in [webhooks.md](webhooks.md#o
 | Expecting `threads.remove` to delete at once | It moves the thread to `trash` for 30 days. Update `folder` to restore it |
 | Setting `folder: 'sent'` | `sent` is set by the API. Use `inbox`, `archive`, `spam` or `trash` |
 | Using a named color like `'red'` | Use a `#RRGGBB` hex string |
-| Passing a `path` attachment to a draft | Drafts store their files. Send `content`, `filename` and `contentType` |
 | Sending `attachments` on a draft update to add one file | It replaces every attachment. Send the full list |
 | Updating only `html` on a draft that has `text` | The omitted body part becomes `null`. Send both |
 | Expecting a new email to show in search at once | Search can be up to about a minute behind. Use `threads.list` for the newest threads |
