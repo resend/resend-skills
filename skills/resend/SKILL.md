@@ -277,7 +277,7 @@ See [webhooks.md](references/webhooks.md) for full details, signature verificati
 | 401 | Check API key — `restricted_api_key` means sending-only key used on non-sending endpoint |
 | 403 | Verify domain ownership — common causes: `resend.dev` sandbox, `from` domain mismatch, unverified domain |
 | 409 | Idempotency conflict — use new key or fix payload |
-| 429 | Rate limited — retry with exponential backoff (default rate limit: 2 req/s) |
+| 429 | Rate limited — retry with exponential backoff (default rate limit: 10 req/s) |
 | 500 | Server error — retry with exponential backoff |
 
 ## Resources

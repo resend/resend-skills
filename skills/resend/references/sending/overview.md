@@ -11,7 +11,7 @@ Resend provides two endpoints for sending emails:
 
 **Choose batch when:**
 - Sending 2+ distinct emails at once
-- Reducing API calls is important (by default, rate limit is 2 requests per second)
+- Reducing API calls is important (by default, rate limit is 10 requests per second)
 - No attachments or scheduling needed
 
 **Choose single when:**
