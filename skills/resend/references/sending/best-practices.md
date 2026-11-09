@@ -127,13 +127,13 @@ curl -X POST 'https://api.resend.com/emails' \
 |------|------|-------------|--------|
 | 400 | `validation_error` | Invalid parameters | Fix request, don't retry |
 | 400 | `invalid_idempotency_key` | Key must be 1-256 characters | Fix key format, don't retry |
-| 401 | `authentication_error` | Invalid API key | Check RESEND_API_KEY, don't retry |
-| 403 | `authorization_error` | Domain not verified | Verify domain at resend.com/domains |
+| 401 | `validation_error` | Invalid API key | Check RESEND_API_KEY, don't retry |
+| 403 | `validation_error` | Domain not verified | Verify domain at resend.com/domains |
 | 409 | `invalid_idempotent_request` | Key used with different payload | Use new key or fix payload |
 | 409 | `concurrent_idempotent_requests` | Same key request in progress | Wait and retry |
-| 422 | `unprocessable_entity` | Invalid email format/content | Fix content, don't retry |
+| 422 | `invalid_parameter` | Invalid parameter value | Fix content, don't retry |
 | 429 | `rate_limit_exceeded` | Too many requests | Retry with exponential backoff |
-| 500 | `api_error` | Server error | Retry with exponential backoff |
+| 500 | `application_error` | Server error | Retry with exponential backoff |
 
 ### Retryable vs Non-Retryable
 
