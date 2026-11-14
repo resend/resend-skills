@@ -61,7 +61,7 @@ const ALLOWED_DOMAINS = [
 
 function isAllowedDomain(from: string): boolean {
   const domain = senderAddress(from).split('@')[1];
-  return ALLOWED_DOMAINS.some(allowed => domain === allowed);
+  return ALLOWED_DOMAINS.some(allowed => domain === allowed.toLowerCase());
 }
 
 async function processEmailForAgent(email: InboxEmail, thread: ThreadRef) {
