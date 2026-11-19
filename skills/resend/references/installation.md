@@ -19,6 +19,8 @@ These are the minimum versions required for full functionality (sending, receivi
 
 > **If the project already has a Resend SDK installed**, check the version and upgrade if it's below the minimum. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, or `domains.claims.*`, which power webhook security, inbound email, and domain claiming.
 
+Inboxes (`inboxes.*`) need Node.js `resend` >= 6.36.0 or Python `resend` >= 2.51.0. For the other languages, install the latest version. See [inboxes.md](inboxes.md).
+
 ## Detecting Project Language
 
 Check for these files to determine the project's language/framework:

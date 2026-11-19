@@ -2,7 +2,7 @@
 
 An inbox sends and receives email at one address on your domain. Received and sent emails group into threads. Each thread is in one folder and can carry labels. Drafts hold unsent emails, and agent settings tell an AI agent how to handle the threads of the inbox.
 
-Inboxes need Node.js `resend` 6.34.1 or later, or Python `resend` 2.50.0 or later.
+Inboxes need Node.js `resend` 6.36.0 or later, or Python `resend` 2.51.0 or later. The Go, Ruby, PHP, Java, Rust and .NET SDKs also have inbox methods. Install their latest version, and see the [Inboxes API reference](https://resend.com/docs/api-reference/inboxes/create-inbox) for samples in each language.
 
 If an agent acts on the content of received emails, also install the `agent-email-inbox` skill. It covers the security levels for untrusted input.
 

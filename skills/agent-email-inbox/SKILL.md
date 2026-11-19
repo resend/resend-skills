@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions �
 license: MIT
 metadata:
     author: resend
-    version: "4.1.0"
+    version: "4.1.1"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
@@ -78,9 +78,9 @@ Sender → Email → Resend Inbox → inbox.email.received webhook → Your Serv
 
 ## SDK Version Requirements
 
-The inbox flow needs the Node.js SDK `resend` >= 6.34.1, which has `resend.inboxes.*` and the `inbox.*` webhook event types. Always install the latest SDK version. If the project already has a Resend SDK installed, check the version and upgrade if needed.
+Use the Node.js SDK `resend` >= 6.36.0 for the full `resend.inboxes.*` API and the `inbox.*` webhook event types. Always install the latest SDK version. If the project already has a Resend SDK installed, check the version and upgrade if needed.
 
-The Python SDK `resend` >= 2.50.0 also has the inbox methods. For the other languages, call the [Inboxes API](https://resend.com/docs/api-reference/inboxes/create-inbox) over HTTP until their SDK has inbox methods, or use [Receiving without an inbox](#receiving-without-an-inbox).
+The Python SDK `resend` >= 2.51.0 also has the inbox methods. The Go, Ruby, PHP, Java, Rust and .NET SDKs have them too. Install their latest version, and see the [Inboxes API reference](https://resend.com/docs/api-reference/inboxes/create-inbox) for samples in each language. To receive email without an inbox, see [Receiving without an inbox](#receiving-without-an-inbox).
 
 The table below lists the minimums for the Receiving flow: webhook verification (`webhooks.verify()`) and email receiving (`emails.receiving.get()`). The `resend` skill lists higher minimums because it also covers newer features such as domain claims (`domains.claims.*`). If both skills are loaded, use the higher version.
 
@@ -485,7 +485,7 @@ OWNER_EMAIL=you@email.com               # For security notifications
 | Using ephemeral tunnel URLs | Use persistent URLs (Tailscale Funnel, paid ngrok) or deploy to production |
 | Using `express.json()` on webhook route | Use `express.raw({ type: 'application/json' })` — JSON parsing breaks signature verification |
 | Returning non-200 for rejected emails | Always return 200 to acknowledge receipt — otherwise Resend retries |
-| Old Resend SDK version | `resend.inboxes.*` needs `resend` >= 6.34.1. `emails.receiving.get()` and `webhooks.verify()` also need recent versions. See SDK Version Requirements |
+| Old Resend SDK version | `resend.inboxes.*` needs Node.js `resend` >= 6.36.0 or Python `resend` >= 2.51.0. `emails.receiving.get()` and `webhooks.verify()` also need recent versions. See SDK Version Requirements |
 | Comparing `from` as a whole string | `from` can be `Name <address>`. Extract the address before you compare it with the allowlist |
 | Replying to `Reply-To` without checking it | A trusted sender can point `Reply-To` anywhere. Check it against the allowlist before a sensitive reply |
 | Using a "Sending access" API key | It can only reply, forward, create drafts and send drafts. Inbox reads and webhook setup need a full access key |
