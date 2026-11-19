@@ -27,6 +27,8 @@ Create → Add DNS records → Verify → Poll status → Send
 
 > **Claiming a domain another Resend account already verified?** See [Claim a Domain](#claim-a-domain) — available in the Node.js, Python, Ruby, Go, Rust, and Java SDKs, and the CLI (`resend domains claim`).
 
+> **Moving a domain to Resend Forge?** See [Enable Forge](#enable-forge) — available in the Node.js, Python, Ruby, Go, Java, and .NET SDKs.
+
 ## Use a Subdomain
 
 Prefer a subdomain (e.g., `send.example.com`) over the root domain:
@@ -166,6 +168,61 @@ resend.Domains.verify(claim["domain_id"])
 
 A `blocked` status means a safety check failed — inspect `blocked_reason` (`grace_period`, `recent_owner_activity`, `pending_scheduled_emails`).
 
+## Enable Forge
+
+Forge is Resend's own sending and receiving infrastructure. Enabling it on a domain adds a Forge record. The domain keeps sending through its current records while the Forge record verifies, so there is no interruption.
+
+```
+Enable Forge → Add the Forge CNAME (and the new MX, if the domain receives) → Verify with scope forge → Poll until verified
+```
+
+Forge methods are available in the **Node.js** (`resend >= 6.39.0`), **Python** (`resend >= 2.55.0`), **Ruby** (`resend >= 1.20.0`), **Go** (`resend-go/v4 >= 4.13.0`), **Java** (`resend-java >= 4.31.0`), and **.NET** (`Resend >= 0.27.0`) SDKs, plus the REST API. Not yet in the PHP or Rust SDKs or the CLI.
+
+| Operation | Method | Notes |
+|-----------|--------|-------|
+| Enable Forge | `resend.domains.forge.enable({ id, customReturnPath? })` | Returns the full domain, with the Forge record in `records`. When `customReturnPath` is omitted, Resend picks a free subdomain. It is set once and cannot be changed. Calling it again returns the current state |
+| Verify the Forge record | `resend.domains.verify(id, { scope: ['forge'] })` | Checks only the Forge record; the other records keep their current status. Requires Forge to be enabled, otherwise `forge_not_enabled` |
+
+Method naming per SDK: Python `resend.Domains.Forge.enable({"id": ..., "custom_return_path": ...})` (async: `enable_async`) and `resend.Domains.verify(domain_id=..., params={"scope": ["forge"]})`, Ruby `Resend::Domains::Forge.enable(id:, custom_return_path:)` and `Resend::Domains.verify(id, scope: ["forge"])`, Go `client.DomainForge.Enable(domainId, &EnableDomainForgeRequest{...})` (+ `EnableWithContext`) and `client.Domains.VerifyWithOptions(ctx, domainId, &VerifyDomainOptions{Scope: []VerifyDomainScope{"forge"}})`, Java `resend.domains().forge().enable(domainId, EnableForgeOptions)` and `resend.domains().verify(domainId, VerifyDomainOptions)`, .NET `DomainForgeEnableAsync(domainId, customReturnPath)` and `DomainVerifyAsync(domainId, new[] { DomainVerificationScope.Forge })`.
+
+```typescript
+// 1. Enable Forge — returns the domain with the records to add
+const { data: domain, error } = await resend.domains.forge.enable({
+  id: '4dd369bc-aa82-4ff3-97de-514ae3000ee0',
+  customReturnPath: 'forge',
+});
+if (error) {
+  console.error(error);
+  return;
+}
+// The Forge record is the SPF CNAME that points at send.forge.rmta.net.
+// A domain that also receives email gets a pending Receiving MX with a new value.
+console.log(domain.records);
+
+// 2. After adding the records to DNS, check only the Forge record
+await resend.domains.verify(domain.id, { scope: ['forge'] });
+
+// 3. Poll until the Forge record (and the Receiving MX, if it moved) is 'verified'
+const { data: latest } = await resend.domains.get(domain.id);
+console.log(latest.records);
+```
+
+```python
+# 1. Enable Forge — returns the domain with the records to add
+domain = resend.Domains.Forge.enable({
+    "id": "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+    "custom_return_path": "forge",
+})
+print(domain["records"])  # add the Forge CNAME (and the new MX, if any) to DNS
+
+# 2. After adding the records, check only the Forge record
+resend.Domains.verify(domain_id=domain["id"], params={"scope": ["forge"]})
+
+# 3. Poll until the Forge record (and the Receiving MX, if it moved) is 'verified'
+latest = resend.Domains.get(domain["id"])
+print(latest["records"])
+```
+
 ## Parameter Reference
 
 | Parameter | Values | Default | Notes |
@@ -199,3 +256,6 @@ A `blocked` status means a safety check failed — inspect `blocked_reason` (`gr
 | Treating the claim as done at `completed` | `completed` only means the transfer finished — the domain still needs its new DKIM records in DNS and a `domains.verify()` to send |
 | Expecting `claims.verify()` to be synchronous | It triggers an async DNS proof + transfer — poll `claims.get()` for `status` |
 | Looking for a claim method in PHP or .NET | Claims are in the Node.js, Python, Ruby, Go, Rust, and Java SDKs (plus CLI and REST API) — PHP/.NET don't support them yet |
+| Using the top-level domain `status` to know Forge is done | It can read `verified` before the MX record moves — check the `status` of the Forge record and, when receiving moved, the `Receiving` record |
+| Passing the current return path (often `send`) as `customReturnPath` on Forge enable | The API rejects it with `return_path_unavailable` — pick another subdomain, like `forge` |
+| Verifying a Forge record without `scope` | Pass `scope: ['forge']`, so only the Forge record is checked |
