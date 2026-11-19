@@ -27,7 +27,7 @@ Create → Add DNS records → Verify → Poll status → Send
 
 > **Claiming a domain another Resend account already verified?** See [Claim a Domain](#claim-a-domain) — available in the Node.js, Python, Ruby, Go, Rust, and Java SDKs, and the CLI (`resend domains claim`).
 
-> **Moving a domain to Resend Forge?** See [Enable Forge](#enable-forge) — available in the Node.js, Python, Ruby, Go, Java, and .NET SDKs.
+> **Moving a domain to Resend Forge?** See [Enable Forge](#enable-forge) — available in the Node.js, Python, Ruby, Go, Java, and .NET SDKs, and the CLI (`resend domains forge enable`).
 
 ## Use a Subdomain
 
@@ -176,7 +176,7 @@ Forge is Resend's own sending and receiving infrastructure. Enabling it on a dom
 Enable Forge → Add the Forge CNAME (and the new MX, if the domain receives) → Verify with scope forge → Poll until verified
 ```
 
-Forge methods are available in the **Node.js** (`resend >= 6.39.0`), **Python** (`resend >= 2.55.0`), **Ruby** (`resend >= 1.20.0`), **Go** (`resend-go/v4 >= 4.13.0`), **Java** (`resend-java >= 4.31.0`), and **.NET** (`Resend >= 0.27.0`) SDKs, plus the REST API. Not yet in the PHP or Rust SDKs or the CLI.
+Forge methods are available in the **Node.js** (`resend >= 6.39.0`), **Python** (`resend >= 2.55.0`), **Ruby** (`resend >= 1.20.0`), **Go** (`resend-go/v4 >= 4.13.0`), **Java** (`resend-java >= 4.31.0`), and **.NET** (`Resend >= 0.27.0`) SDKs, plus the **CLI** (`resend domains forge enable` and `resend domains verify --scope forge`, `resend-cli >= 2.29.0`) and REST API. Not yet in the PHP or Rust SDKs.
 
 | Operation | Method | Notes |
 |-----------|--------|-------|
