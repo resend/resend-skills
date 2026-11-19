@@ -179,9 +179,9 @@ export async function POST(req: Request) {
 
 ## SDK Version Requirements
 
-Always install the latest SDK version. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, `domains.claims.*`, or `domains.forge.*`.
+Always install the latest SDK version. Older SDKs may be missing `webhooks.verify()`, `emails.receiving.get()`, `domains.claims.*`, `domains.forge.*`, or `inboxes.*`.
 
-> **If the project already has a Resend SDK installed**, check its version against the minimum versions in [installation.md](references/installation.md) and upgrade if it's below.
+> **If the project already has a Resend SDK installed**, check its version against the minimum versions in [installation.md](references/installation.md) and upgrade if it's below. Inboxes need higher versions. See [inboxes.md](references/inboxes.md).
 
 See [installation.md](references/installation.md) for the minimum version per language, full installation commands, language detection, and cURL fallback.
 
