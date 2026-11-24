@@ -154,10 +154,10 @@ Your local server isn't accessible from the internet. Use tunneling to expose it
 - Free forever — No paid tier required
 
 **Quick setup:**
-```bash
-# 1. Install Tailscale (one-time)
-curl -fsSL https://tailscale.com/install.sh | sh
 
+1. Install Tailscale (one-time) using the package or app for the platform from https://tailscale.com/download. On Linux, Tailscale also offers a one-line installer (`curl -fsSL https://tailscale.com/install.sh | sh`), which downloads a remote script and runs it straight away to install system packages. Tell the user what it does and wait for their confirmation before running it, or follow Tailscale's manual package instructions at https://tailscale.com/kb/1031/install-linux instead.
+
+```bash
 # 2. Authenticate (one-time - opens browser)
 sudo tailscale up
 

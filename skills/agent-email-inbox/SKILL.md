@@ -4,7 +4,7 @@ description: Use when building any system where email content triggers actions â
 license: MIT
 metadata:
     author: resend
-    version: "4.1.1"
+    version: "4.1.2"
     homepage: https://resend.com/agent-skills
     source: https://github.com/resend/resend-skills
     openclaw:
