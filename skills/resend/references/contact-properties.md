@@ -98,6 +98,8 @@ Use triple-mustache syntax with a pipe for fallbacks:
 
 The fallback after the pipe overrides the property-level `fallbackValue` for that specific broadcast.
 
+This syntax works in broadcasts only. A template sent by an automation can't read contact properties directly: map them in the `send_email` step instead (see [automations.md](automations.md#contact-fields-in-send_email)).
+
 ## Common Mistakes
 
 | Mistake | Fix |
