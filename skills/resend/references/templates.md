@@ -66,6 +66,8 @@ Variable key casing is arbitrary (`ORDER_ID`, `orderId`, `order_id` all work) bu
 
 These cannot be used as custom variable keys — rename to `USER_FIRST_NAME`, `USER_EMAIL`, etc.
 
+Those names, like `{{{contact.first_name}}}`, are filled from contact data in **broadcasts only**. A template has no contact data of its own, so `{{{contact.*}}}` or an inline fallback like `{{{contact.first_name|there}}}` in a template fails when an automation sends it. To show a contact field, declare a variable (e.g. `USER_FIRST_NAME` with `fallbackValue: 'there'`) and map it to `contact.first_name` in the automation's `send_email` step. See [automations.md](automations.md#contact-fields-in-send_email).
+
 ## Sending with a Template
 
 ```typescript
@@ -195,6 +197,7 @@ Every template maintains full version history. Reverting creates a new draft fro
 | `{{#each}}` or `{{#if}}` in template HTML | No loop/conditional support — pre-render dynamic lists server-side |
 | `html` + `template` in same send call | Mutually exclusive — remove `html` when using template |
 | Using `FIRST_NAME`, `EMAIL` as variable keys | Reserved — rename to `USER_FIRST_NAME`, `USER_EMAIL` |
+| `{{{contact.first_name}}}` or `{{{FIRST_NAME\|there}}}` in a template | Broadcast-only syntax. Declare a template variable and map it to `contact.first_name` in the automation's `send_email` step |
 | Variable without fallback missing at send | Add `fallbackValue` or always provide the variable |
 | Calling `.delete()` | SDK method is `.remove()` |
 | Expecting alias = name | `alias` is a separate referenceable slug; `name` is display-only |

@@ -354,7 +354,7 @@
       "files": [],
       "expectations": [
         "Identifies FIRST_NAME, LAST_NAME, and EMAIL as reserved variable names",
-        "Explains that reserved variables are auto-populated from contact data",
+        "Explains that these names are filled from contact data in broadcasts only, not in templates",
         "Suggests renaming to avoid conflicts (e.g., USER_FIRST_NAME)"
       ]
     },
@@ -424,6 +424,18 @@
         "Identifies this as a domain claim (resend.domains.claims.create / verify / get)",
         "Notes the transferred domain gets new DKIM keys — DNS must be updated and the domain verified before sending",
         "Mentions availability in the Node.js, Python, Ruby, Go, Rust, and Java SDKs, and the CLI (`resend domains claim`)"
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "I'm building a welcome template for my signup automation. The template HTML is '<p>Hi {{{contact.first_name|there}}}, welcome to Acme!</p>'. The automation's send_email step points at this template with no variables. Will the greeting work?",
+      "expected_output": "No. {{{contact.first_name|there}}} is broadcast-only syntax, and the step fails to send. Declare a template variable (e.g. USER_FIRST_NAME with fallback 'there'), use {{{USER_FIRST_NAME}}} in the HTML, and map it in the send_email step with { var: 'contact.first_name' }.",
+      "files": [],
+      "expectations": [
+        "Says contact.* placeholders and inline fallbacks work in broadcasts only, not in a template sent by an automation",
+        "Suggests a template variable with a fallback value instead of the inline fallback",
+        "Maps that variable in the send_email step's template.variables with { var: 'contact.first_name' }",
+        "Does not suggest renaming the variable to FIRST_NAME, which is reserved"
       ]
     }
   ]

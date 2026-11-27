@@ -147,6 +147,8 @@ resend.Broadcasts.send({"broadcast_id": broadcast["id"]})
 
 Use triple-mustache with a pipe for fallbacks: `{{{PROPERTY_KEY|fallback}}}`
 
+This works in **broadcasts only**. Templates, including ones sent by automations, can't read contact properties or inline fallbacks. See [automations.md](automations.md#contact-fields-in-send_email) for the template equivalent.
+
 ```html
 <p>Hi {{{FIRST_NAME|there}}}, your balance is {{{BALANCE|0}}}.</p>
 <a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Unsubscribe</a>

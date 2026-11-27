@@ -45,6 +45,25 @@ Each step has a `key` (unique within the graph), a `type`, and a `config` object
 | `contact_delete` | `{}` | Deletes the contact |
 | `add_to_segment` | `{ segment_id: string }` | Adds the contact to a segment |
 
+### Contact fields in send_email
+
+The template only reads the variables the step maps. To greet the contact by name, the template declares a variable (e.g. `USER_FIRST_NAME` with fallback `there`) and the step maps it with `{ var: 'contact.first_name' }`:
+
+```typescript
+{
+  key: 'welcome',
+  type: 'send_email',
+  config: {
+    template: {
+      id: 'tmpl_welcome',
+      variables: { USER_FIRST_NAME: { var: 'contact.first_name' } },
+    },
+  },
+}
+```
+
+Never write `{{{contact.first_name}}}` or `{{{contact.first_name|there}}}` in the template: that is broadcast syntax and the step fails to send. Custom properties map the same way, e.g. `{ var: 'contact.properties.plan' }`. Event data uses `{ var: 'event.<field>' }`.
+
 ### Rule Tree (condition & filter_rule)
 
 Leaf nodes: `{ "type": "rule", "field": "<namespace>.<key>", "operator": "<op>", "value": "<val>" }`
@@ -232,6 +251,7 @@ const { data, error } = await resend.automations.duplicate('aut_abc123');
 | Updating steps without connections (or vice versa) | When changing the graph, provide both `steps` and `connections` together |
 | Using `ref` or `edges` (old naming) | Use `key` for step identifiers and `connections` for links between steps |
 | Using `template_id` in send_email config | Use `template: { id: "..." }` — template is a nested object |
+| `{{{contact.first_name}}}` or `{{{contact.first_name\|there}}}` in the template | Broadcast-only syntax. Declare a template variable and map it in `template.variables` with `{ var: 'contact.first_name' }` |
 | Using `seconds` in delay config (old naming) | Use `duration` (e.g. `"30 minutes"`) — `seconds` is no longer accepted |
 | Forgetting to enable the automation | Automations default to `disabled` — set `status: "enabled"` on create or update |
 | Not checking `error` in Node.js | SDK returns `{ data, error }`, does not throw — always destructure and check |
