@@ -47,7 +47,7 @@ Each step has a `key` (unique within the graph), a `type`, and a `config` object
 
 ### Contact fields in send_email
 
-The template only reads the variables the step maps. To greet the contact by name, the template declares a variable (e.g. `USER_FIRST_NAME` with fallback `there`) and the step maps it with `{ var: 'contact.first_name' }`:
+The template only reads the variables the step maps. To greet the contact by name, the template declares a variable (e.g. `USER_FIRST_NAME` with fallback `there`) and the step maps it with `{ var: 'contact.first_name' }`. The variable can't be called `FIRST_NAME`: that name is reserved, so the template rejects it.
 
 ```typescript
 {

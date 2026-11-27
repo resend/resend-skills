@@ -350,7 +350,7 @@
     {
       "id": 32,
       "prompt": "I'm building a template for a user profile email. I want to include the user's first name, last name, email, and a custom field called 'plan_tier'. I define these variables: FIRST_NAME, LAST_NAME, EMAIL, PLAN_TIER. Are there any problems with this variable list?",
-      "expected_output": "FIRST_NAME, LAST_NAME, and EMAIL are reserved variable names. Must rename them.",
+      "expected_output": "FIRST_NAME, LAST_NAME, and EMAIL are reserved variable names, filled from contact data in broadcasts only. Rename them (e.g. USER_FIRST_NAME) and pass the values in variables, or map them to contact fields in the automation's send_email step. PLAN_TIER is fine.",
       "files": [],
       "expectations": [
         "Identifies FIRST_NAME, LAST_NAME, and EMAIL as reserved variable names",
